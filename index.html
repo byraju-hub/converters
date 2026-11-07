@@ -273,6 +273,11 @@ const $=id=>document.getElementById(id);
 const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let files=[],opts={model:'small',lang:''};
+if(location.protocol==='file:'){          /* index.html 을 파일로 직접 연 경우 */
+  const B='http://127.0.0.1:8765/';
+  const chk=async()=>{try{await fetch(B+'api/info',{mode:'no-cors',cache:'no-store'});location.replace(B)}catch{$('offline').hidden=false;setTimeout(chk,2000)}};
+  chk();
+}
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800)}
 
@@ -433,7 +438,7 @@ function startFeedback(){
   if(!starting)return;
   const sec=(Date.now()-starting)/1000;
   if(sec<20){$('startlink').classList.add('wait');$('starttxt').textContent='켜는 중…';$('offmsg').textContent='서버를 켜고 있어요. 보통 5초쯤 걸려요. 브라우저가 "앱을 열까요?"라고 물으면 열기를 눌러 주세요.'}
-  else{starting=0;resetStart();$('starttxt').textContent='다시 시도';$('offmsg').textContent='아직 켜지지 않았어요. 브라우저의 "앱 열기" 팝업을 허용했는지 확인하거나, web.bat을 직접 실행해 주세요.'}
+  else{starting=0;resetStart();$('starttxt').textContent='다시 시도';$('offmsg').textContent='아직 연결되지 않았어요. 브라우저의 "앱 열기" 팝업을 허용했는지 확인하거나, web.bat을 직접 실행해 주세요. (이 화면 주소: '+(location.protocol==='file:'?'파일로 직접 연 화면 — http://127.0.0.1:8765 로 열어야 해요':location.origin)+')'}
 }
 $('startlink').addEventListener('click',()=>{starting=Date.now();startFeedback();clearTimeout(poll.t);poll.t=setTimeout(poll,1000)});
 $('stop').onclick=async()=>{
