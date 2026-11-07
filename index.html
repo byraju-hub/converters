@@ -409,8 +409,8 @@ function jobHTML(j){
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }
 async function poll(force){
-  let js;try{js=await (await fetch('/api/jobs')).json();$('offline').hidden=true;if(starting){starting=0;resetStart();toast('서버가 켜졌어요')}}
-  catch{$('offline').hidden=false;startFeedback();clearTimeout(poll.t);poll.t=setTimeout(poll,starting?1000:3000);return}
+  let js;try{js=await (await fetch('/api/jobs')).json();$('offline').hidden=true;if(wasOff){location.reload();return}}
+  catch{wasOff=true;$('offline').hidden=false;startFeedback();clearTimeout(poll.t);poll.t=setTimeout(poll,starting?1000:3000);return}
   const sig=JSON.stringify(js)+[...open];
   if(sig!==last||force){
     last=sig;
@@ -427,7 +427,7 @@ async function poll(force){
   clearTimeout(poll.t);poll.t=setTimeout(poll,active?1500:5000);
 }
 /* 서버 시작 버튼 피드백 */
-let starting=0;
+let starting=0,wasOff=false;
 function resetStart(){$('startlink').classList.remove('wait');$('starttxt').textContent='서버 시작';$('offmsg').textContent='서버가 꺼져 있어요. 시작하면 이 화면이 자동으로 다시 연결돼요.'}
 function startFeedback(){
   if(!starting)return;
@@ -444,6 +444,9 @@ $('stop').onclick=async()=>{
   else if(r)toast('이 서버는 옛 버전이라 종료 기능이 없어요. web.bat을 다시 실행해 주세요');
   last='';setTimeout(poll,800);
 };
+/* 가려져 있던 탭은 브라우저가 타이머를 늦추므로, 다시 보이는 순간 바로 확인 */
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+window.addEventListener('focus',()=>poll());
 poll();
 </script>
 </body>
