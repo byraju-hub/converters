@@ -35,7 +35,7 @@ h1 span{color:var(--accent)}
 .top-link:hover{background:var(--step)}
 
 /* layout */
-.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start;padding-bottom:80px}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start;padding-bottom:32px}
 .panel{background:var(--panel);border-radius:16px;padding:24px}
 h2{margin:0 0 12px;font-size:17px;font-weight:700;letter-spacing:-.02em}
 .sect+.sect{margin-top:18px}
@@ -116,6 +116,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border-ra
 .empty svg{width:42px;height:42px;color:#9db4ac;stroke-width:1.5}
 .empty b{color:var(--ink);font-size:17px}
 
+.foot{padding-top:8px;padding-bottom:40px;text-align:center;color:var(--sub);font-size:14px}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
@@ -231,6 +232,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border-ra
     <div id="jobs"></div>
   </section>
 </main>
+<footer class="wrap foot">ⓒ 2026 byraju with Claude. All Rights Reserved.</footer>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
