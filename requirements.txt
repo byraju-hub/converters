@@ -1,0 +1,5 @@
+yt-dlp
+faster-whisper
+av<17
+flask
+anthropic
