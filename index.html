@@ -360,8 +360,10 @@ async function poll(force){
 $('stop').onclick=async()=>{
   const busy=document.querySelector('.st.running,.st.queued');
   if(busy&&!confirm('변환 중인 작업이 있어요. 그래도 서버를 끌까요?'))return;
-  try{await fetch('/api/shutdown',{method:'POST'})}catch{}
-  last='';poll();
+  let r;try{r=await fetch('/api/shutdown',{method:'POST'})}catch{r=null}
+  if(r&&r.ok)toast('서버를 껐어요');
+  else if(r)toast('이 서버는 옛 버전이라 종료 기능이 없어요. web.bat을 다시 실행해 주세요');
+  last='';setTimeout(poll,800);
 };
 poll();
 </script>
