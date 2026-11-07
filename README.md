@@ -33,6 +33,20 @@ web.bat                       # Windows: 브라우저가 자동으로 열립니�
 
 포트를 바꾸려면 환경변수 `VOD_PORT`를 지정하세요. 결과 파일은 `output/` 폴더에도 저장됩니다.
 
+### 서버 시작·종료 버튼 (선택)
+
+웹 화면 오른쪽 위의 **서버 끄기** 버튼으로 서버를 끌 수 있습니다. 꺼진 뒤에는 화면 위에 **서버 시작** 배너가 나타나고,
+`launcher.html`(즐겨찾기에 추가해 두면 편해요)을 열어도 같은 버튼으로 서버를 켤 수 있습니다.
+
+서버 시작 버튼이 동작하려면 `vodmd://` 주소를 한 번 등록해야 합니다(현재 사용자 전용, 관리자 권한 불필요).
+
+```powershell
+powershell -ExecutionPolicy Bypass -File register-protocol.ps1     # 등록
+powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
+```
+
+처음 누르면 브라우저가 "앱을 열까요?"라고 묻는데, "항상 허용"을 체크하세요.
+
 ### 명령줄
 
 ```bash

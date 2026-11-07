@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vod to MD — 시작</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f6b57'/%3E%3Cpath d='M18 20v24l17-12z' fill='%23fff'/%3E%3Cpath d='M41 24h7M41 32h7M41 40h7' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#eef2f0;color:#14201c;font:16px/1.55 "Pretendard Variable",Pretendard,"Malgun Gothic",system-ui,sans-serif}
+.card{background:#fff;border-radius:20px;padding:40px 36px;width:min(440px,calc(100% - 32px));text-align:center}
+.mark{width:72px;height:72px;margin:0 auto 18px;display:block}
+h1{margin:0 0 6px;font-size:30px;letter-spacing:-.035em;font-weight:800}h1 span{color:#0f6b57}
+p{margin:0;color:#4d5a55}
+.st{display:inline-flex;align-items:center;gap:8px;margin:22px 0 18px;font-weight:650}
+.st::before{content:"";width:10px;height:10px;border-radius:50%;background:#8a958f}
+.st.up::before{background:#0f6b57}.st.wait::before{background:#b36b00}
+button{width:100%;border:0;border-radius:12px;background:#0f6b57;color:#fff;padding:15px;font:inherit;font-weight:700;font-size:17px;cursor:pointer}
+button:hover{background:#0b5444}button:disabled{background:#9db4ac;cursor:default}
+small{display:block;margin-top:14px;color:#4d5a55;font-size:14px}
+</style></head>
+<body><main class="card">
+<svg class="mark" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0f6b57"/><path d="M18 20v24l17-12z" fill="#fff"/><path d="M41 24h7M41 32h7M41 40h7" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>
+<h1>Vod to <span>MD</span></h1>
+<p>영상을 Markdown으로 바꾸는 도구</p>
+<div class="st" id="st" role="status">서버 확인 중…</div>
+<button id="go" disabled>서버 시작</button>
+<small>처음 누르면 브라우저가 "앱을 열까요?" 하고 물어요. "항상 허용"을 체크하세요.</small>
+</main>
+<script>
+const BASE='http://127.0.0.1:8765/';
+const st=document.getElementById('st'),go=document.getElementById('go');
+let starting=false;
+async function alive(){try{await fetch(BASE+'api/jobs',{mode:'no-cors',cache:'no-store'});return true}catch{return false}}
+async function tick(){
+  if(await alive()){st.className='st up';st.textContent='서버가 켜져 있어요';go.textContent='열기';go.disabled=false;location.href=BASE;return}
+  st.className='st'+(starting?' wait':'');st.textContent=starting?'서버를 켜는 중…':'서버가 꺼져 있어요';
+  go.disabled=starting;go.textContent='서버 시작';
+  setTimeout(tick,starting?1000:3000);
+}
+go.onclick=()=>{if(go.textContent==='열기'){location.href=BASE;return}starting=true;go.disabled=true;location.href='vodmd://start';tick()};
+tick();
+</script></body></html>

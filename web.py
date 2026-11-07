@@ -12,7 +12,7 @@ import zipfile
 from pathlib import Path
 from queue import Queue
 
-from flask import Flask, jsonify, request, send_file, Response
+from flask import Flask, abort, jsonify, request, send_file, Response
 
 import vod2md
 
@@ -106,6 +106,15 @@ def zip_all():
 def clear():
     for jid in [i for i, j in jobs.items() if j["status"] in ("done", "error")]:
         del jobs[jid]
+    return jsonify(ok=True)
+
+
+@app.post("/api/shutdown")
+def shutdown():
+    origin = request.headers.get("Origin", "")
+    if origin and not origin.startswith(("http://127.0.0.1", "http://localhost")):
+        abort(403)          # 다른 웹사이트가 내 서버를 끄지 못하게
+    threading.Timer(0.5, lambda: os._exit(0)).start()
     return jsonify(ok=True)
 
 
