@@ -4,6 +4,7 @@
 """
 import io
 import os
+import re
 import shutil
 import tempfile
 import threading
@@ -40,7 +41,7 @@ def worker():
             path.write_text(md, encoding="utf-8")
             j.update(status="done", title=title, file=path.name, md=md, log="완료")
         except Exception as e:
-            j.update(status="error", log=str(e))
+            j.update(status="error", log=re.sub(r"\x1b\[[0-9;]*m", "", str(e)).strip())
         finally:
             if j.get("tmp"):
                 Path(j["tmp"]).unlink(missing_ok=True)
@@ -50,28 +51,39 @@ def worker():
 threading.Thread(target=worker, daemon=True).start()
 
 
+def enqueue(opts, **kw):
+    jid = uuid.uuid4().hex[:8]
+    jobs[jid] = dict(status="queued", log="대기 중", **opts, **kw)
+    q.put(jid)
+    return jid
+
+
 @app.post("/api/submit")
 def submit():
     f = request.form
     opts = dict(model=f.get("model", "small"), lang=f.get("lang") or None,
                 whisper=f.get("whisper") == "1", summarize=f.get("summarize") == "1")
-    ids = []
-
-    def add(**kw):
-        jid = uuid.uuid4().hex[:8]
-        jobs[jid] = dict(status="queued", log="대기 중", **opts, **kw)
-        q.put(jid)
-        ids.append(jid)
-
-    for line in f.get("urls", "").splitlines():
-        line = line.strip()
-        if line:
-            add(source=line, label=line)
+    lines = [l.strip() for l in f.get("urls", "").splitlines() if l.strip()]
+    bad = [l for l in lines if not l.lower().startswith(("http://", "https://"))]
+    if bad:    # 하나라도 이상하면 아무것도 시작하지 않고 어떤 줄이 문제인지 알려준다
+        return jsonify(error="링크는 http:// 또는 https:// 로 시작해야 해요", bad=bad), 400
+    ids = [enqueue(opts, source=l, label=l) for l in lines]
     for up in request.files.getlist("files"):
         dest = UPLOADS / f"{uuid.uuid4().hex}_{Path(up.filename).name}"
         up.save(dest)
-        add(source=str(dest), tmp=str(dest), name=up.filename, label=up.filename)
+        ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
     return jsonify(ids)
+
+
+@app.post("/api/retry/<jid>")
+def retry(jid):
+    local_only()
+    j = jobs.get(jid)
+    if not j or j["status"] != "error" or not j["source"].lower().startswith(("http://", "https://")):
+        abort(404)      # 올린 파일은 변환 후 지워지므로 링크만 다시 시도할 수 있다
+    opts = {k: j[k] for k in ("model", "lang", "whisper", "summarize")}
+    del jobs[jid]
+    return jsonify(id=enqueue(opts, source=j["source"], label=j["label"]))
 
 
 @app.get("/api/jobs")
