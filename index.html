@@ -26,12 +26,13 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 /* title */
 header{padding:44px 0 30px}
 .brand{display:flex;align-items:center;gap:18px}
+.brand>div:nth-child(2){min-width:0;flex:1}
 .mark{width:60px;height:60px;border-radius:16px;background:var(--accent);flex:none;display:grid;place-items:center}
 .mark svg{width:60px;height:60px}
 h1{margin:0;font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.035em}
 h1 span{color:var(--accent)}
 .lede{margin:6px 0 0;font-size:17px;color:var(--sub)}
-.top-link{margin-left:auto;display:inline-flex;gap:8px;align-items:center;text-decoration:none;color:var(--ink);background:var(--panel);padding:9px 14px;border-radius:99px;font-weight:600;font-size:14px;transition:background .15s}
+.top-link{white-space:nowrap;flex:none;margin-left:auto;display:inline-flex;gap:8px;align-items:center;text-decoration:none;color:var(--ink);background:var(--panel);padding:9px 14px;border-radius:99px;font-weight:600;font-size:14px;transition:background .15s}
 .top-link:hover{background:var(--step)}
 .top-acts{margin-left:auto;display:flex;gap:8px;align-items:center}
 .top-acts .top-link{margin-left:0;border:0;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
@@ -93,13 +94,13 @@ textarea:focus{outline:0;box-shadow:0 0 0 2px var(--accent)}
 /* queue */
 .qhead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .qhead h2{margin:0;flex:1}
-.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--field);border-radius:8px;padding:7px 11px;font-weight:600;font-size:14px;transition:background .15s}
+.btn{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border:0;background:var(--field);border-radius:8px;padding:7px 11px;font-weight:600;font-size:14px;transition:background .15s}
 .btn:hover{background:var(--step)}
 .btn:disabled{opacity:.45;cursor:default}
 .btn svg{width:16px;height:16px}
 .btn.ic-only{padding:7px 8px}
 
-#jobs{display:grid;gap:0}
+#jobs{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
 .job{padding:14px 0}
 .job+.job{border-top:1px solid var(--step)}
 .row{display:flex;gap:12px;align-items:center}
@@ -142,6 +143,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border-ra
   .panel{padding:18px}
   .gowrap{margin:18px -18px -18px;padding:12px 18px 18px}
   .seg button{padding:8px 2px;font-size:13px}
+  .qhead{flex-wrap:wrap}
+  .qhead h2{flex:1 1 100%;margin-bottom:4px}
   .bar,.prev{margin-left:0}
   .row{flex-wrap:wrap}
   .job .t{flex:1 1 calc(100% - 56px)}
