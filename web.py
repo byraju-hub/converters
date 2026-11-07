@@ -109,11 +109,32 @@ def clear():
     return jsonify(ok=True)
 
 
-@app.post("/api/shutdown")
-def shutdown():
+def local_only():
+    """다른 웹사이트가 내 서버를 조작하지 못하게 출처를 확인한다."""
     origin = request.headers.get("Origin", "")
     if origin and not origin.startswith(("http://127.0.0.1", "http://localhost")):
-        abort(403)          # 다른 웹사이트가 내 서버를 끄지 못하게
+        abort(403)
+
+
+@app.get("/api/info")
+def info():
+    return jsonify(outdir=str(OUT))
+
+
+@app.post("/api/open-folder")
+def open_folder():
+    local_only()
+    if hasattr(os, "startfile"):
+        os.startfile(OUT)                       # Windows 탐색기
+    else:
+        import subprocess, sys
+        subprocess.Popen(["open" if sys.platform == "darwin" else "xdg-open", str(OUT)])
+    return jsonify(ok=True, outdir=str(OUT))
+
+
+@app.post("/api/shutdown")
+def shutdown():
+    local_only()
     threading.Timer(0.5, lambda: os._exit(0)).start()
     return jsonify(ok=True)
 

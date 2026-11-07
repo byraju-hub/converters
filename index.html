@@ -167,6 +167,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border-ra
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-gh" viewBox="0 0 24 24"><path d="M9 19c-4 1.4-4-2-6-2.5m12 4.5v-3.2a2.8 2.8 0 0 0-.8-2.2c2.700-.3 5.500-1.300 5.500-6a4.700 4.700 0 0 0-1.300-3.300 4.400 4.400 0 0 0-.1-3.300s-1-.3-3.400 1.300a11.600 11.600 0 0 0-6 0C6.500 2.700 5.500 3 5.500 3a4.400 4.400 0 0 0-.1 3.300A4.700 4.700 0 0 0 4 9.600c0 4.600 2.800 5.600 5.500 6a2.800 2.800 0 0 0-.8 2.200V21"/></symbol>
     <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 9h5M3 15h5M16 9h5M16 15h5"/></symbol>
   </defs>
 </svg>
@@ -239,6 +240,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border-ra
   <section class="panel" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
+      <button class="btn" id="folder" type="button" title="결과 파일이 저장되는 폴더"><svg class="i"><use href="#i-folder"/></svg>저장 폴더</button>
       <button class="btn" id="zip" type="button" disabled><svg class="i"><use href="#i-zip"/></svg>전체 ZIP</button>
       <button class="btn" id="clear" type="button" disabled><svg class="i"><use href="#i-broom"/></svg>끝난 항목 지우기</button>
     </div>
@@ -308,6 +310,12 @@ $('go').onclick=async()=>{
   try{await fetch('/api/submit',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요');$('go').disabled=false;refreshGo();return}
   $('urls').value='';files=[];renderPicked();$('go').disabled=false;refreshGo();poll();
 };
+$('folder').onclick=async()=>{
+  let r;try{r=await fetch('/api/open-folder',{method:'POST'})}catch{r=null}
+  if(r&&r.ok){const d=await r.json();toast('폴더를 열었어요: '+d.outdir)}
+  else toast('폴더를 열지 못했어요. web.bat을 다시 실행해 보세요');
+};
+fetch('/api/info').then(r=>r.json()).then(d=>{$('folder').title='저장 위치: '+d.outdir}).catch(()=>{});
 $('zip').onclick=()=>location.href='/api/zip';
 $('clear').onclick=async()=>{await fetch('/api/clear',{method:'POST'});last='';poll()};
 
