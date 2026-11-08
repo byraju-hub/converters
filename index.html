@@ -282,10 +282,11 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
       </button>
       <input id="pfile" type="file" multiple accept="application/pdf,.pdf" hidden>
       <div id="ppicked" class="picked"></div>
-      <p class="note">제목·목록·표 구조를 살려서 변환해요. 글자가 없는 스캔(이미지) PDF는 아직 변환할 수 없어요.</p>
+      <p class="note">제목·목록·표 구조를 살려서 변환해요. 글자가 없는 스캔(이미지) PDF는 아래 글자 인식 스위치를 켜 두면 읽어 줘요.</p>
     </div>
 
     <div class="sect">
+      <label class="sw"><span class="t"><b>스캔 PDF 글자 인식 (OCR)</b><small>이미지뿐인 쪽을 한국어로 읽어요. 쪽당 몇 초 걸리고, 처음 한 번 인식 모델(약 13MB)을 내려받아요</small></span><input type="checkbox" id="pocr" checked><i></i></label>
       <label class="sw"><span class="t"><b>쪽 구분 표시</b><small>각 쪽 앞에 구분선과 쪽 번호를 넣어요</small></span><input type="checkbox" id="pmarks" checked><i></i></label>
     </div>
 
@@ -451,7 +452,7 @@ pfi.onchange=()=>{addPdfs(pfi.files);pfi.value=''};
 pdrop.addEventListener('drop',x=>addPdfs(x.dataTransfer.files));
 $('pgo').onclick=async()=>{
   if(!pfiles.length){toast('PDF 파일을 올려 주세요');pdrop.focus();return}
-  const fd=new FormData();fd.append('page_marks',$('pmarks').checked?'1':'0');
+  const fd=new FormData();fd.append('page_marks',$('pmarks').checked?'1':'0');fd.append('ocr',$('pocr').checked?'1':'0');
   pfiles.forEach(f=>fd.append('files',f));
   $('pgo').disabled=true;$('pgo-t').textContent='보내는 중…';
   let r;try{r=await fetch('/api/submit-pdf',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');$('pgo').disabled=false;renderPPicked();return}

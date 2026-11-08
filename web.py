@@ -38,7 +38,8 @@ def worker():
                 j["log"] = msg
             if j.get("kind") == "pdf":
                 title, md = pdf2md.convert_pdf(j["source"], local_name=j.get("name"),
-                                               page_marks=j.get("page_marks", True), cb=cb)
+                                               page_marks=j.get("page_marks", True),
+                                               ocr=j.get("ocr", True), cb=cb)
             else:
                 title, md = vod2md.convert(j["source"], j["model"], j["lang"], j["whisper"],
                                            j["summarize"], cb=cb, local_name=j.get("name"))
@@ -96,7 +97,8 @@ def submit_pdf():
             bad.append(up.filename)
     if bad:
         return jsonify(error="PDF 파일이 아니에요", bad=bad), 400
-    opts = dict(kind="pdf", page_marks=request.form.get("page_marks") != "0")
+    opts = dict(kind="pdf", page_marks=request.form.get("page_marks") != "0",
+                ocr=request.form.get("ocr") != "0")
     ids = []
     for up in ups:
         dest = UPLOADS / f"{uuid.uuid4().hex}_{Path(up.filename).name}"
