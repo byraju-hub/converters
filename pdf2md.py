@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright (C) 2026 byraju
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# 이 프로그램은 자유 소프트웨어입니다. GNU Affero 일반 공중 사용 허가서(AGPL) 3판 또는 그 이후 판의
+# 조건에 따라 배포·수정할 수 있습니다. 자세한 내용은 LICENSE 파일을 보세요.
 """PDF -> Markdown 변환기 (제목·목록·표 구조를 살립니다)
 
 글자가 들어 있는 쪽은 텍스트를 그대로 뽑고, 글자 없이 이미지뿐인(스캔한) 쪽은

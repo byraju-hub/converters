@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright (C) 2026 byraju
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# 이 프로그램은 자유 소프트웨어입니다. GNU Affero 일반 공중 사용 허가서(AGPL) 3판 또는 그 이후 판의
+# 조건에 따라 배포·수정할 수 있습니다. 자세한 내용은 LICENSE 파일을 보세요.
 """vod2md 웹 화면: 링크 붙여넣기 / 파일 드래그 앤 드롭 -> 일괄 변환 -> .md 미리보기·다운로드
 실행: python web.py  → http://127.0.0.1:8765
 """

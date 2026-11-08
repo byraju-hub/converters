@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright (C) 2026 byraju
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# 이 프로그램은 자유 소프트웨어입니다. GNU Affero 일반 공중 사용 허가서(AGPL) 3판 또는 그 이후 판의
+# 조건에 따라 배포·수정할 수 있습니다. 자세한 내용은 LICENSE 파일을 보세요.
 """영상(유튜브 링크 / 로컬 파일) -> Markdown 변환기
 
 사용법:

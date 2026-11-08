@@ -124,5 +124,30 @@ ANTHROPIC_API_KEY=sk-ant-...
 ## 참고
 
 - GPU는 쓰지 않고 CPU(int8)로만 동작합니다.
-- PDF 변환은 [pymupdf4llm](https://github.com/pymupdf/pymupdf4llm)(PyMuPDF)을 사용합니다. PyMuPDF는 AGPL/상용 이중 라이선스이니 배포할 때 확인하세요.
 - 유튜브 다운로드는 [yt-dlp](https://github.com/yt-dlp/yt-dlp)를 사용합니다. 저작권이 있는 영상은 이용 약관과 법률을 지켜 사용하세요.
+
+## 라이선스
+
+Copyright (C) 2026 byraju
+
+이 프로젝트는 **GNU Affero 일반 공중 사용 허가서 3판 이후(AGPL-3.0-or-later)** 로 공개합니다. 전문은 [LICENSE](LICENSE)를 보세요.
+PDF 변환에 쓰는 [PyMuPDF·pymupdf4llm](https://github.com/pymupdf/pymupdf4llm)이 AGPL-3.0이라 프로젝트 전체를 같은 라이선스로 맞췄습니다.
+
+- 자유롭게 쓰고 고쳐서 다시 배포할 수 있습니다. 다만 배포하는 결과물도 AGPL로, 소스 코드와 함께 공개해야 합니다.
+- 수정한 버전을 **네트워크로 다른 사람에게 서비스**하는 경우에도 그 사용자에게 소스 코드를 제공해야 합니다(AGPL 13조). 화면 오른쪽 위 GitHub 링크가 소스 위치입니다.
+- 개인 PC에서 혼자 쓰는 것은 아무 제약이 없습니다.
+
+### 함께 쓰는 도구의 라이선스
+
+| 도구 | 라이선스 |
+|---|---|
+| faster-whisper, CTranslate2, onnxruntime | MIT |
+| Flask, PyAV, NumPy | BSD 계열 |
+| yt-dlp | Unlicense |
+| anthropic SDK, RapidOCR, OpenCV | Apache-2.0 |
+| PyMuPDF, pymupdf4llm | AGPL-3.0 |
+| Whisper 모델 / PP-OCRv5 모델 | MIT / Apache-2.0 (실행할 때 내려받음) |
+| Pretendard 글꼴 | SIL OFL 1.1 (인터넷에서 불러옴) |
+
+이 도구들은 저장소에 포함하지 않고 `pip install -r requirements.txt`로 설치합니다.
+PyPI의 PyAV에는 GPL로 빌드된 FFmpeg가 들어 있으니, 이 프로그램을 `.exe` 등으로 묶어 배포할 때는 FFmpeg의 라이선스도 따로 확인하세요.
