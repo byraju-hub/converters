@@ -149,6 +149,8 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
 .empty b{color:var(--ink);font-size:17px}
 
 .foot{margin-top:8px;margin-bottom:40px;text-align:center;color:var(--sub);font-size:14px}
+.foot a{color:inherit;text-underline-offset:3px}
+.foot a:hover{color:var(--accent-d)}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
@@ -303,7 +305,7 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
     <div id="jobs"></div>
   </section>
 </main>
-<footer class="wrap foot">ⓒ 2026 byraju with Claude. All Rights Reserved.</footer>
+<footer class="wrap foot">ⓒ 2026 byraju with Claude. Licensed under <a href="https://github.com/byraju-hub/vod-to-md/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>.</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
