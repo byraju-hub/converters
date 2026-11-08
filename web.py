@@ -15,6 +15,7 @@ from queue import Queue
 
 from flask import Flask, abort, jsonify, request, send_file, Response
 
+import pdf2md
 import vod2md
 
 PORT = int(os.environ.get("VOD_PORT", "8765"))
@@ -35,16 +36,23 @@ def worker():
             j["status"] = "running"
             def cb(msg):
                 j["log"] = msg
-            title, md = vod2md.convert(j["source"], j["model"], j["lang"], j["whisper"],
-                                       j["summarize"], cb=cb, local_name=j.get("name"))
+            if j.get("kind") == "pdf":
+                title, md = pdf2md.convert_pdf(j["source"], local_name=j.get("name"),
+                                               page_marks=j.get("page_marks", True), cb=cb)
+            else:
+                title, md = vod2md.convert(j["source"], j["model"], j["lang"], j["whisper"],
+                                           j["summarize"], cb=cb, local_name=j.get("name"))
             path = vod2md.unique_path(OUT, title)
             path.write_text(md, encoding="utf-8")
             j.update(status="done", title=title, file=path.name, md=md, log="완료")
         except Exception as e:
             j.update(status="error", log=re.sub(r"\x1b\[[0-9;]*m", "", str(e)).strip())
         finally:
-            if j.get("tmp"):
-                Path(j["tmp"]).unlink(missing_ok=True)
+            try:
+                if j.get("tmp"):
+                    Path(j["tmp"]).unlink(missing_ok=True)
+            except OSError:
+                pass        # 임시 파일을 못 지워도 다음 작업은 계속 처리한다
             q.task_done()
 
 
@@ -69,6 +77,28 @@ def submit():
         return jsonify(error="링크는 http:// 또는 https:// 로 시작해야 해요", bad=bad), 400
     ids = [enqueue(opts, source=l, label=l) for l in lines]
     for up in request.files.getlist("files"):
+        dest = UPLOADS / f"{uuid.uuid4().hex}_{Path(up.filename).name}"
+        up.save(dest)
+        ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
+    return jsonify(ids)
+
+
+@app.post("/api/submit-pdf")
+def submit_pdf():
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="PDF 파일을 올려 주세요"), 400
+    bad = []
+    for up in ups:       # 확장자와 파일 머리(%PDF-)를 둘 다 확인한다
+        head = up.stream.read(5)
+        up.stream.seek(0)
+        if not up.filename.lower().endswith(".pdf") or head != b"%PDF-":
+            bad.append(up.filename)
+    if bad:
+        return jsonify(error="PDF 파일이 아니에요", bad=bad), 400
+    opts = dict(kind="pdf", page_marks=request.form.get("page_marks") != "0")
+    ids = []
+    for up in ups:
         dest = UPLOADS / f"{uuid.uuid4().hex}_{Path(up.filename).name}"
         up.save(dest)
         ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))

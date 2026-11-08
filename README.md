@@ -1,6 +1,6 @@
 # Vod to MD
 
-유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로 바꿔 주는 도구입니다.
+유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다.
 웹 화면과 명령줄 두 가지로 쓸 수 있고, 변환은 모두 내 PC에서 돌아갑니다(무료, API 키 불필요).
 
 ## 특징
@@ -9,6 +9,7 @@
 - **로컬 파일**: [faster-whisper](https://github.com/SYSTRAN/faster-whisper)로 음성인식 (ffmpeg 설치 불필요)
 - **여러 개 한꺼번에**: 링크·파일을 섞어서 일괄 변환, 한 건이 실패해도 나머지는 계속
 - **웹 화면**: 링크 붙여넣기 / 파일 드래그 앤 드롭, 진행률, 미리보기, 복사, `.md`·ZIP 다운로드
+- **PDF → MD**: 웹 화면의 **PDF → MD** 탭에서 PDF를 끌어다 놓으면 제목·목록·표를 살려 변환 (쪽 구분 표시 선택 가능, 글자가 없는 스캔 PDF는 아직 미지원)
 - **Claude 요약(선택)**: 문서 맨 위에 요약·핵심 포인트, 본문 중간에 소제목 자동 삽입
 
 ## 설치
@@ -47,6 +48,10 @@ powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
 
 처음 누르면 브라우저가 "앱을 열까요?"라고 묻는데, "항상 허용"을 체크하세요.
 
+### 웹 화면의 탭
+
+화면 위쪽의 탭으로 **영상 → MD**와 **PDF → MD**를 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`를 붙이면(`http://127.0.0.1:8765/#pdf`) PDF 탭으로 바로 열립니다.
+
 ### 명령줄
 
 ```bash
@@ -57,6 +62,13 @@ vod2md.bat --list 목록.txt -d 결과폴더               # 한 줄에 하나�
 vod2md.bat URL --whisper                             # 자막 무시, 음성인식 강제
 vod2md.bat FILE -m medium -l ko                      # 모델·언어 지정
 vod2md.bat URL --summarize                           # Claude 요약 + 소제목
+```
+
+PDF는 이렇게 변환합니다.
+
+```bash
+pdf2md.bat 문서.pdf                                  # 현재 폴더에 문서.md 생성
+pdf2md.bat a.pdf b.pdf -d 결과폴더 --no-page-marks    # 여러 개, 쪽 구분선 없이
 ```
 
 ## Whisper 모델 고르기
@@ -100,4 +112,5 @@ ANTHROPIC_API_KEY=sk-ant-...
 ## 참고
 
 - GPU는 쓰지 않고 CPU(int8)로만 동작합니다.
+- PDF 변환은 [pymupdf4llm](https://github.com/pymupdf/pymupdf4llm)(PyMuPDF)을 사용합니다. PyMuPDF는 AGPL/상용 이중 라이선스이니 배포할 때 확인하세요.
 - 유튜브 다운로드는 [yt-dlp](https://github.com/yt-dlp/yt-dlp)를 사용합니다. 저작권이 있는 영상은 이용 약관과 법률을 지켜 사용하세요.

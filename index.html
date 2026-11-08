@@ -28,7 +28,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
 
 /* title */
-header{padding:44px 0 30px}
+header{padding:44px 0 24px}
 .brand{display:flex;align-items:center;gap:18px}
 .brand>div:nth-child(2){min-width:0;flex:1}
 .mark{width:60px;height:60px;border-radius:16px;background:var(--accent);flex:none;display:grid;place-items:center}
@@ -49,6 +49,15 @@ h1 span{color:var(--accent)}
 .offline a.wait{background:#7a8782;pointer-events:none}
 .offline a b{font-weight:700}
 
+/* tabs */
+.tabs-wrap{margin-bottom:20px}
+.tabs{display:inline-flex;background:var(--panel);border-radius:14px;padding:4px;gap:4px}
+.tabs button{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:10px;padding:10px 20px;font-weight:700;font-size:15px;color:var(--sub);transition:background .15s,color .15s}
+.tabs button:hover:not([aria-selected=true]){background:var(--field);color:var(--ink)}
+.tabs button[aria-selected=true]{background:var(--accent);color:#fff}
+.tabs svg{width:18px;height:18px}
+.note{margin:10px 2px 0;font-size:14px;color:var(--sub)}
+
 /* layout */
 .grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start;padding-bottom:32px}
 .panel{background:var(--panel);border-radius:16px;padding:24px}
@@ -64,14 +73,14 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 2px var(--bad)}
 .fieldmsg code{font:inherit;font-weight:500;background:#f8e4e2;border-radius:4px;padding:0 4px;overflow-wrap:anywhere}
 textarea:focus{outline:0;box-shadow:0 0 0 2px var(--accent)}
 
-#drop{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1.5px dashed var(--line);background:transparent;border-radius:12px;padding:16px 18px;transition:background .15s,border-color .15s}
-#drop:hover,#drop.on{background:var(--accent-t);border-color:var(--accent)}
-#drop .ic{width:42px;height:42px;border-radius:10px;background:var(--step);display:grid;place-items:center;color:var(--accent);flex:none;transition:transform .2s}
-#drop.on .ic{transform:translateY(-3px)}
-#drop b{display:block;font-weight:650}
-#drop small{color:var(--sub);font-size:14px}
-#picked{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-#picked:empty{display:none}
+.dz{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1.5px dashed var(--line);background:transparent;border-radius:12px;padding:16px 18px;transition:background .15s,border-color .15s}
+.dz:hover,.dz.on{background:var(--accent-t);border-color:var(--accent)}
+.dz .ic{width:42px;height:42px;border-radius:10px;background:var(--step);display:grid;place-items:center;color:var(--accent);flex:none;transition:transform .2s}
+.dz.on .ic{transform:translateY(-3px)}
+.dz b{display:block;font-weight:650}
+.dz small{color:var(--sub);font-size:14px}
+.picked{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.picked:empty{display:none}
 .chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;background:var(--accent-t);color:var(--accent-d);border-radius:8px;padding:4px 6px 4px 10px;font-size:14px;font-weight:600}
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
 .chip button{border:0;background:transparent;display:grid;place-items:center;width:28px;height:28px;margin:-4px 0;border-radius:6px;color:inherit}
@@ -139,7 +148,7 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
 .empty svg{width:42px;height:42px;color:#9db4ac;stroke-width:1.5}
 .empty b{color:var(--ink);font-size:17px}
 
-.foot{padding-top:8px;padding-bottom:40px;text-align:center;color:var(--sub);font-size:14px}
+.foot{margin-top:8px;margin-bottom:40px;text-align:center;color:var(--sub);font-size:14px}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
@@ -153,6 +162,8 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
   .mark,.mark svg{width:50px;height:50px}
   .brand{gap:14px}
   .top-acts .top-link.gh{display:none}
+  .tabs{display:flex;width:100%}
+  .tabs button{flex:1;justify-content:center;padding:10px 8px}
   .lede{font-size:15px}
   .panel{padding:18px}
   .gowrap{margin:18px -18px -18px;padding:12px 18px 18px}
@@ -185,6 +196,7 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
     <symbol id="i-gh" viewBox="0 0 24 24"><path d="M9 19c-4 1.4-4-2-6-2.5m12 4.5v-3.2a2.8 2.8 0 0 0-.8-2.2c2.700-.3 5.500-1.300 5.500-6a4.700 4.700 0 0 0-1.300-3.300 4.400 4.400 0 0 0-.1-3.300s-1-.3-3.400 1.300a11.600 11.600 0 0 0-6 0C6.500 2.700 5.500 3 5.500 3a4.400 4.400 0 0 0-.1 3.300A4.700 4.700 0 0 0 4 9.600c0 4.600 2.800 5.600 5.500 6a2.800 2.800 0 0 0-.8 2.200V21"/></symbol>
     <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 9h5M3 15h5M16 9h5M16 15h5"/></symbol>
   </defs>
 </svg>
@@ -198,7 +210,7 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
     </div>
     <div>
       <h1>Vod to <span>MD</span></h1>
-      <p class="lede">영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.</p>
+      <p class="lede" id="lede">영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.</p>
     </div>
     <div class="top-acts">
       <button class="top-link" id="stop" type="button" title="서버 끄기"><svg class="i"><use href="#i-power"/></svg>서버 끄기</button>
@@ -207,9 +219,15 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
   </div>
 </div>
 </header>
+<div class="wrap tabs-wrap">
+  <div class="tabs" role="tablist" aria-label="변환 종류">
+    <button type="button" role="tab" id="tab-video" data-tab="video" aria-selected="true" aria-controls="panel-video"><svg class="i"><use href="#i-play"/></svg>영상 → MD</button>
+    <button type="button" role="tab" id="tab-pdf" data-tab="pdf" aria-selected="false" aria-controls="panel-pdf"><svg class="i"><use href="#i-doc"/></svg>PDF → MD</button>
+  </div>
+</div>
 
 <main class="wrap grid">
-  <section class="panel" aria-label="변환 설정">
+  <section class="panel" id="panel-video" role="tabpanel" aria-labelledby="tab-video">
     <div class="sect">
       <h2>유튜브 링크</h2>
       <textarea id="urls" placeholder="https://youtu.be/…&#10;한 줄에 하나씩 붙여넣으면 한꺼번에 변환해요" aria-label="유튜브 링크" aria-describedby="urlmsg"></textarea>
@@ -218,12 +236,12 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
 
     <div class="sect">
       <h2>내 PC 파일</h2>
-      <button id="drop" type="button">
+      <button id="drop" class="dz" type="button">
         <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
         <span><b>영상·오디오 파일을 끌어다 놓기</b><small>또는 클릭해서 선택 (여러 개 가능)</small></span>
       </button>
       <input id="file" type="file" multiple accept="video/*,audio/*" hidden>
-      <div id="picked"></div>
+      <div id="picked" class="picked"></div>
     </div>
 
     <div class="sect">
@@ -253,6 +271,25 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
     </div>
 
     <div class="gowrap"><button class="go" id="go" type="button"><span id="go-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-pdf" role="tabpanel" aria-labelledby="tab-pdf" hidden>
+    <div class="sect">
+      <h2>PDF 파일</h2>
+      <button id="pdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>PDF 파일을 끌어다 놓기</b><small>또는 클릭해서 선택 (여러 개 가능)</small></span>
+      </button>
+      <input id="pfile" type="file" multiple accept="application/pdf,.pdf" hidden>
+      <div id="ppicked" class="picked"></div>
+      <p class="note">제목·목록·표 구조를 살려서 변환해요. 글자가 없는 스캔(이미지) PDF는 아직 변환할 수 없어요.</p>
+    </div>
+
+    <div class="sect">
+      <label class="sw"><span class="t"><b>쪽 구분 표시</b><small>각 쪽 앞에 구분선과 쪽 번호를 넣어요</small></span><input type="checkbox" id="pmarks" checked><i></i></label>
+    </div>
+
+    <div class="gowrap"><button class="go" id="pgo" type="button"><span id="pgo-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
   <section class="panel" aria-label="변환 목록">
@@ -369,11 +406,59 @@ function friendly(raw){
   if(/파일을 찾을 수 없/.test(r))return '파일을 찾지 못했어요. 링크라면 http로 시작하는지 확인해 주세요.';
   if(/Unsupported URL/i.test(r))return '지원하지 않는 주소예요. 유튜브 영상 링크인지 확인해 주세요.';
   if(/getaddrinfo|Network|timed out|Connection/i.test(r))return '인터넷에 연결하지 못했어요. 연결을 확인하고 다시 시도해 주세요.';
+  if(/[가-힣]/.test(r)&&r.length<140&&!/ERROR|Traceback/.test(r))return r;
   return '변환에 실패했어요. 다시 시도해도 같다면 이 문구에 마우스를 올려 자세한 내용을 확인해 주세요.';
 }
 
 /* queue */
 const LABEL={queued:'대기 중',running:'변환 중',done:'완료',error:'실패'};
+/* ===== 탭 ===== */
+const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
+            pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.'};
+const tabBtns=[...document.querySelectorAll('.tabs [role=tab]')];
+function setTab(t,focus){
+  if(!LEDE[t])t='video';
+  tabBtns.forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
+  $('panel-video').hidden=t!=='video';$('panel-pdf').hidden=t!=='pdf';
+  $('lede').textContent=LEDE[t];
+  history.replaceState(null,'',t==='video'?location.pathname:'#'+t);
+}
+tabBtns.forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelector('.tabs').addEventListener('keydown',e=>{
+  const d={ArrowRight:1,ArrowLeft:-1}[e.key];if(!d)return;e.preventDefault();
+  const cur=tabBtns.findIndex(b=>b.getAttribute('aria-selected')==='true');
+  setTab(tabBtns[(cur+d+tabBtns.length)%tabBtns.length].dataset.tab,true);
+});
+setTab(location.hash.slice(1));
+
+/* ===== PDF 올리기 ===== */
+let pfiles=[];
+const pdrop=$('pdrop'),pfi=$('pfile');
+function renderPPicked(){
+  $('ppicked').innerHTML=pfiles.map((f,i)=>`<span class="chip"><span>${esc(f.name)}</span><button type="button" data-i="${i}" aria-label="${esc(f.name)} 빼기">${ic('x')}</button></span>`).join('');
+  $('pgo-t').textContent=pfiles.length?`${pfiles.length}개 변환 시작`:'변환 시작';
+}
+$('ppicked').onclick=e=>{const b=e.target.closest('button');if(b){pfiles.splice(+b.dataset.i,1);renderPPicked()}};
+function addPdfs(l){
+  const all=[...l],ok=all.filter(f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name));
+  if(ok.length<all.length)toast(`PDF가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+  pfiles=pfiles.concat(ok.filter(f=>!pfiles.some(g=>g.name===f.name&&g.size===f.size)));renderPPicked();
+}
+pdrop.onclick=()=>pfi.click();
+pfi.onchange=()=>{addPdfs(pfi.files);pfi.value=''};
+['dragenter','dragover'].forEach(e=>pdrop.addEventListener(e,x=>{x.preventDefault();pdrop.classList.add('on')}));
+['dragleave','drop'].forEach(e=>pdrop.addEventListener(e,x=>{x.preventDefault();pdrop.classList.remove('on')}));
+pdrop.addEventListener('drop',x=>addPdfs(x.dataTransfer.files));
+$('pgo').onclick=async()=>{
+  if(!pfiles.length){toast('PDF 파일을 올려 주세요');pdrop.focus();return}
+  const fd=new FormData();fd.append('page_marks',$('pmarks').checked?'1':'0');
+  pfiles.forEach(f=>fd.append('files',f));
+  $('pgo').disabled=true;$('pgo-t').textContent='보내는 중…';
+  let r;try{r=await fetch('/api/submit-pdf',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');$('pgo').disabled=false;renderPPicked();return}
+  if(!r.ok){const d=await r.json().catch(()=>({}));toast((d.error||'요청을 처리하지 못했어요')+(d.bad?': '+d.bad.slice(0,2).join(', '):''));$('pgo').disabled=false;renderPPicked();return}
+  pfiles=[];renderPPicked();$('pgo').disabled=false;poll();
+};
+
 const open=new Set(),cache={};let last='';
 async function toggle(id){
   if(open.has(id)){open.delete(id)}else{open.add(id);if(!(id in cache))cache[id]=await (await fetch('/api/md/'+id)).text()}
@@ -409,7 +494,7 @@ function jobHTML(j){
   const retryBtn=canRetry?`<div class="acts"><button class="btn warn" data-a="retry" data-id="${j.id}">${ic('arrow')}다시 시도</button></div>`:'';
   const prev=open.has(j.id)&&cache[j.id]!=null?`<div class="prev"><pre>${esc(cache[j.id])}</pre></div>`:'';
   return `<div class="job"><div class="row">
-    <span class="ico">${ic(isUrl?'play':'file')}</span>
+    <span class="ico">${ic(j.kind==='pdf'?'doc':isUrl?'play':'film')}</span>
     <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${j.status==='error'?`<small class="err" title="${esc(j.log)}">${esc(friendly(j.log))}</small>`:`<small>${esc(j.title?j.label:j.log)}</small>`}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }

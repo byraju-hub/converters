@@ -3,3 +3,4 @@ faster-whisper
 av<17
 flask
 anthropic
+pymupdf4llm
