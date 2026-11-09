@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Raju's Converters — 영상·PDF·이미지 변환기</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f6b57'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 24h32M38 15l9 9-9 9'/%3E%3Cpath d='M49 40H17M26 31l-9 9 9 9'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 /* =====================================================================
@@ -33,7 +34,7 @@
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard Variable",Pretendard,"Malgun Gothic",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;color-scheme:light;accent-color:var(--tint);scroll-behavior:smooth}
+html{scrollbar-color:rgba(12,125,104,.38) transparent;-webkit-text-size-adjust:100%;color-scheme:light;accent-color:var(--tint);scroll-behavior:smooth}
 ::selection{background:var(--tint-soft);color:var(--tint-d)}
 body{margin:0;min-height:100dvh;color:var(--ink);font:16px/1.55 var(--font);letter-spacing:-.011em;
   -webkit-tap-highlight-color:transparent;position:relative;isolation:isolate;background:#e3f2ed}
@@ -44,6 +45,12 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .lede,.hint,.empty span,.note{text-wrap:pretty}
 h1,h2,.empty b{text-wrap:balance}
 .st,.go,#go-t,.num{font-variant-numeric:tabular-nums}
+.why{margin-top:6px;font-size:13px;color:var(--sub)}
+.why summary{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-weight:700;color:var(--tint-d);list-style:none;border-radius:var(--r-pill);padding:2px 4px}
+.why summary::-webkit-details-marker{display:none}
+.why summary::after{content:"›";display:inline-block;transition:transform .3s var(--spring);font-size:16px;line-height:1}
+.why[open] summary::after{transform:rotate(90deg)}
+.why p{margin:6px 0 0;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.55);overflow-wrap:anywhere;user-select:text;max-height:120px;overflow:auto}
 
 /* ---------- 배경: 유리가 비출 바탕화면 ---------- */
 body::before{content:"";position:fixed;inset:-14%;z-index:-2;pointer-events:none;
@@ -131,6 +138,10 @@ h1 span{color:var(--tint)}
 h2{margin:0 0 14px;font-size:21px;line-height:1.25;font-weight:750;letter-spacing:-.025em}
 .sect+.sect{margin-top:24px}
 
+/* 탭을 바꾸면 새 패널이 살짝 올라오며 나타난다 (이 화면의 유일한 연출) */
+@keyframes panelIn{from{opacity:0;transform:translateY(10px) scale(.992)}to{opacity:1;transform:none}}
+.panel[role=tabpanel]:not([hidden]){animation:panelIn .5s var(--ease) both}
+
 /* ---------- 입력 ---------- */
 textarea,.txt{width:100%;border:0;border-radius:var(--r-group);background:rgba(255,255,255,.42);padding:15px 18px;
   box-shadow:inset 0 2px 5px rgba(6,54,44,.13),inset 0 0 0 1px rgba(255,255,255,.6);transition:box-shadow .2s,background .2s}
@@ -206,6 +217,13 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 
 .go:disabled{background:linear-gradient(180deg,rgba(80,150,134,.78),rgba(12,125,104,.5));box-shadow:none;cursor:default;filter:none}
 
 /* ---------- 변환 목록: 유리 위의 둥근 목록 ---------- */
+#panel-queue{display:flex;flex-direction:column}
+#panel-queue #jobs{flex:1 1 auto}
+#jobs:has(>.empty){grid-template-rows:minmax(0,1fr)}
+.qfoot{display:flex;align-items:flex-start;gap:9px;margin:auto 4px 0;padding-top:22px;font-size:13px;line-height:1.5;color:var(--sub)}
+.qfoot:empty{display:none}
+.qfoot svg{width:17px;height:17px;margin-top:1px;color:var(--tint)}
+.qfoot b{color:var(--ink);font-weight:650;overflow-wrap:anywhere}
 .qhead{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .qhead h2{margin:0;flex:1}
 .btn{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border:0;border-radius:var(--r-pill);padding:9px 15px;font-weight:700;font-size:14px;
@@ -221,11 +239,13 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 
 
 #jobs{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start}
 .job{padding:14px;border-radius:var(--r-group);background:rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 3px rgba(6,54,44,.06)}
-.row{display:flex;gap:13px;align-items:center}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;column-gap:13px;row-gap:12px;align-items:start}
+.row>.ico{align-self:start}
+.row>.st{margin-top:2px}
 .ico{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;flex:none;color:var(--tint-d);
   background:linear-gradient(180deg,#fff,rgba(255,255,255,.72));box-shadow:var(--g-shadow-s),inset 0 1px 1px #fff}
 .job .t{flex:1;min-width:0}
-.job .t b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.job .t b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 .job .t small{display:flex;align-items:center;gap:7px;color:var(--sub);font-size:14px;min-width:0}
 .job .t small>span.txt2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .job .t small.err{color:var(--bad);display:block;white-space:normal}
@@ -237,7 +257,7 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 
 .st.running{background:rgba(163,87,0,.14);color:var(--run)}.st.running::before{background:#e08a14}
 .st.done{background:rgba(12,125,104,.15);color:var(--tint-d)}.st.done::before{background:var(--tint)}
 .st.error{background:rgba(196,40,31,.12);color:var(--bad)}.st.error::before{background:var(--bad)}
-.acts{display:flex;gap:6px}
+.acts{display:flex;flex-wrap:wrap;gap:6px;grid-column:2 / -1}
 .bar{height:6px;border-radius:var(--r-pill);background:rgba(255,255,255,.7);margin:12px 0 0 57px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(6,54,44,.14)}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#f0a63a,#e08a14);border-radius:var(--r-pill);transition:width .6s var(--ease)}
 .bar i.ind{width:35%;animation:slide 1.4s ease-in-out infinite}
@@ -247,7 +267,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
   background:rgba(255,255,255,.6);border-radius:20px;padding:18px;font:15px/1.7 var(--font);
   box-shadow:inset 0 2px 5px rgba(6,54,44,.1),inset 0 0 0 1px rgba(255,255,255,.7)}
 .empty{display:grid;justify-items:center;align-content:center;text-align:center;gap:8px;padding:54px 20px;color:var(--sub);
-  border:1.5px dashed rgba(12,125,104,.32);border-radius:var(--r-group);background:rgba(255,255,255,.2);min-height:260px}
+  border:1.5px dashed rgba(12,125,104,.22);border-radius:var(--r-group);background:rgba(255,255,255,.2);min-height:260px}
 .empty svg{width:46px;height:46px;color:rgba(12,125,104,.55);stroke-width:1.5}
 .empty b{color:var(--ink);font-size:18px}
 
@@ -273,7 +293,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
 .thumb .tb button:disabled{opacity:.35;cursor:default}
 .thumb .tb svg{width:15px;height:15px}
 .thumb figcaption{padding:7px 10px 8px;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (hover:none){.thumb .tb{opacity:1}}
+@media (hover:none){.thumb .tb{opacity:1}.thumb .tb button{width:36px;height:36px}.thumb .tb svg{width:17px;height:17px}}
 
 /* ---------- 알림(위에서 내려오는 유리 알약) · 바닥글 ---------- */
 .foot{margin-top:6px;margin-bottom:44px;text-align:center;color:var(--sub);font-size:14px}
@@ -300,21 +320,21 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
   .lede{font-size:15px}
   .top-acts .top-link.gh{display:none}
   .top-link{padding:9px 14px;font-size:14px}
+  #stop{width:44px;height:44px;padding:0;justify-content:center}
+  #stop .tl{display:none}
   /* iOS 탭 바처럼: 아이콘 위, 글자 아래 */
   .tabs-wrap{top:8px;margin-bottom:16px}
   .tabs{display:flex;width:100%}
-  .tabs button{flex:1;min-width:0;flex-direction:column;gap:3px;padding:8px 2px;font-size:11.5px;letter-spacing:-.03em;border-radius:24px}
+  .tabs button{flex:1;min-width:0;flex-direction:column;gap:3px;padding:8px 2px;font-size:12px;letter-spacing:-.04em;border-radius:24px}
   .tabs svg{width:22px;height:22px}
   .tabs .bubble{border-radius:24px}
   .panel{padding:22px;border-radius:30px}
   .gowrap{margin:22px -22px -22px;padding:30px 22px 22px;border-radius:0 0 30px 30px}
   .seg button{padding:10px 2px;font-size:13px}
   .qhead h2{flex:1 1 100%;margin-bottom:2px}
-  .bar,.prev{margin-left:0}
-  .row{flex-wrap:wrap}
-  .job .t{flex:1 1 calc(100% - 64px)}
-  .st{margin-left:57px}
-  .acts{margin-left:auto}
+  .prev{margin-left:0}
+  .row{grid-template-columns:44px minmax(0,1fr)}
+  .row>.st{grid-column:2;justify-self:start;margin-top:0}
   .toast{top:10px}
 }
 
@@ -369,7 +389,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
       <p class="lede" id="lede">영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.</p>
     </div>
     <div class="top-acts">
-      <button class="top-link" id="stop" type="button" title="서버 끄기"><svg class="i"><use href="#i-power"/></svg>서버 끄기</button>
+      <button class="top-link" id="stop" type="button" title="서버 끄기" aria-label="서버 끄기"><svg class="i"><use href="#i-power"/></svg><span class="tl">서버 끄기</span></button>
       <a class="top-link gh" href="https://github.com/byraju-hub/converters" target="_blank" rel="noopener"><svg class="i"><use href="#i-gh"/></svg>GitHub</a>
     </div>
   </div>
@@ -521,7 +541,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <div class="gowrap"><button class="go" id="p2go" type="button"><span id="p2go-t">이미지로 변환</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
-  <section class="panel" aria-label="변환 목록">
+  <section class="panel" id="panel-queue" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
       <button class="btn" id="folder" type="button" title="결과 파일이 저장되는 폴더"><svg class="i"><use href="#i-folder"/></svg>저장 폴더</button>
@@ -529,6 +549,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
       <button class="btn" id="clear" type="button" disabled><svg class="i"><use href="#i-broom"/></svg>끝난 항목 지우기</button>
     </div>
     <div id="jobs"></div>
+    <p class="qfoot" id="qfoot"></p>
   </section>
 </main>
 <footer class="wrap foot">ⓒ 2026 byraju with Claude. Licensed under <a href="https://github.com/byraju-hub/converters/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>.</footer>
@@ -634,7 +655,7 @@ $('folder').onclick=async()=>{
   if(r&&r.ok){const d=await r.json();toast('폴더를 열었어요: '+d.outdir)}
   else toast('폴더를 열지 못했어요. web.bat을 다시 실행해 보세요');
 };
-fetch('/api/info').then(r=>r.json()).then(d=>{$('folder').title='저장 위치: '+d.outdir}).catch(()=>{});
+fetch('/api/info').then(r=>r.json()).then(d=>{$('folder').title='저장 위치: '+d.outdir;$('qfoot').innerHTML=`${ic('folder')}<span>결과 파일은 <b>${esc(d.outdir)}</b> 폴더에 저장돼요</span>`}).catch(()=>{});
 $('zip').onclick=()=>location.href='/api/zip';
 $('clear').onclick=async()=>{await fetch('/api/clear',{method:'POST'});last='';poll()};
 function friendly(raw){
@@ -645,7 +666,7 @@ function friendly(raw){
   if(/Unsupported URL/i.test(r))return '지원하지 않는 주소예요. 유튜브 영상 링크인지 확인해 주세요.';
   if(/getaddrinfo|Network|timed out|Connection/i.test(r))return '인터넷에 연결하지 못했어요. 연결을 확인하고 다시 시도해 주세요.';
   if(/[가-힣]/.test(r)&&r.length<140&&!/ERROR|Traceback/.test(r))return r;
-  return '변환에 실패했어요. 다시 시도해도 같다면 이 문구에 마우스를 올려 자세한 내용을 확인해 주세요.';
+  return '변환에 실패했어요. 다시 시도해 보세요. 계속 안 되면 \'자세히\'에서 원인을 확인할 수 있어요.';
 }
 
 /* queue */
@@ -800,7 +821,8 @@ $('p2go').onclick=async()=>{
   p2.clear();$('p2go').disabled=false;poll();
 };
 
-const open=new Set(),cache={};let last='';
+const open=new Set(),cache={},openWhy=new Set();let last='';
+$('jobs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.why')){d.open?openWhy.add(d.dataset.id):openWhy.delete(d.dataset.id)}},true);   // 목록이 다시 그려져도 '자세히'가 닫히지 않게
 async function toggle(id){
   if(open.has(id)){open.delete(id)}else{open.add(id);if(!(id in cache))cache[id]=await (await fetch('/api/md/'+id)).text()}
   last='';await poll(true);
@@ -835,6 +857,10 @@ function flowOf(j){            // 이 변환이 무엇에서 무엇으로 가는
   if(j.kind==='pdf2img')return'PDF → 이미지';
   return /^https?:/i.test(j.label||'')?(/youtu/i.test(j.label)?'YouTube → MD':'링크 → MD'):'영상 → MD';
 }
+function niceLog(l){          // 개발자용 로그 머리표를 사람 말로
+  return String(l||'').replace(/^\[whisper\]\s*/,'음성인식 ').replace(/^\[pdf\]\s*/,'변환 ').replace(/^\[ocr\]\s*/,'글자 인식 ')
+    .replace(/^\[claude\]\s*/,'Claude ').replace(/^\[자막 없음\/무시\]\s*/,'').replace(/^\[자막\]\s*/,'자막 ').replace(/^\[[^\]]*\]\s*/,'');
+}
 function jobHTML(j){
   const isUrl=/^https?:/i.test(j.label||'');
   const pct=(String(j.log).match(/(\d+)%/)||[])[1];
@@ -848,9 +874,16 @@ function jobHTML(j){
   const canRetry=j.status==='error'&&/^https?:/i.test(j.source||'');
   const retryBtn=canRetry?`<div class="acts"><button class="btn warn" data-a="retry" data-id="${j.id}">${ic('arrow')}다시 시도</button></div>`:'';
   const prev=open.has(j.id)&&cache[j.id]!=null?`<div class="prev"><pre>${esc(cache[j.id])}</pre></div>`:'';
+  let sub;
+  if(j.status==='error'){
+    const f=friendly(j.log);
+    sub=`<small class="err">${esc(f)}</small>`+(f!==j.log?`<details class="why" data-id="${j.id}"${openWhy.has(j.id)?' open':''}><summary>자세히</summary><p>${esc(j.log)}</p></details>`:'');
+  }else{
+    sub=`<small><span class="flow">${esc(flowOf(j))}</span><span class="txt2">${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:niceLog(j.log)))}</span></small>`;
+  }
   return `<div class="job"><div class="row">
     <span class="ico">${ic(j.kind==='pdf'?'doc':(j.kind==='img2pdf'||j.kind==='pdf2img')?'image':isUrl?'play':'film')}</span>
-    <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${j.status==='error'?`<small class="err" title="${esc(j.log)}">${esc(friendly(j.log))}</small>`:`<small><span class="flow">${esc(flowOf(j))}</span><span class="txt2">${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:j.log))}</span></small>`}</div>
+    <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${sub}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }
 async function poll(force){
