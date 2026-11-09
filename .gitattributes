@@ -1,0 +1,4 @@
+# Windows 스크립트는 ZIP 으로 받아도 Windows 줄바꿈(CRLF)이 되도록
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.ico binary

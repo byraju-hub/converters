@@ -16,25 +16,33 @@
 
 ## 설치
 
-Python 3.10 이상이 필요합니다.
+**Windows 10/11**에서는 세 단계면 됩니다. 단계별 설명과 문제 해결은 **[설치 가이드](docs/INSTALL.md)**에 있습니다.
 
-```bash
-git clone https://github.com/byraju-hub/converters.git
-cd converters
-python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt     # macOS/Linux: .venv/bin/pip
-```
+1. **Python을 설치**합니다 (3.10 이상, 3.12~3.14 권장). <https://www.python.org/downloads/> 에서 받고, 설치 첫 화면의 **"Add python.exe to PATH"를 반드시 체크**하세요.
+2. **프로그램을 받습니다.** 이 페이지의 초록색 **Code → Download ZIP**을 누르고 압축을 풉니다. (`git clone https://github.com/byraju-hub/converters.git`도 됩니다.)
+3. 폴더 안의 **`setup.bat`을 더블클릭**합니다. 약 650MB를 설치하며 3~10분 걸립니다. 끝나면 바탕화면에 **Raju's Converters** 아이콘이 생깁니다.
+
+| 하고 싶은 일 | 방법 |
+|---|---|
+| 실행 | 바탕화면의 **Raju's Converters** 더블클릭 (또는 폴더의 `web.bat`) |
+| 업데이트 | 폴더의 **`update.bat`** 더블클릭 (유튜브 변환이 갑자기 안 되면 먼저 해 보세요) |
+| 삭제 | 설치 가이드의 [삭제](docs/INSTALL.md#삭제) 참고 |
+
+필요한 것: 디스크 여유 약 1.5GB, 인터넷(설치할 때와 모델을 처음 내려받을 때), Chrome 또는 Edge 권장.
+`setup.bat`은 Windows 전용입니다. macOS·Linux는 [직접 설치](docs/INSTALL.md#고급-직접-설치-macoslinux-포함)로 할 수 있지만 아직 시험해 보지 못했습니다.
 
 ## 사용법
 
 ### 웹 화면
 
+바탕화면 아이콘을 더블클릭하면 서버가 켜지고 브라우저가 열립니다. 직접 실행하려면:
+
 ```bash
-web.bat                       # Windows: 브라우저가 자동으로 열립니다
+web.bat                       # Windows: 브라우저가 자동으로 열립니다 (검은 창을 닫으면 종료)
 .venv\Scripts\python web.py   # 직접 실행 → http://127.0.0.1:8765
 ```
 
-포트를 바꾸려면 환경변수 `VOD_PORT`를 지정하세요. 변환된 `.md` 파일은 프로젝트 폴더의 `output/`에 자동 저장되며, 화면의 **저장 폴더** 버튼으로 탐색기에서 바로 열 수 있습니다.
+포트를 바꾸려면 환경변수 `VOD_PORT`를 지정하세요 (`web.bat`은 그 포트로 브라우저를 엽니다). 변환된 `.md` 파일은 프로젝트 폴더의 `output/`에 자동 저장되며, 화면의 **저장 폴더** 버튼으로 탐색기에서 바로 열 수 있습니다.
 
 ### 서버 시작·종료 버튼 (선택)
 
