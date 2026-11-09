@@ -219,11 +219,12 @@ def convert(source, model="small", lang=None, force_whisper=False, do_summary=Fa
     return title, build_md(title, src_label, method, duration, segs, link_base=link, ai=ai)
 
 
-def unique_path(d: Path, name: str) -> Path:
-    p = d / (safe_name(name) + ".md")
+def unique_path(d: Path, name: str, ext: str = ".md") -> Path:
+    """d 안에서 겹치지 않는 경로를 돌려준다. ext="" 이면 폴더 이름용."""
+    p = d / (safe_name(name) + ext)
     i = 2
     while p.exists():
-        p = d / f"{safe_name(name)} ({i}).md"
+        p = d / f"{safe_name(name)} ({i}){ext}"
         i += 1
     return p
 

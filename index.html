@@ -290,6 +290,45 @@ pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12
   .offline,.toast{-webkit-backdrop-filter:none;backdrop-filter:none;background:#14201c}
   body::before{display:none}
 }
+
+/* ===== 이미지 ↔ PDF 도구 ===== */
+.txt{width:100%;border:0;border-radius:10px;background:rgba(255,255,255,.38);padding:11px 14px;
+  box-shadow:inset 0 1px 3px rgba(18,70,58,.14),inset 0 0 0 1px rgba(255,255,255,.55);transition:box-shadow .15s}
+.txt::placeholder{color:#5d6964}
+.txt:focus{outline:0;box-shadow:0 0 0 2px var(--accent),inset 0 1px 3px rgba(18,70,58,.12)}
+.sub2{display:block;margin:8px 2px 0;font-size:14px;color:var(--sub)}
+
+.thumb-head{display:flex;align-items:center;gap:10px;margin-top:14px}
+.thumb-head:has(+ .thumbs:empty){display:none}
+.thumb-head span{flex:1;font-size:14px;font-weight:650}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative;margin:0;border-radius:12px;overflow:hidden;cursor:grab;background:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.8);box-shadow:0 3px 10px rgba(18,70,58,.10),inset 0 1px 1px rgba(255,255,255,.9);
+  transition:transform .15s,box-shadow .15s,opacity .15s}
+.thumb:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(18,70,58,.16),inset 0 1px 1px #fff}
+.thumb.dragging{opacity:.4}
+.thumb.over{outline:2px solid var(--accent);outline-offset:1px}
+.thumb img{display:block;width:100%;height:98px;object-fit:cover;background:#fff;pointer-events:none}
+.thumb .num{position:absolute;left:6px;top:6px;min-width:24px;height:24px;padding:0 7px;border-radius:99px;
+  background:linear-gradient(180deg,#2aa085,#0f6b57);color:#fff;font:700 12px/24px var(--font);text-align:center;
+  box-shadow:0 2px 6px rgba(15,107,87,.4),inset 0 1px 1px rgba(255,255,255,.5)}
+.thumb .tb{position:absolute;right:4px;top:4px;display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.thumb:hover .tb,.thumb:focus-within .tb{opacity:1}
+.thumb .tb button{width:26px;height:26px;padding:0;border:0;border-radius:7px;background:rgba(255,255,255,.92);
+  display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.thumb .tb button:hover:not(:disabled){background:#fff}
+.thumb .tb button:disabled{opacity:.35;cursor:default}
+.thumb .tb svg{width:15px;height:15px}
+.thumb figcaption{padding:5px 8px 6px;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (hover:none){.thumb .tb{opacity:1}}
+
+/* 탭이 네 개가 되어 좁은 화면에서는 줄바꿈 */
+@media (max-width:900px){.tabs{flex-wrap:wrap}}
+@media (max-width:560px){
+  .tabs{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .tabs button{justify-content:center;padding:10px 6px;font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -310,6 +349,9 @@ pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12
     <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
     <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-9 9"/></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 9h5M3 15h5M16 9h5M16 15h5"/></symbol>
   </defs>
 </svg>
@@ -336,6 +378,8 @@ pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12
   <div class="tabs" role="tablist" aria-label="변환 종류">
     <button type="button" role="tab" id="tab-video" data-tab="video" aria-selected="true" aria-controls="panel-video"><svg class="i"><use href="#i-play"/></svg>영상 → MD</button>
     <button type="button" role="tab" id="tab-pdf" data-tab="pdf" aria-selected="false" aria-controls="panel-pdf"><svg class="i"><use href="#i-doc"/></svg>PDF → MD</button>
+    <button type="button" role="tab" id="tab-img2pdf" data-tab="img2pdf" aria-selected="false" aria-controls="panel-img2pdf"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
+    <button type="button" role="tab" id="tab-pdf2img" data-tab="pdf2img" aria-selected="false" aria-controls="panel-pdf2img"><svg class="i"><use href="#i-doc"/></svg>PDF → 이미지</button>
   </div>
 </div>
 
@@ -406,6 +450,75 @@ pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12
     <div class="gowrap"><button class="go" id="pgo" type="button"><span id="pgo-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
+  <section class="panel" id="panel-img2pdf" role="tabpanel" aria-labelledby="tab-img2pdf" hidden>
+    <div class="sect">
+      <h2>이미지 파일</h2>
+      <button id="idrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>이미지를 끌어다 놓기</b><small>또는 클릭해서 선택 · PNG, JPG, WEBP, BMP, GIF, TIFF</small></span>
+      </button>
+      <input id="ifile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/bmp,image/gif,image/tiff,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff" hidden>
+      <div class="thumb-head"><span id="icount"></span><button class="btn" id="isort" type="button" disabled>이름순 정렬</button></div>
+      <div id="thumbs" class="thumbs"></div>
+      <p class="note">번호 순서대로 PDF의 쪽이 되어요. 끌어서 옮기거나 ‹ › 버튼으로 순서를 바꿀 수 있어요.</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-isize">쪽 크기</span>
+      <div class="seg" id="isize" role="radiogroup" aria-labelledby="l-isize">
+        <button type="button" role="radio" data-v="fit" aria-checked="true">이미지에 맞춤</button>
+        <button type="button" role="radio" data-v="a4" aria-checked="false">A4 용지</button>
+      </div>
+      <p class="hint" id="isize-hint">이미지 비율 그대로 여백 없이 한 쪽씩 넣어요. 스캔·캡처 이미지에 알맞아요.</p>
+    </div>
+
+    <div class="sect">
+      <label class="lbl" for="iname">PDF 이름 (선택)</label>
+      <input class="txt" id="iname" type="text" maxlength="80" placeholder="비워 두면 첫 이미지 이름으로 정해요" autocomplete="off">
+    </div>
+
+    <div class="gowrap"><button class="go" id="igo" type="button"><span id="igo-t">PDF 만들기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-pdf2img" role="tabpanel" aria-labelledby="tab-pdf2img" hidden>
+    <div class="sect">
+      <h2>PDF 파일</h2>
+      <button id="p2drop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>PDF 파일을 끌어다 놓기</b><small>또는 클릭해서 선택 (여러 개 가능)</small></span>
+      </button>
+      <input id="p2file" type="file" multiple accept="application/pdf,.pdf" hidden>
+      <div id="p2picked" class="picked"></div>
+      <p class="note">쪽마다 이미지 한 장으로 저장해요. 결과는 output 폴더 안에 PDF 이름의 폴더로 만들어지고, ZIP으로도 받을 수 있어요.</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-ofmt">이미지 형식</span>
+      <div class="seg" id="ofmt" role="radiogroup" aria-labelledby="l-ofmt">
+        <button type="button" role="radio" data-v="png" aria-checked="true">PNG (선명, 용량 큼)</button>
+        <button type="button" role="radio" data-v="jpg" aria-checked="false">JPG (용량 작음)</button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-odpi">해상도</span>
+      <div class="seg" id="odpi" role="radiogroup" aria-labelledby="l-odpi">
+        <button type="button" role="radio" data-v="100" aria-checked="false">작게</button>
+        <button type="button" role="radio" data-v="150" aria-checked="true">보통</button>
+        <button type="button" role="radio" data-v="220" aria-checked="false">선명</button>
+        <button type="button" role="radio" data-v="300" aria-checked="false">인쇄용</button>
+      </div>
+      <p class="hint" id="odpi-hint"></p>
+    </div>
+
+    <div class="sect">
+      <label class="lbl" for="opages">변환할 쪽 (선택)</label>
+      <input class="txt" id="opages" type="text" placeholder="예: 1-3, 5  (비우면 전체)" autocomplete="off">
+    </div>
+
+    <div class="gowrap"><button class="go" id="p2go" type="button"><span id="p2go-t">이미지로 변환</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
   <section class="panel" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
@@ -423,7 +536,7 @@ pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12
 const $=id=>document.getElementById(id);
 const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let files=[],opts={model:'small',lang:''};
+let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150'};
 if(location.protocol==='file:'){          /* index.html 을 파일로 직접 연 경우 */
   const B='http://127.0.0.1:8765/';
   const chk=async()=>{try{await fetch(B+'api/info',{mode:'no-cors',cache:'no-store'});location.replace(B)}catch{$('offline').hidden=false;setTimeout(chk,2000)}};
@@ -528,12 +641,14 @@ function friendly(raw){
 const LABEL={queued:'대기 중',running:'변환 중',done:'완료',error:'실패'};
 /* ===== 탭 ===== */
 const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
-            pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.'};
+            pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.',
+            img2pdf:'이미지 파일을 순서대로 모아서 PDF 한 개로 만들어 드려요.',
+            pdf2img:'PDF의 쪽을 이미지 파일(PNG·JPG)로 저장해 드려요.'};
 const tabBtns=[...document.querySelectorAll('.tabs [role=tab]')];
 function setTab(t,focus){
   if(!LEDE[t])t='video';
   tabBtns.forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
-  $('panel-video').hidden=t!=='video';$('panel-pdf').hidden=t!=='pdf';
+  Object.keys(LEDE).forEach(n=>{$('panel-'+n).hidden=n!==t});
   $('lede').textContent=LEDE[t];
   history.replaceState(null,'',t==='video'?location.pathname:'#'+t);
 }
@@ -573,6 +688,103 @@ $('pgo').onclick=async()=>{
   pfiles=[];renderPPicked();$('pgo').disabled=false;poll();
 };
 
+/* ===== 작은 도우미: 파일 모으기(드롭존 + 칩) ===== */
+function fileBucket(o){
+  const st={files:[]},drop=$(o.drop),pk=$(o.picked);
+  const render=()=>{
+    pk.innerHTML=st.files.map((f,i)=>`<span class="chip"><span>${esc(f.name)}</span><button type="button" data-i="${i}" aria-label="${esc(f.name)} 빼기">${ic('x')}</button></span>`).join('');
+    o.onChange&&o.onChange(st.files.length);
+  };
+  const add=l=>{
+    const all=[...l],ok=all.filter(o.ok);
+    if(ok.length<all.length)toast(`${o.noun}가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+    st.files=st.files.concat(ok.filter(f=>!st.files.some(g=>g.name===f.name&&g.size===f.size)));render();
+  };
+  pk.onclick=e=>{const b=e.target.closest('button');if(b){st.files.splice(+b.dataset.i,1);render()}};
+  drop.onclick=()=>$(o.input).click();
+  $(o.input).onchange=e=>{add(e.target.files);e.target.value=''};
+  ['dragenter','dragover'].forEach(n=>drop.addEventListener(n,x=>{x.preventDefault();drop.classList.add('on')}));
+  ['dragleave','drop'].forEach(n=>drop.addEventListener(n,x=>{x.preventDefault();drop.classList.remove('on')}));
+  drop.addEventListener('drop',x=>add(x.dataTransfer.files));
+  st.clear=()=>{st.files=[];render()};
+  return st;
+}
+
+/* ===== 이미지 → PDF ===== */
+let imgs=[];                                   // {file,url}
+const thumbs=$('thumbs'),idrop=$('idrop'),ifi=$('ifile');
+const IMG_EXT=/\.(png|jpe?g|webp|bmp|gif|tiff?)$/i;
+function renderThumbs(){
+  thumbs.innerHTML=imgs.map((it,i)=>`<figure class="thumb" draggable="true" data-i="${i}">
+    <img src="${it.url}" alt="" draggable="false">
+    <span class="num">${i+1}</span>
+    <div class="tb">
+      <button type="button" data-a="prev" data-i="${i}" aria-label="${esc(it.file.name)} 앞으로" ${i===0?'disabled':''}>${ic('chev-l')}</button>
+      <button type="button" data-a="next" data-i="${i}" aria-label="${esc(it.file.name)} 뒤로" ${i===imgs.length-1?'disabled':''}>${ic('chev-r')}</button>
+      <button type="button" data-a="del" data-i="${i}" aria-label="${esc(it.file.name)} 빼기">${ic('x')}</button>
+    </div>
+    <figcaption title="${esc(it.file.name)}">${esc(it.file.name)}</figcaption></figure>`).join('');
+  $('igo-t').textContent=imgs.length?`${imgs.length}장으로 PDF 만들기`:'PDF 만들기';
+  $('icount').textContent=imgs.length?`${imgs.length}장`:'';
+  $('isort').disabled=imgs.length<2;
+}
+function moveImg(a,b){if(b<0||b>=imgs.length||a===b)return;const [x]=imgs.splice(a,1);imgs.splice(b,0,x);renderThumbs()}
+function addImgs(l){
+  const all=[...l];
+  if(all.some(f=>/\.hei[cf]$/i.test(f.name)))toast('HEIC 사진은 아직 지원하지 않아요. JPG로 바꿔서 올려 주세요');
+  const ok=all.filter(f=>IMG_EXT.test(f.name)||/^image\/(png|jpeg|webp|bmp|gif|tiff)$/.test(f.type));
+  if(ok.length<all.length&&!all.some(f=>/\.hei[cf]$/i.test(f.name)))toast(`이미지가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+  for(const f of ok)if(!imgs.some(g=>g.file.name===f.name&&g.file.size===f.size))imgs.push({file:f,url:URL.createObjectURL(f)});
+  renderThumbs();
+}
+function clearImgs(){imgs.forEach(it=>URL.revokeObjectURL(it.url));imgs=[];renderThumbs()}
+idrop.onclick=()=>ifi.click();
+ifi.onchange=()=>{addImgs(ifi.files);ifi.value=''};
+['dragenter','dragover'].forEach(e=>idrop.addEventListener(e,x=>{x.preventDefault();idrop.classList.add('on')}));
+['dragleave','drop'].forEach(e=>idrop.addEventListener(e,x=>{x.preventDefault();idrop.classList.remove('on')}));
+idrop.addEventListener('drop',x=>addImgs(x.dataTransfer.files));
+thumbs.addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const i=+b.dataset.i;
+  if(b.dataset.a==='prev')moveImg(i,i-1);
+  else if(b.dataset.a==='next')moveImg(i,i+1);
+  else{URL.revokeObjectURL(imgs[i].url);imgs.splice(i,1);renderThumbs()}
+});
+let dragI=null;                                   // 끌어서 순서 바꾸기
+thumbs.addEventListener('dragstart',e=>{const f=e.target.closest('.thumb');if(!f)return;dragI=+f.dataset.i;f.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(dragI))});
+thumbs.addEventListener('dragover',e=>{if(dragI==null)return;e.preventDefault();thumbs.querySelectorAll('.over').forEach(x=>x.classList.remove('over'));e.target.closest('.thumb')?.classList.add('over')});
+thumbs.addEventListener('drop',e=>{const f=e.target.closest('.thumb');if(dragI==null||!f)return;e.preventDefault();e.stopPropagation();const to=+f.dataset.i,from=dragI;dragI=null;moveImg(from,to)});
+thumbs.addEventListener('dragend',()=>{dragI=null;thumbs.querySelectorAll('.dragging,.over').forEach(x=>x.classList.remove('dragging','over'))});
+$('isort').onclick=()=>{imgs.sort((a,b)=>a.file.name.localeCompare(b.file.name,'ko',{numeric:true}));renderThumbs();toast('이름순으로 정렬했어요')};
+const SIZE_HINT={fit:'이미지 비율 그대로 여백 없이 한 쪽씩 넣어요. 스캔·캡처 이미지에 알맞아요.',a4:'A4 용지(가로·세로는 이미지에 맞춰 자동)에 여백을 두고 가운데 놓아요. 인쇄용에 알맞아요.'};
+seg('isize','isize',()=>$('isize-hint').textContent=SIZE_HINT[opts.isize]);
+$('igo').onclick=async()=>{
+  if(!imgs.length){toast('이미지를 올려 주세요');idrop.focus();return}
+  const fd=new FormData();imgs.forEach(it=>fd.append('files',it.file));
+  fd.append('size',opts.isize);fd.append('name',$('iname').value.trim());
+  $('igo').disabled=true;$('igo-t').textContent='보내는 중…';
+  let r;try{r=await fetch('/api/submit-img2pdf',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');$('igo').disabled=false;renderThumbs();return}
+  if(!r.ok){const d=await r.json().catch(()=>({}));toast((d.error||'요청을 처리하지 못했어요')+(d.bad?': '+d.bad.slice(0,2).join(', '):''));$('igo').disabled=false;renderThumbs();return}
+  clearImgs();$('iname').value='';$('igo').disabled=false;poll();
+};
+
+/* ===== PDF → 이미지 ===== */
+const p2=fileBucket({drop:'p2drop',input:'p2file',picked:'p2picked',noun:'PDF',
+  ok:f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name),
+  onChange:n=>$('p2go-t').textContent=n?`${n}개 이미지로 변환`:'이미지로 변환'});
+const DPI_HINT={100:'화면에서 훑어보기용. 용량이 가장 작아요.',150:'일반 용도. 글자가 또렷하고 용량도 알맞아요.',220:'글자가 작은 문서나 확대해서 볼 때.',300:'인쇄하거나 보관할 때. 용량이 커요.'};
+seg('ofmt','ofmt');
+seg('odpi','odpi',()=>$('odpi-hint').textContent=DPI_HINT[opts.odpi]);
+$('odpi-hint').textContent=DPI_HINT[150];
+$('p2go').onclick=async()=>{
+  if(!p2.files.length){toast('PDF 파일을 올려 주세요');$('p2drop').focus();return}
+  const fd=new FormData();p2.files.forEach(f=>fd.append('files',f));
+  fd.append('fmt',opts.ofmt);fd.append('dpi',opts.odpi);fd.append('pages',$('opages').value.trim());
+  $('p2go').disabled=true;$('p2go-t').textContent='보내는 중…';
+  let r;try{r=await fetch('/api/submit-pdf2img',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');$('p2go').disabled=false;p2.clear();return}
+  if(!r.ok){const d=await r.json().catch(()=>({}));toast((d.error||'요청을 처리하지 못했어요')+(d.bad?': '+d.bad.slice(0,2).join(', '):''));$('p2go').disabled=false;$('p2go-t').textContent=`${p2.files.length}개 이미지로 변환`;return}
+  p2.clear();$('p2go').disabled=false;poll();
+};
+
 const open=new Set(),cache={};let last='';
 async function toggle(id){
   if(open.has(id)){open.delete(id)}else{open.add(id);if(!(id in cache))cache[id]=await (await fetch('/api/md/'+id)).text()}
@@ -584,6 +796,11 @@ async function retry(id){
   if(!r||!r.ok){toast('다시 시도하지 못했어요. 링크를 다시 붙여넣어 주세요');return}
   last='';poll();
 }
+async function download(id){        // output 폴더에서 지운 파일이면 빈 오류 페이지 대신 안내
+  const url='/api/download/'+id;
+  const r=await fetch(url,{method:'HEAD'}).catch(()=>null);
+  if(r&&r.ok)location.href=url;else toast('파일을 찾을 수 없어요. output 폴더에서 지웠을 수 있어요');
+}
 async function copy(id){
   if(!(id in cache))cache[id]=await (await fetch('/api/md/'+id)).text();
   try{await navigator.clipboard.writeText(cache[id]);toast('Markdown을 복사했어요')}catch{toast('복사하지 못했어요')}
@@ -594,22 +811,25 @@ $('jobs').onclick=e=>{
   if(b.dataset.a==='view')toggle(id);
   else if(b.dataset.a==='copy')copy(id);
   else if(b.dataset.a==='retry')retry(id);
-  else if(b.dataset.a==='dl')location.href='/api/download/'+id;
+  else if(b.dataset.a==='openpdf')window.open('/api/download/'+id+'?inline=1','_blank');
+  else if(b.dataset.a==='dl')download(id);
 };
 function jobHTML(j){
   const isUrl=/^https?:/i.test(j.label||'');
   const pct=(String(j.log).match(/(\d+)%/)||[])[1];
   const bar=j.status==='running'?`<div class="bar" role="progressbar" aria-label="변환 진행률" aria-valuemin="0" aria-valuemax="100" ${pct?`aria-valuenow="${pct}"`:''}><i ${pct?`style="width:${pct}%"`:'class="ind"'}></i></div>`:'';
-  const acts=j.status==='done'?`<div class="acts">
-    <button class="btn ic-only" data-a="view" data-id="${j.id}" aria-label="미리보기" aria-expanded="${open.has(j.id)}" title="미리보기">${ic('eye')}</button>
-    <button class="btn ic-only" data-a="copy" data-id="${j.id}" aria-label="복사" title="복사">${ic('copy')}</button>
-    <button class="btn" data-a="dl" data-id="${j.id}">${ic('dl')}.md</button></div>`:'';
+  const ext=j.ext||'md';
+  const acts=j.status!=='done'?'':`<div class="acts">`+
+    (j.has_md?`<button class="btn ic-only" data-a="view" data-id="${j.id}" aria-label="미리보기" aria-expanded="${open.has(j.id)}" title="미리보기">${ic('eye')}</button>
+    <button class="btn ic-only" data-a="copy" data-id="${j.id}" aria-label="복사" title="복사">${ic('copy')}</button>`
+     :ext==='pdf'?`<button class="btn ic-only" data-a="openpdf" data-id="${j.id}" aria-label="새 탭에서 열기" title="새 탭에서 열기">${ic('eye')}</button>`:'')+
+    `<button class="btn" data-a="dl" data-id="${j.id}">${ic('dl')}.${ext}</button></div>`;
   const canRetry=j.status==='error'&&/^https?:/i.test(j.source||'');
   const retryBtn=canRetry?`<div class="acts"><button class="btn warn" data-a="retry" data-id="${j.id}">${ic('arrow')}다시 시도</button></div>`:'';
   const prev=open.has(j.id)&&cache[j.id]!=null?`<div class="prev"><pre>${esc(cache[j.id])}</pre></div>`:'';
   return `<div class="job"><div class="row">
-    <span class="ico">${ic(j.kind==='pdf'?'doc':isUrl?'play':'film')}</span>
-    <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${j.status==='error'?`<small class="err" title="${esc(j.log)}">${esc(friendly(j.log))}</small>`:`<small>${esc(j.title?j.label:j.log)}</small>`}</div>
+    <span class="ico">${ic(j.kind==='pdf'?'doc':(j.kind==='img2pdf'||j.kind==='pdf2img')?'image':isUrl?'play':'film')}</span>
+    <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${j.status==='error'?`<small class="err" title="${esc(j.log)}">${esc(friendly(j.log))}</small>`:`<small>${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:j.log))}</small>`}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }
 async function poll(force){
