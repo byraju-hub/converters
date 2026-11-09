@@ -22,12 +22,12 @@ from flask import Flask, abort, jsonify, request, send_file, Response
 import hwpconv
 import pdf2md
 import pdftools
+import settings
 import vod2md
 
 PORT = int(os.environ.get("VOD_PORT", "8765"))
 app = Flask(__name__)
-OUT = Path(__file__).resolve().parent / "output"
-OUT.mkdir(exist_ok=True)
+OUT, OUT_WARN = settings.initial_output_dir()      # 저장 폴더 (사용자가 바꿀 수 있고 settings.json 에 기억된다)
 UPLOADS = Path(tempfile.mkdtemp(prefix="vod2md_up_"))
 
 jobs = {}              # id -> dict
@@ -372,9 +372,55 @@ def local_only():
         abort(403)
 
 
+def out_info():
+    return dict(outdir=str(OUT), default=str(settings.DEFAULT_OUT.resolve()),
+                is_default=(OUT.resolve() == settings.DEFAULT_OUT.resolve()), warning=OUT_WARN)
+
+
 @app.get("/api/info")
 def info():
-    return jsonify(outdir=str(OUT))
+    return jsonify(out_info())
+
+
+@app.post("/api/output-dir")
+def set_output_dir():
+    """결과 파일을 저장할 폴더를 바꾼다 (앞으로 하는 변환부터 적용). 이미 끝난 결과물은 그대로 둔다."""
+    global OUT, OUT_WARN
+    local_only()
+    body = request.get_json(silent=True) or {}
+    try:
+        OUT = settings.set_output_dir(body.get("path"))
+    except ValueError as e:
+        return jsonify(error=str(e)), 400
+    OUT_WARN = None
+    return jsonify(out_info())
+
+
+@app.post("/api/output-dir/reset")
+def reset_output_dir():
+    global OUT, OUT_WARN
+    local_only()
+    OUT = settings.reset_output_dir()
+    OUT_WARN = None
+    return jsonify(out_info())
+
+
+_pick_lock = threading.Lock()
+
+
+@app.post("/api/pick-folder")
+def pick_folder():
+    """이 PC 에서 폴더 선택 창을 띄운다. (서버가 내 PC 에서 돌기 때문에 가능하다)"""
+    local_only()
+    if not _pick_lock.acquire(blocking=False):
+        return jsonify(error="이미 폴더 선택 창이 열려 있어요."), 409
+    try:
+        path = settings.pick_folder(initial=OUT)
+    except Exception as e:
+        return jsonify(error=str(e) or "폴더 선택 창을 열지 못했어요. 경로를 직접 입력해 주세요."), 500
+    finally:
+        _pick_lock.release()
+    return jsonify(cancelled=True) if not path else jsonify(path=path)
 
 
 @app.post("/api/open-folder")

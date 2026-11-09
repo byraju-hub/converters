@@ -223,8 +223,15 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 
 #panel-queue{display:flex;flex-direction:column}
 #panel-queue #jobs{flex:1 1 auto}
 #jobs:has(>.empty){grid-template-rows:minmax(0,1fr)}
-.qfoot{display:flex;align-items:flex-start;gap:9px;margin:auto 4px 0;padding-top:22px;font-size:13px;line-height:1.5;color:var(--sub)}
-.qfoot:empty{display:none}
+.qwrap{margin:auto 4px 0;padding-top:22px}
+.qwrap:has(.qfoot:empty){display:none}
+.qfoot{display:flex;align-items:flex-start;gap:9px;margin:0;font-size:13px;line-height:1.5;color:var(--sub)}
+.qfoot .warnline{display:block;margin-top:4px;color:var(--bad);font-weight:650}
+.qctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.qctl .btn{font-size:13px;padding:7px 13px}
+.outform{display:flex;gap:8px;align-items:center;margin-top:12px}
+.outform .txt{flex:1;min-width:0;padding:10px 16px;border-radius:var(--r-pill);font-size:14px}
+.outform[hidden],.qctl [hidden]{display:none}
 .qfoot svg{width:17px;height:17px;margin-top:1px;color:var(--tint)}
 .qfoot b{color:var(--ink);font-weight:650;overflow-wrap:anywhere}
 .qhead{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
@@ -586,7 +593,19 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
       <button class="btn" id="clear" type="button" disabled><svg class="i"><use href="#i-broom"/></svg>끝난 항목 지우기</button>
     </div>
     <div id="jobs"></div>
-    <p class="qfoot" id="qfoot"></p>
+    <div class="qwrap">
+      <p class="qfoot" id="qfoot"></p>
+      <div class="qctl">
+        <button class="btn" id="outpick" type="button"><svg class="i"><use href="#i-folder"/></svg>저장 폴더 바꾸기</button>
+        <button class="btn" id="outtype" type="button">경로 직접 입력</button>
+        <button class="btn" id="outreset" type="button" hidden>기본 폴더로</button>
+      </div>
+      <form class="outform" id="outform" hidden>
+        <input class="txt" id="outpath" type="text" aria-label="결과 파일을 저장할 폴더 경로" placeholder="예: D:\변환결과" autocomplete="off" spellcheck="false">
+        <button class="btn warn" type="submit">적용</button>
+        <button class="btn" id="outcancel" type="button">취소</button>
+      </form>
+    </div>
   </section>
 </main>
 <footer class="wrap foot">ⓒ 2026 byraju with Claude. Licensed under <a href="https://github.com/byraju-hub/converters/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>.</footer>
@@ -693,7 +712,34 @@ $('folder').onclick=async()=>{
   if(r&&r.ok){const d=await r.json();toast('폴더를 열었어요: '+d.outdir)}
   else toast('폴더를 열지 못했어요. web.bat을 다시 실행해 보세요');
 };
-fetch('/api/info').then(r=>r.json()).then(d=>{$('folder').title='저장 위치: '+d.outdir;$('qfoot').innerHTML=`${ic('folder')}<span>결과 파일은 <b>${esc(d.outdir)}</b> 폴더에 저장돼요</span>`}).catch(()=>{});
+let outInfo=null;
+function renderOut(d){
+  outInfo=d;$('folder').title='저장 위치: '+d.outdir;
+  $('qfoot').innerHTML=`${ic('folder')}<span>결과 파일은 <b>${esc(d.outdir)}</b> 폴더에 저장돼요${d.warning?`<span class="warnline">${esc(d.warning)}</span>`:''}</span>`;
+  $('outreset').hidden=!!d.is_default;
+}
+async function applyOut(path){
+  let r;try{r=await fetch('/api/output-dir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path})})}catch{toast('서버에 연결하지 못했어요');return false}
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){toast(d.error||'폴더를 바꾸지 못했어요');return false}
+  renderOut(d);toast('저장 폴더를 바꿨어요. 앞으로 하는 변환부터 이 폴더에 저장돼요');return true;
+}
+fetch('/api/info').then(r=>r.json()).then(renderOut).catch(()=>{});
+$('outpick').onclick=async()=>{
+  const b=$('outpick');b.disabled=true;toast('폴더 선택 창을 열었어요. 안 보이면 작업 표시줄을 확인해 주세요');
+  try{
+    const r=await fetch('/api/pick-folder',{method:'POST'});const d=await r.json().catch(()=>({}));
+    if(!r.ok){toast(d.error||'폴더 선택 창을 열지 못했어요. 경로를 직접 입력해 주세요')}
+    else if(d.path){await applyOut(d.path)}
+  }catch{toast('서버에 연결하지 못했어요')}finally{b.disabled=false}
+};
+$('outtype').onclick=()=>{$('outform').hidden=false;const i=$('outpath');i.value=(outInfo&&outInfo.outdir)||'';i.focus();i.select()};
+$('outcancel').onclick=()=>{$('outform').hidden=true};
+$('outform').onsubmit=async e=>{e.preventDefault();if(await applyOut($('outpath').value.trim()))$('outform').hidden=true};
+$('outreset').onclick=async()=>{
+  let r;try{r=await fetch('/api/output-dir/reset',{method:'POST'})}catch{toast('서버에 연결하지 못했어요');return}
+  if(r.ok){renderOut(await r.json());toast('기본 폴더로 되돌렸어요')}
+};
 $('zip').onclick=()=>location.href='/api/zip';
 $('clear').onclick=async()=>{await fetch('/api/clear',{method:'POST'});last='';poll()};
 function friendly(raw){
@@ -702,6 +748,7 @@ function friendly(raw){
   if(/Sign in|not a bot|429|Too Many/i.test(r))return '유튜브가 잠시 요청을 막았어요. 몇 분 뒤에 다시 시도해 주세요.';
   if(/파일을 찾을 수 없/.test(r))return '파일을 찾지 못했어요. 링크라면 http로 시작하는지 확인해 주세요.';
   if(/Unsupported URL/i.test(r))return '지원하지 않는 주소예요. 유튜브 영상 링크인지 확인해 주세요.';
+  if(/PermissionError|Permission denied|Errno 13|No space left|Errno 28/i.test(r))return '저장 폴더에 쓸 수 없어요. 폴더를 바꾸거나 권한·남은 용량을 확인해 주세요.';
   if(/getaddrinfo|Network|timed out|Connection/i.test(r))return '인터넷에 연결하지 못했어요. 연결을 확인하고 다시 시도해 주세요.';
   if(/[가-힣]/.test(r)&&r.length<140&&!/ERROR|Traceback/.test(r))return r;
   return '변환에 실패했어요. 다시 시도해 보세요. 계속 안 되면 \'자세히\'에서 원인을 확인할 수 있어요.';

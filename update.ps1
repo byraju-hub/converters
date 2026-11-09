@@ -58,7 +58,7 @@ if (-not $updated) {
         $src = Get-ChildItem (Join-Path $tmp 'x') -Directory | Select-Object -First 1
         if (-not $src -or -not (Test-Path (Join-Path $src.FullName 'web.py'))) { throw "ZIP 안에서 프로그램 파일을 찾지 못했어요" }
         # 내 것(.venv, output, .env, backups)은 빼고 덮어쓴다
-        robocopy $src.FullName $root /E /NFL /NDL /NJH /NJS /NP /XD .venv output backups .git .taste-skill __pycache__ /XF .env | Out-Null
+        robocopy $src.FullName $root /E /NFL /NDL /NJH /NJS /NP /XD .venv output backups .git .taste-skill __pycache__ /XF .env settings.json | Out-Null
         if ($LASTEXITCODE -ge 8) { throw "파일을 복사하지 못했어요 (robocopy 오류 $LASTEXITCODE)" }
         Done "최신 파일로 덮어썼어요"
     } catch {
