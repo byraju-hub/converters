@@ -672,6 +672,13 @@ function friendly(raw){
 /* queue */
 const LABEL={queued:'대기 중',running:'변환 중',done:'완료',error:'실패'};
 /* ===== 탭 ===== */
+let curTab='video',njobs=-1;                 // 지금 탭과 변환 목록 개수 (빈 상태 안내를 탭에 맞추려고)
+const EMPTY={
+  video:{i:'film',t:'아직 변환한 영상이 없어요',d:'유튜브 링크를 붙여넣거나 영상 파일을 올려 보세요.'},
+  pdf:{i:'doc',t:'아직 변환한 PDF가 없어요',d:'PDF 파일을 끌어다 놓으면 Markdown 문서로 바꿔 드려요.'},
+  img2pdf:{i:'image',t:'아직 만든 PDF가 없어요',d:'이미지를 올려 순서를 정하고 PDF 한 개로 묶어 보세요.'},
+  pdf2img:{i:'image',t:'아직 저장한 이미지가 없어요',d:'PDF를 올리면 쪽마다 이미지 파일로 저장해 드려요.'}};
+function emptyHTML(){const e=EMPTY[curTab]||EMPTY.video;return `<div class="empty">${ic(e.i)}<b>${e.t}</b><span>${e.d}</span></div>`}
 const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
             pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.',
             img2pdf:'이미지 파일을 순서대로 모아서 PDF 한 개로 만들어 드려요.',
@@ -682,6 +689,7 @@ function placeBubble(){slideTo(tabsEl,bubble,tabsEl.querySelector('[aria-selecte
 new ResizeObserver(placeBubble).observe(tabsEl);
 function setTab(t,focus){
   if(!LEDE[t])t='video';
+  curTab=t;if(njobs===0)$('jobs').innerHTML=emptyHTML();
   tabBtns.forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
   Object.keys(LEDE).forEach(n=>{$('panel-'+n).hidden=n!==t});
   $('lede').textContent=LEDE[t];
@@ -892,9 +900,9 @@ async function poll(force){
   const sig=JSON.stringify(js)+[...open];
   if(sig!==last||force){
     last=sig;
-    $('jobs').innerHTML=js.length?js.map(jobHTML).join(''):
-     `<div class="empty">${ic('film')}<b>아직 변환한 영상이 없어요</b><span>링크를 붙여넣거나 파일을 올려 보세요.</span></div>`;
+    $('jobs').innerHTML=js.length?js.map(jobHTML).join(''):emptyHTML();
   }
+  njobs=js.length;
   for(const id of [...open])if(!js.some(j=>j.id===id))open.delete(id);
   for(const id in cache)if(!js.some(j=>j.id===id))delete cache[id];
   const nrun=js.filter(j=>j.status==='running'||j.status==='queued').length;
