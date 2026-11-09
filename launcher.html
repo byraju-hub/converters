@@ -3,38 +3,47 @@
 <title>Raju's Converters — 시작</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f6b57'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 24h32M38 15l9 9-9 9'/%3E%3Cpath d='M49 40H17M26 31l-9 9 9 9'/%3E%3C/g%3E%3C/svg%3E">
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#eef2f0;color:#14201c;font:16px/1.55 "Pretendard Variable",Pretendard,"Malgun Gothic",system-ui,sans-serif}
-.card{background:#fff;border-radius:20px;padding:40px 36px;width:min(440px,calc(100% - 32px));text-align:center}
-.mark{width:72px;height:72px;margin:0 auto 18px;display:block}
-h1{margin:0 0 6px;font-size:30px;letter-spacing:-.035em;font-weight:800}h1 span{color:#0f6b57}
-p{margin:0;color:#4d5a55}
-.st{display:inline-flex;align-items:center;gap:8px;margin:22px 0 18px;font-weight:650}
-.st::before{content:"";width:10px;height:10px;border-radius:50%;background:#8a958f}
-.st.up::before{background:#0f6b57}.st.wait::before{background:#b36b00}
-button{width:100%;border:0;border-radius:12px;background:#0f6b57;color:#fff;padding:15px;font:inherit;font-weight:700;font-size:17px;cursor:pointer}
-button:hover{background:#0b5444}button:disabled{background:#9db4ac;cursor:default}
-small{display:block;margin-top:14px;color:#4d5a55;font-size:14px}
-
-/* ===== Liquid glass ===== */
-body{background:#dcece6;position:relative;isolation:isolate}
-body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
-  background:radial-gradient(38% 42% at 12% 10%,#6fd3b6,transparent 70%),radial-gradient(34% 40% at 88% 16%,#8fd0f2,transparent 70%),
-    radial-gradient(42% 46% at 72% 94%,#cdeea0,transparent 70%),radial-gradient(30% 36% at 4% 88%,#7ec8e8,transparent 70%);
-  animation:d 30s ease-in-out infinite alternate}
-@keyframes d{from{transform:scale(1)}to{transform:translate3d(2.5%,-2%,0) scale(1.07)}}
-.card{background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,.22)),linear-gradient(160deg,rgba(255,255,255,.72),rgba(255,255,255,.4));
-  -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.78);
-  box-shadow:0 14px 40px rgba(18,70,58,.14),inset 0 1px 1.5px rgba(255,255,255,.95)}
-.mark{filter:drop-shadow(0 8px 14px rgba(15,107,87,.35))}
-button{background:linear-gradient(180deg,#2fa88c,#0f6b57 60%,#0c5a4a);border:1px solid rgba(255,255,255,.28);
-  box-shadow:0 12px 26px rgba(15,107,87,.38),inset 0 1px 1px rgba(255,255,255,.6),inset 0 -3px 6px rgba(0,0,0,.16)}
-button:hover{background:linear-gradient(180deg,#38b498,#127a63 60%,#0e6552)}
-button:disabled{background:linear-gradient(180deg,rgba(90,160,142,.7),rgba(15,107,87,.5));box-shadow:none}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
-@media (prefers-reduced-transparency:reduce){.card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}}
+:root{--ink:#0f1f1a;--sub:#41504a;--tint:#0c7d68;--tint-d:#0a5f4f;--spring:cubic-bezier(.34,1.18,.64,1)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;background:#e3f2ed;color:var(--ink);position:relative;isolation:isolate;
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard Variable",Pretendard,"Malgun Gothic",system-ui,sans-serif;letter-spacing:-.011em}
+body::before{content:"";position:fixed;inset:-14%;z-index:-2;pointer-events:none;
+  background:radial-gradient(34% 38% at 12% 14%,#36d3b2,rgba(54,211,178,0) 72%),radial-gradient(30% 36% at 90% 10%,#5fbaff,rgba(95,186,255,0) 72%),
+    radial-gradient(38% 42% at 84% 90%,#c9f28f,rgba(201,242,143,0) 74%),radial-gradient(32% 36% at 6% 92%,#70d1f2,rgba(112,209,242,0) 72%);
+  animation:wall 60s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(2px);
+  background:radial-gradient(circle at 80% 24%,rgba(255,255,255,.62) 0 5.5%,transparent 5.8%),radial-gradient(circle at 10% 62%,rgba(46,200,168,.42) 0 8%,transparent 8.3%),
+    radial-gradient(circle at 56% 90%,rgba(95,186,255,.4) 0 5%,transparent 5.3%)}
+@keyframes wall{from{transform:scale(1)}to{transform:translate3d(2%,-1.5%,0) scale(1.05)}}
+.card{position:relative;width:min(440px,calc(100% - 32px));padding:42px 36px 36px;text-align:center;border-radius:40px;
+  background:linear-gradient(150deg,rgba(255,255,255,.70),rgba(255,255,255,.46));
+  -webkit-backdrop-filter:blur(18px) saturate(1.9);backdrop-filter:blur(18px) saturate(1.9);
+  box-shadow:0 26px 60px -22px rgba(6,54,44,.34),0 3px 12px rgba(6,54,44,.07),inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.38)}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.6px;pointer-events:none;
+  background:conic-gradient(from 200deg,rgba(255,255,255,.98),rgba(255,255,255,.12) 24%,rgba(255,255,255,.55) 50%,rgba(255,255,255,.1) 76%,rgba(255,255,255,.98));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.mark{display:block;width:76px;height:76px;margin:0 auto 20px;border-radius:24px;
+  background:linear-gradient(155deg,#37c4a6 0%,#0c7d68 62%,#09594b 100%);
+  box-shadow:0 14px 28px -8px rgba(12,125,104,.5),inset 0 1.5px 1px rgba(255,255,255,.75),inset 0 -4px 8px rgba(0,0,0,.18)}
+h1{margin:0 0 6px;font-size:28px;letter-spacing:-.036em;font-weight:800}h1 span{color:var(--tint)}
+p{margin:0;color:var(--sub)}
+.st{display:inline-flex;align-items:center;gap:9px;margin:24px 0 20px;padding:6px 16px;border-radius:999px;font-weight:700;font-size:14px;background:rgba(111,127,120,.16);color:#3c4a44}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;background:#6f7f78}
+.st.up{background:rgba(12,125,104,.15);color:var(--tint-d)}.st.up::before{background:var(--tint)}
+.st.wait{background:rgba(163,87,0,.14);color:#a35700}.st.wait::before{background:#e08a14}
+button{width:100%;border:1px solid rgba(255,255,255,.4);border-radius:999px;color:#fff;padding:17px;font:inherit;font-weight:750;font-size:17px;cursor:pointer;
+  background:linear-gradient(180deg,#22b194 0%,#0c7d68 50%,#09695a 100%);
+  box-shadow:0 18px 34px -10px rgba(12,125,104,.62),inset 0 2px 1px rgba(255,255,255,.65),inset 0 -5px 10px rgba(0,0,0,.16);
+  transition:transform .4s var(--spring),filter .2s}
+button:hover{filter:brightness(1.07)}button:active{transform:scale(.97)}
+button:disabled{background:linear-gradient(180deg,rgba(80,150,134,.78),rgba(12,125,104,.5));box-shadow:none;cursor:default;filter:none}
+small{display:block;margin-top:16px;color:var(--sub);font-size:14px}
+:focus-visible{outline:2.5px solid var(--tint);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-transparency:reduce){.card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}body::before,body::after{display:none}}
 </style></head>
 <body><main class="card">
-<svg class="mark" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0f6b57"/><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 24h32M38 15l9 9-9 9"/><path d="M49 40H17M26 31l-9 9 9 9"/></g></svg>
+<svg class="mark" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 24h32M38 15l9 9-9 9"/><path d="M49 40H17M26 31l-9 9 9 9"/></g></svg>
 <h1>Raju's <span>Converters</span></h1>
 <p>영상·PDF·이미지 변환기</p>
 <div class="st" id="st" role="status">서버 확인 중…</div>
