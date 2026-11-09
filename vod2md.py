@@ -110,7 +110,7 @@ def summarize(title, paras, cb=None):
     """paras: [(start_sec, text)] -> {'summary', 'points', 'sections':[{'start','heading'}]}"""
     key = load_api_key()
     if not key:
-        raise RuntimeError("ANTHROPIC_API_KEY 가 없습니다 (환경변수 또는 vod-md\\.env 파일)")
+        raise RuntimeError("ANTHROPIC_API_KEY 가 없습니다 (환경변수 또는 converters\\.env 파일)")
     import anthropic
 
     log("[claude] 요약/소제목 생성 중...", cb)

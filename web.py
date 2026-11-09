@@ -343,5 +343,5 @@ def index():
 
 
 if __name__ == "__main__":
-    print(f"http://127.0.0.1:{PORT}  (결과 파일은 vod-md\\output 에도 저장됩니다)")
+    print(f"http://127.0.0.1:{PORT}  (결과 파일은 converters\\output 에도 저장됩니다)")
     app.run(host="127.0.0.1", port=PORT, threaded=True)

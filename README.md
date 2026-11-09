@@ -19,8 +19,8 @@
 Python 3.10 이상이 필요합니다.
 
 ```bash
-git clone https://github.com/byraju-hub/vod-to-md.git
-cd vod-to-md
+git clone https://github.com/byraju-hub/converters.git
+cd converters
 python -m venv .venv
 .venv\Scripts\pip install -r requirements.txt     # macOS/Linux: .venv/bin/pip
 ```
