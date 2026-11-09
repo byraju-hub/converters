@@ -1,6 +1,6 @@
 # Raju's Converters
 
-유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다. 이미지를 PDF로 묶거나, PDF를 이미지로 저장하고, **한글(.hwp·.hwpx) 문서를 PDF·Markdown·이미지로** 바꾸는 기능도 있습니다.
+유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다. 이미지를 PDF로 묶거나, PDF를 이미지로 저장하고, **사진의 형식을 바꾸거나 긴 변 기준으로 한꺼번에 줄이고(HEIC → JPG 포함)**, **한글(.hwp·.hwpx) 문서를 PDF·Markdown·이미지로** 바꾸는 기능도 있습니다.
 웹 화면과 명령줄 두 가지로 쓸 수 있고, 변환은 모두 내 PC에서 돌아갑니다(무료, API 키 불필요).
 
 ## 특징
@@ -12,6 +12,7 @@
 - **PDF → MD**: 웹 화면의 **PDF → MD** 탭에서 PDF를 끌어다 놓으면 제목·목록·표를 살려 변환 (쪽 구분 표시 선택 가능). 글자 없이 이미지뿐인 **스캔 PDF**는 한국어 글자 인식(OCR, RapidOCR)으로 읽음 — 글자 쪽과 스캔 쪽이 섞여 있어도 됨
 - **이미지 → PDF**: 여러 이미지를 번호 순서대로 PDF 한 개로 묶음. 썸네일을 끌어서 순서를 바꾸고, 쪽 크기(이미지에 맞춤 / A4)를 고름
 - **PDF → 이미지**: PDF의 쪽을 PNG/JPG로 저장(해상도·쪽 범위 선택). `output` 폴더에 PDF 이름의 폴더로 저장되고 ZIP으로도 받음
+- **사진 변환**: HEIC·JPG·PNG·WEBP 등을 JPG·PNG·WEBP로 바꾸고, **긴 변 길이(px)를 지정해 여러 장을 한꺼번에 리사이즈**. 작은 사진은 키우지 않고, 사진 방향을 바르게 맞추며, 위치(GPS) 같은 사진 정보는 기본으로 지움
 - **한글 변환**: `.hwp`·`.hwpx`를 PDF, Markdown, 이미지로. 한컴오피스가 있는 PC에서는 한글이 원본 모양 그대로 PDF를 만들고(이미지도 여기서 파생), 한컴오피스가 없어도 Markdown은 직접 읽어서 만듭니다(`.hwpx`는 제목·표까지, `.hwp`는 글자 위주).
 - **Claude 요약(선택)**: 문서 맨 위에 요약·핵심 포인트, 본문 중간에 소제목 자동 삽입
 
@@ -63,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
 
 ### 웹 화면의 탭
 
-화면 위쪽의 탭으로 **영상 → MD**, **PDF → MD**, **이미지 → PDF**, **PDF → 이미지**, **한글 변환**을 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
+화면 위쪽의 탭으로 **영상 → MD**, **PDF → MD**, **이미지 → PDF**, **PDF → 이미지**, **한글 변환**, **사진 변환**을 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`, `#imgconv`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
 
 ### 명령줄
 
@@ -96,6 +97,18 @@ python pdftools.py pdf2img 문서.pdf -d 결과폴더 --format jpg --dpi 200 --p
   PNG·BMP·GIF·TIFF는 손실 없이(PNG) 넣고, WEBP는 JPEG로 변환해 넣습니다. HEIC는 아직 지원하지 않습니다.
 - 아주 긴 이미지(웹 전체 캡처 등)는 PDF 한 쪽의 길이 한계(약 14,000pt)에 맞춰 줄어듭니다.
 - PDF → 이미지의 해상도는 100/150/220/300dpi 중에서 고르며, 클수록 선명하지만 용량이 커집니다.
+
+### 사진 변환 (형식 바꾸기 · 긴 변 기준 리사이즈)
+
+```bash
+imgconv.bat 사진1.heic 사진2.jpg --format jpg --long 1600 -d 결과폴더   # HEIC→JPG + 긴 변 1600px로 줄이기
+imgconv.bat *.png --format webp --quality 80                          # 형식만 바꾸기
+```
+
+- **긴 변 기준:** 가로·세로 중 긴 쪽이 지정한 길이(px)가 되도록 비율을 지켜 줄입니다. 이보다 작은 사진은 키우지 않습니다. 화면에서는 800/1280/1600/2048 중에서 고르거나 직접 적을 수 있습니다(100~20000px).
+- **형식:** JPG, PNG, WEBP, 또는 원래 형식 유지(HEIC·BMP·TIFF·GIF는 JPG로). 투명한 부분은 JPG에서 흰색이 됩니다.
+- **사진 정보:** 촬영 위치(GPS)·기기 같은 EXIF 정보는 기본으로 지웁니다(끌 수 있음). 사진 방향은 바르게 돌려서 저장하고, 색 프로필은 유지합니다.
+- 사진이 한 장이면 저장 폴더에 파일로, 여러 장이면 폴더로 저장되고 ZIP으로도 받을 수 있습니다. 읽을 수 없는 사진이 섞여 있으면 업로드할 때 알려 줍니다(이미지 → PDF 탭도 이제 HEIC를 받습니다).
 
 ### 한글(HWP·HWPX) 변환
 
@@ -187,7 +200,7 @@ PDF 변환에 쓰는 [PyMuPDF·pymupdf4llm](https://github.com/pymupdf/pymupdf4l
 | 도구 | 라이선스 |
 |---|---|
 | faster-whisper, CTranslate2, onnxruntime | MIT |
-| Flask, PyAV, NumPy, olefile | BSD 계열 |
+| Flask, PyAV, NumPy, olefile, pillow-heif | BSD 계열 (pillow-heif에는 LGPL인 libheif가 포함됨) |
 | yt-dlp | Unlicense |
 | pywin32 | PSF |
 | anthropic SDK, RapidOCR, OpenCV | Apache-2.0 |

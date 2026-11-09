@@ -20,6 +20,8 @@ from queue import Queue
 from flask import Flask, abort, jsonify, request, send_file, Response
 
 import hwpconv
+import imgconv
+import mimetypes
 import pdf2md
 import pdftools
 import settings
@@ -52,7 +54,7 @@ def run_job(j, cb):
         path = vod2md.unique_path(OUT, stem, ".pdf")
         pdftools.images_to_pdf(j["tmps"], path, j.get("size", "fit"), cb=cb)
         j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
-                 meta=f"{len(j['names'])}장 · {human(path.stat().st_size)}", log="완료")
+                 meta=human(path.stat().st_size), log="완료")
     elif kind == "hwp":
         stem = Path(j["name"]).stem
         t = j.get("target", "md")
@@ -72,6 +74,25 @@ def run_job(j, cb):
         else:
             title, md = hwpconv.convert_hwp_md(j["source"], j["name"], cb)
             save_md(j, title, md)
+    elif kind == "imgconv":
+        items = list(zip(j["tmps"], j["names"]))
+        n = len(items)
+        out_dir = OUT if n == 1 else vod2md.unique_path(OUT, f"{Path(items[0][1]).stem} 외 {n - 1}장 변환", "")
+        ok, bad = imgconv.convert_images(items, out_dir, j["fmt"], j["long"], j["quality"], j["strip"], cb)
+        if not ok:
+            raise ValueError("변환하지 못했어요: " + "; ".join(f"{a} ({b})" for a, b in bad[:3]))
+        src_total = sum(r["src_bytes"] for r in ok)
+        dst_total = sum(r["out_bytes"] for r in ok)
+        fmts = "/".join(sorted({r["fmt"].upper() for r in ok}))
+        size_txt = f"긴 변 {j['long']}px" if j["long"] else "원래 크기"
+        meta = f"{fmts} · {size_txt} · {human(dst_total)} (원본 {human(src_total)})"
+        if bad:
+            meta += f" · 실패 {len(bad)}장: " + ", ".join(a for a, _ in bad[:3])
+        if n == 1:
+            p = ok[0]["path"]
+            j.update(status="done", title=p.name, file=p.name, fpath=str(p), ext=p.suffix.lstrip("."), meta=meta, log="완료")
+        else:
+            j.update(status="done", title=out_dir.name, file=out_dir.name + ".zip", dir=str(out_dir), ext="zip", meta=meta, log="완료")
     elif kind == "pdf2img":
         folder = vod2md.unique_path(OUT, Path(j["name"]).stem + " 이미지", "")
         files = pdftools.pdf_to_images(j["source"], folder, j.get("fmt", "png"), j.get("dpi", 150),
@@ -180,6 +201,39 @@ def submit_img2pdf():
     paths = [str(save_upload(up)) for up in ups]       # 올린 순서가 쪽 순서
     jid = enqueue(dict(kind="img2pdf", size=size, pdfname=request.form.get("name", "").strip()),
                   source="", tmps=paths, names=[up.filename for up in ups], label=f"이미지 {len(ups)}장")
+    return jsonify([jid])
+
+
+@app.post("/api/submit-imgconv")
+def submit_imgconv():
+    from PIL import Image
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="사진을 올려 주세요"), 400
+    bad = []
+    for up in ups:
+        try:
+            Image.open(up.stream).verify()
+        except Exception:
+            bad.append(up.filename)
+        finally:
+            up.stream.seek(0)
+    if bad:
+        return jsonify(error="사진으로 읽을 수 없는 파일이 있어요", bad=bad), 400
+    f = request.form
+    fmt = f.get("fmt") if f.get("fmt") in ("jpg", "png", "webp", "keep") else "jpg"
+    try:
+        long_edge = int(f.get("long", "0"))
+    except ValueError:
+        long_edge = 0
+    long_edge = 0 if long_edge <= 0 else max(100, min(20000, long_edge))
+    try:
+        quality = max(30, min(100, int(f.get("quality", "85"))))
+    except ValueError:
+        quality = 85
+    paths = [str(save_upload(up)) for up in ups]
+    jid = enqueue(dict(kind="imgconv", fmt=fmt, long=long_edge, quality=quality, strip=f.get("strip") != "0"),
+                  source="", tmps=paths, names=[up.filename for up in ups], label=f"사진 {len(ups)}장")
     return jsonify([jid])
 
 
@@ -319,7 +373,8 @@ def download(jid):
         if not Path(j["fpath"]).is_file():
             abort(404)          # output 폴더에서 지운 파일
         inline = request.args.get("inline") == "1"          # PDF 는 새 탭에서 바로 열어 볼 수 있다
-        return send_file(j["fpath"], as_attachment=not inline, download_name=j["file"], mimetype="application/pdf")
+        return send_file(j["fpath"], as_attachment=not inline, download_name=j["file"],
+                         mimetype=mimetypes.guess_type(j["file"])[0] or "application/octet-stream")
     if j.get("dir"):
         if not Path(j["dir"]).is_dir():
             abort(404)

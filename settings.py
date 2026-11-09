@@ -13,7 +13,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_OUT = HERE / "output"
-SETTINGS_FILE = HERE / "settings.json"
+SETTINGS_FILE = Path(os.environ.get("VOD_SETTINGS") or HERE / "settings.json")      # 시험·여러 설정이 필요할 때 환경변수로 바꿀 수 있다
 
 
 def load():

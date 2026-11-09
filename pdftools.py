@@ -20,6 +20,12 @@ from pathlib import Path
 
 from vod2md import log, safe_name
 
+try:                                   # 아이폰 사진(HEIC/HEIF) 읽기
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+except ImportError:
+    pass
+
 A4 = (595.28, 841.89)       # PDF 단위(pt)
 MARGIN = 24
 MAX_PAGE_PT = 14000         # PDF 한 쪽의 한계(14400pt)보다 조금 작게
@@ -50,7 +56,7 @@ def _prepare(path):
         elif im.mode not in ("RGB", "L"):
             im = im.convert("RGB")
         buf = io.BytesIO()
-        if fmt in ("JPEG", "WEBP"):         # 사진류는 JPEG 로, 그 밖(PNG·BMP·GIF·TIFF)은 손실 없이 PNG 로
+        if fmt in ("JPEG", "WEBP", "HEIF"):   # 사진류는 JPEG 로, 그 밖(PNG·BMP·GIF·TIFF)은 손실 없이 PNG 로
             im.save(buf, "JPEG", quality=95 if fmt == "JPEG" else 92)
         else:
             im.save(buf, "PNG")
