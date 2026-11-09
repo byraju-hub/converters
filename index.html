@@ -188,6 +188,9 @@ textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 
 .seg button:active{transform:scale(.95)}
 .seg button[aria-checked=true]{color:var(--tint-d)}
 
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.seg button:disabled:hover{color:var(--sub)}
+
 /* ---------- 스위치: 유리 알이 늘어나며 움직인다 ---------- */
 .sw{position:relative;display:flex;align-items:center;gap:14px;padding:13px 0;cursor:pointer}
 .sw+.sw{border-top:1px solid rgba(12,125,104,.14)}
@@ -325,7 +328,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
   /* iOS 탭 바처럼: 아이콘 위, 글자 아래 */
   .tabs-wrap{top:8px;margin-bottom:16px}
   .tabs{display:flex;width:100%}
-  .tabs button{flex:1;min-width:0;flex-direction:column;gap:3px;padding:8px 2px;font-size:12px;letter-spacing:-.04em;border-radius:24px}
+  .tabs button{flex:1;min-width:0;flex-direction:column;gap:3px;padding:8px 1px;font-size:11.5px;letter-spacing:-.05em;border-radius:24px}
   .tabs svg{width:22px;height:22px}
   .tabs .bubble{border-radius:24px}
   .panel{padding:22px;border-radius:30px}
@@ -402,6 +405,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <button type="button" role="tab" id="tab-pdf" data-tab="pdf" aria-selected="false" aria-controls="panel-pdf"><svg class="i"><use href="#i-doc"/></svg><span>PDF → MD</span></button>
     <button type="button" role="tab" id="tab-img2pdf" data-tab="img2pdf" aria-selected="false" aria-controls="panel-img2pdf"><svg class="i"><use href="#i-image"/></svg><span>이미지 → PDF</span></button>
     <button type="button" role="tab" id="tab-pdf2img" data-tab="pdf2img" aria-selected="false" aria-controls="panel-pdf2img"><svg class="i"><use href="#i-doc"/></svg><span>PDF → 이미지</span></button>
+    <button type="button" role="tab" id="tab-hwp" data-tab="hwp" aria-selected="false" aria-controls="panel-hwp"><svg class="i"><use href="#i-doc"/></svg><span>한글 변환</span></button>
   </div>
 </div>
 
@@ -541,6 +545,39 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <div class="gowrap"><button class="go" id="p2go" type="button"><span id="p2go-t">이미지로 변환</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
+  <section class="panel" id="panel-hwp" role="tabpanel" aria-labelledby="tab-hwp" hidden>
+    <div class="sect">
+      <h2>한글 문서</h2>
+      <button id="hdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>한글 문서를 끌어다 놓기</b><small>또는 클릭해서 선택 · .hwp, .hwpx (여러 개 가능)</small></span>
+      </button>
+      <input id="hfile" type="file" multiple accept=".hwp,.hwpx" hidden>
+      <div id="hpicked" class="picked"></div>
+      <p class="note" id="hstatus">한컴오피스를 확인하는 중…</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-hout">무엇으로 바꿀까요?</span>
+      <div class="seg" id="hout" role="radiogroup" aria-labelledby="l-hout">
+        <button type="button" role="radio" data-v="pdf" aria-checked="true">PDF</button>
+        <button type="button" role="radio" data-v="md" aria-checked="false">Markdown</button>
+        <button type="button" role="radio" data-v="img" aria-checked="false">이미지</button>
+      </div>
+      <p class="hint" id="hout-hint"></p>
+    </div>
+
+    <div class="sect" id="hfmt-sect" hidden>
+      <span class="lbl" id="l-hfmt">이미지 형식</span>
+      <div class="seg" id="hfmt" role="radiogroup" aria-labelledby="l-hfmt">
+        <button type="button" role="radio" data-v="png" aria-checked="true">PNG (선명, 용량 큼)</button>
+        <button type="button" role="radio" data-v="jpg" aria-checked="false">JPG (용량 작음)</button>
+      </div>
+    </div>
+
+    <div class="gowrap"><button class="go" id="hgo" type="button"><span id="hgo-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
   <section class="panel" id="panel-queue" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
@@ -559,7 +596,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
 const $=id=>document.getElementById(id);
 const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150'};
+let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150',hout:'pdf',hfmt:'png'};
 if(location.protocol==='file:'){          /* index.html 을 파일로 직접 연 경우 */
   const B='http://127.0.0.1:8765/';
   const chk=async()=>{try{await fetch(B+'api/info',{mode:'no-cors',cache:'no-store'});location.replace(B)}catch{$('offline').hidden=false;setTimeout(chk,2000)}};
@@ -595,7 +632,8 @@ function seg(id,key,after){
   el.addEventListener('keydown',e=>{
     const d={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key];if(!d)return;
     e.preventDefault();
-    const n=bs[(bs.indexOf(document.activeElement)+d+bs.length)%bs.length];n.focus();pick(n);
+    let k=bs.indexOf(document.activeElement),n;for(let t=0;t<bs.length;t++){k=(k+d+bs.length)%bs.length;if(!bs[k].disabled){n=bs[k];break}}
+    if(n){n.focus();pick(n)}      // 쓸 수 없는(disabled) 선택지는 건너뛴다
   });
 }
 seg('model','model',()=>$('hint').innerHTML=HINTS[opts.model]);
@@ -677,12 +715,14 @@ const EMPTY={
   video:{i:'film',t:'아직 변환한 영상이 없어요',d:'유튜브 링크를 붙여넣거나 영상 파일을 올려 보세요.'},
   pdf:{i:'doc',t:'아직 변환한 PDF가 없어요',d:'PDF 파일을 끌어다 놓으면 Markdown 문서로 바꿔 드려요.'},
   img2pdf:{i:'image',t:'아직 만든 PDF가 없어요',d:'이미지를 올려 순서를 정하고 PDF 한 개로 묶어 보세요.'},
-  pdf2img:{i:'image',t:'아직 저장한 이미지가 없어요',d:'PDF를 올리면 쪽마다 이미지 파일로 저장해 드려요.'}};
+  pdf2img:{i:'image',t:'아직 저장한 이미지가 없어요',d:'PDF를 올리면 쪽마다 이미지 파일로 저장해 드려요.'},
+  hwp:{i:'doc',t:'아직 변환한 한글 문서가 없어요',d:'.hwp·.hwpx 파일을 올려서 PDF, Markdown, 이미지로 바꿔 보세요.'}};
 function emptyHTML(){const e=EMPTY[curTab]||EMPTY.video;return `<div class="empty">${ic(e.i)}<b>${e.t}</b><span>${e.d}</span></div>`}
 const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
             pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.',
             img2pdf:'이미지 파일을 순서대로 모아서 PDF 한 개로 만들어 드려요.',
-            pdf2img:'PDF의 쪽을 이미지 파일(PNG·JPG)로 저장해 드려요.'};
+            pdf2img:'PDF의 쪽을 이미지 파일(PNG·JPG)로 저장해 드려요.',
+            hwp:'한글(.hwp·.hwpx) 문서를 PDF, Markdown, 이미지로 바꿔 드려요.'};
 const tabBtns=[...document.querySelectorAll('.tabs [role=tab]')];
 const tabsEl=document.querySelector('.tabs'),bubble=tabsEl.querySelector('.bubble'),bst={done:false};
 function placeBubble(){slideTo(tabsEl,bubble,tabsEl.querySelector('[aria-selected=true]'),bst)}
@@ -829,6 +869,42 @@ $('p2go').onclick=async()=>{
   p2.clear();$('p2go').disabled=false;poll();
 };
 
+/* ===== 한글(HWP) 변환 ===== */
+let HANCOM=false;
+const hb=fileBucket({drop:'hdrop',input:'hfile',picked:'hpicked',noun:'한글 문서',
+  ok:f=>/\.(hwp|hwpx)$/i.test(f.name),
+  onChange:n=>$('hgo-t').textContent=n?`${n}개 변환 시작`:'변환 시작'});
+const HOUT_HINT={
+  pdf:'한컴오피스가 문서를 열어 원본 모양 그대로 PDF로 저장해요.',
+  md:'제목·문단·목록·표를 살린 Markdown으로 바꿔요. 한컴오피스가 없어도 돼요(.hwp는 글자 위주).',
+  img:'쪽마다 이미지 한 장으로 저장해요. 한컴오피스가 PDF로 먼저 저장한 뒤 이미지로 바꿔요.'};
+function houtChanged(){
+  $('hout-hint').textContent=HOUT_HINT[opts.hout];
+  $('hfmt-sect').hidden=opts.hout!=='img';
+}
+seg('hout','hout',houtChanged);
+seg('hfmt','hfmt');
+houtChanged();
+fetch('/api/capabilities').then(r=>r.json()).then(c=>{
+  HANCOM=!!c.hancom;
+  $('hstatus').textContent=HANCOM
+    ?'한컴오피스를 찾았어요. PDF·이미지는 원본 모양 그대로, Markdown은 구조를 살려 만들어요.'
+    :'한컴오피스를 찾지 못했어요. 이 PC에서는 Markdown만 바꿀 수 있어요. PDF·이미지는 한컴오피스가 있는 PC에서 쓸 수 있어요.';
+  if(!HANCOM){
+    document.querySelectorAll('#hout [data-v="pdf"],#hout [data-v="img"]').forEach(b=>{b.disabled=true;b.title='한컴오피스가 필요해요'});
+    document.querySelector('#hout [data-v="md"]').click();
+  }
+}).catch(()=>{$('hstatus').textContent='한컴오피스 확인에 실패했어요. 서버가 켜져 있는지 확인해 주세요.'});
+$('hgo').onclick=async()=>{
+  if(!hb.files.length){toast('한글 문서를 올려 주세요');$('hdrop').focus();return}
+  const fd=new FormData();hb.files.forEach(f=>fd.append('files',f));
+  fd.append('target',opts.hout);fd.append('fmt',opts.hfmt);
+  $('hgo').disabled=true;$('hgo-t').textContent='보내는 중…';
+  let r;try{r=await fetch('/api/submit-hwp',{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');$('hgo').disabled=false;hb.clear();return}
+  if(!r.ok){const d=await r.json().catch(()=>({}));toast((d.error||'요청을 처리하지 못했어요')+(d.bad?': '+d.bad.slice(0,2).join(', '):''));$('hgo').disabled=false;$('hgo-t').textContent=`${hb.files.length}개 변환 시작`;return}
+  hb.clear();$('hgo').disabled=false;poll();
+};
+
 const open=new Set(),cache={},openWhy=new Set();let last='';
 $('jobs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.why')){d.open?openWhy.add(d.dataset.id):openWhy.delete(d.dataset.id)}},true);   // 목록이 다시 그려져도 '자세히'가 닫히지 않게
 async function toggle(id){
@@ -862,6 +938,7 @@ $('jobs').onclick=e=>{
 function flowOf(j){            // 이 변환이 무엇에서 무엇으로 가는지: 로고의 교환 화살표와 같은 말
   if(j.kind==='pdf')return'PDF → MD';
   if(j.kind==='img2pdf')return'이미지 → PDF';
+  if(j.kind==='hwp')return {pdf:'한글 → PDF',md:'한글 → MD',img:'한글 → 이미지'}[j.target]||'한글 변환';
   if(j.kind==='pdf2img')return'PDF → 이미지';
   return /^https?:/i.test(j.label||'')?(/youtu/i.test(j.label)?'YouTube → MD':'링크 → MD'):'영상 → MD';
 }
@@ -890,7 +967,7 @@ function jobHTML(j){
     sub=`<small><span class="flow">${esc(flowOf(j))}</span><span class="txt2">${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:niceLog(j.log)))}</span></small>`;
   }
   return `<div class="job"><div class="row">
-    <span class="ico">${ic(j.kind==='pdf'?'doc':(j.kind==='img2pdf'||j.kind==='pdf2img')?'image':isUrl?'play':'film')}</span>
+    <span class="ico">${ic((j.kind==='pdf'||j.kind==='hwp')?'doc':(j.kind==='img2pdf'||j.kind==='pdf2img')?'image':isUrl?'play':'film')}</span>
     <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${sub}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }

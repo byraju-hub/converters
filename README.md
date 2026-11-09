@@ -1,6 +1,6 @@
 # Raju's Converters
 
-유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다. 이미지를 PDF로 묶거나, PDF를 이미지로 저장하는 기능도 있습니다.
+유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다. 이미지를 PDF로 묶거나, PDF를 이미지로 저장하고, **한글(.hwp·.hwpx) 문서를 PDF·Markdown·이미지로** 바꾸는 기능도 있습니다.
 웹 화면과 명령줄 두 가지로 쓸 수 있고, 변환은 모두 내 PC에서 돌아갑니다(무료, API 키 불필요).
 
 ## 특징
@@ -12,6 +12,7 @@
 - **PDF → MD**: 웹 화면의 **PDF → MD** 탭에서 PDF를 끌어다 놓으면 제목·목록·표를 살려 변환 (쪽 구분 표시 선택 가능). 글자 없이 이미지뿐인 **스캔 PDF**는 한국어 글자 인식(OCR, RapidOCR)으로 읽음 — 글자 쪽과 스캔 쪽이 섞여 있어도 됨
 - **이미지 → PDF**: 여러 이미지를 번호 순서대로 PDF 한 개로 묶음. 썸네일을 끌어서 순서를 바꾸고, 쪽 크기(이미지에 맞춤 / A4)를 고름
 - **PDF → 이미지**: PDF의 쪽을 PNG/JPG로 저장(해상도·쪽 범위 선택). `output` 폴더에 PDF 이름의 폴더로 저장되고 ZIP으로도 받음
+- **한글 변환**: `.hwp`·`.hwpx`를 PDF, Markdown, 이미지로. 한컴오피스가 있는 PC에서는 한글이 원본 모양 그대로 PDF를 만들고(이미지도 여기서 파생), 한컴오피스가 없어도 Markdown은 직접 읽어서 만듭니다(`.hwpx`는 제목·표까지, `.hwp`는 글자 위주).
 - **Claude 요약(선택)**: 문서 맨 위에 요약·핵심 포인트, 본문 중간에 소제목 자동 삽입
 
 ## 설치
@@ -60,7 +61,7 @@ powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
 
 ### 웹 화면의 탭
 
-화면 위쪽의 탭으로 **영상 → MD**, **PDF → MD**, **이미지 → PDF**, **PDF → 이미지**를 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
+화면 위쪽의 탭으로 **영상 → MD**, **PDF → MD**, **이미지 → PDF**, **PDF → 이미지**, **한글 변환**을 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
 
 ### 명령줄
 
@@ -93,6 +94,25 @@ python pdftools.py pdf2img 문서.pdf -d 결과폴더 --format jpg --dpi 200 --p
   PNG·BMP·GIF·TIFF는 손실 없이(PNG) 넣고, WEBP는 JPEG로 변환해 넣습니다. HEIC는 아직 지원하지 않습니다.
 - 아주 긴 이미지(웹 전체 캡처 등)는 PDF 한 쪽의 길이 한계(약 14,000pt)에 맞춰 줄어듭니다.
 - PDF → 이미지의 해상도는 100/150/220/300dpi 중에서 고르며, 클수록 선명하지만 용량이 커집니다.
+
+### 한글(HWP·HWPX) 변환
+
+```bash
+hwpconv.bat 문서.hwpx --to pdf                 # PDF (한컴오피스 필요)
+hwpconv.bat 문서.hwp  --to md                  # Markdown (한컴오피스가 없어도 됨)
+hwpconv.bat 문서.hwpx --to img --format jpg --dpi 200 -d 결과폴더   # 이미지 (한컴오피스 필요)
+```
+
+| 결과물 | 한컴오피스 있음 | 한컴오피스 없음 |
+|---|---|---|
+| **PDF** | 한글이 보이지 않게 열어 원본 모양 그대로 저장 | 불가 |
+| **이미지** | 위 PDF를 쪽마다 PNG/JPG로 | 불가 |
+| **Markdown** `.hwpx` | 파일을 직접 읽어 제목·문단·목록·표를 살림 | 같음 |
+| **Markdown** `.hwp` | 한글이 `.hwpx`로 저장한 뒤 위와 같이 읽음 | 글자만 직접 읽음(표·서식 제외) |
+
+- 한컴오피스는 Windows용이며 이 프로그램은 내 PC의 한글을 자동으로 조작합니다(파일당 10초 안팎). 변환 중 한글 화면은 보이지 않습니다.
+- 한글이 중간에 멈추면(암호·확인 창 등) 3분 뒤 알아서 중단하고, 이 프로그램이 띄운 한글만 종료합니다. 사용자가 직접 열어 둔 한글 문서는 건드리지 않습니다.
+- 암호가 걸린 문서와 배포용(읽기 전용) 문서는 변환할 수 없습니다. `.hwpx`의 그림은 Markdown에 넣지 못합니다(PDF·이미지로 바꾸면 보입니다).
 
 ### 스캔 PDF(글자 인식, OCR)
 
@@ -146,6 +166,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 ## 참고
 
 - GPU는 쓰지 않고 CPU(int8)로만 동작합니다.
+- 한글 문서 PDF 변환은 한컴오피스의 자동화 기능을 사용하며, 한컴오피스 자체는 이 프로젝트에 포함되어 있지 않습니다(사용자 PC의 정품을 사용).
 - 유튜브 다운로드는 [yt-dlp](https://github.com/yt-dlp/yt-dlp)를 사용합니다. 저작권이 있는 영상은 이용 약관과 법률을 지켜 사용하세요.
 
 ## 라이선스
@@ -164,8 +185,9 @@ PDF 변환에 쓰는 [PyMuPDF·pymupdf4llm](https://github.com/pymupdf/pymupdf4l
 | 도구 | 라이선스 |
 |---|---|
 | faster-whisper, CTranslate2, onnxruntime | MIT |
-| Flask, PyAV, NumPy | BSD 계열 |
+| Flask, PyAV, NumPy, olefile | BSD 계열 |
 | yt-dlp | Unlicense |
+| pywin32 | PSF |
 | anthropic SDK, RapidOCR, OpenCV | Apache-2.0 |
 | PyMuPDF, pymupdf4llm | AGPL-3.0 |
 | Whisper 모델 / PP-OCRv5 모델 | MIT / Apache-2.0 (실행할 때 내려받음) |

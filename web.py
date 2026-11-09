@@ -19,6 +19,7 @@ from queue import Queue
 
 from flask import Flask, abort, jsonify, request, send_file, Response
 
+import hwpconv
 import pdf2md
 import pdftools
 import vod2md
@@ -52,6 +53,25 @@ def run_job(j, cb):
         pdftools.images_to_pdf(j["tmps"], path, j.get("size", "fit"), cb=cb)
         j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
                  meta=f"{len(j['names'])}장 · {human(path.stat().st_size)}", log="완료")
+    elif kind == "hwp":
+        stem = Path(j["name"]).stem
+        t = j.get("target", "md")
+        if t == "pdf":
+            path = vod2md.unique_path(OUT, stem, ".pdf")
+            hwpconv.hwp_to_pdf(j["source"], path, cb)
+            j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
+                     meta=human(path.stat().st_size), log="완료")
+        elif t == "img":
+            with tempfile.TemporaryDirectory(prefix="hwp2img_") as tmp:
+                pdf = hwpconv.hwp_to_pdf(j["source"], Path(tmp) / "doc.pdf", cb)
+                folder = vod2md.unique_path(OUT, stem + " 이미지", "")
+                files = pdftools.pdf_to_images(pdf, folder, j.get("fmt", "png"), j.get("dpi", 150), "", stem=stem, cb=cb)
+            total = sum(f.stat().st_size for f in files)
+            j.update(status="done", title=folder.name, file=folder.name + ".zip", dir=str(folder), ext="zip",
+                     meta=f"{len(files)}장 · {j.get('fmt', 'png').upper()} {j.get('dpi', 150)}dpi · {human(total)}", log="완료")
+        else:
+            title, md = hwpconv.convert_hwp_md(j["source"], j["name"], cb)
+            save_md(j, title, md)
     elif kind == "pdf2img":
         folder = vod2md.unique_path(OUT, Path(j["name"]).stem + " 이미지", "")
         files = pdftools.pdf_to_images(j["source"], folder, j.get("fmt", "png"), j.get("dpi", 150),
@@ -203,6 +223,44 @@ def submit_pdf():
     for up in ups:
         dest = UPLOADS / f"{uuid.uuid4().hex}_{Path(up.filename).name}"
         up.save(dest)
+        ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
+    return jsonify(ids)
+
+
+@app.get("/api/capabilities")
+def capabilities():
+    """이 PC에서 가능한 것 (화면이 선택지를 맞추는 데 쓴다)"""
+    return jsonify(hancom=hwpconv.hancom_available())
+
+
+@app.post("/api/submit-hwp")
+def submit_hwp():
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="한글 문서(.hwp, .hwpx)를 올려 주세요"), 400
+    bad = []
+    for up in ups:          # 확장자와 파일 머리를 모두 확인한다
+        head = up.stream.read(8)
+        up.stream.seek(0)
+        name = up.filename.lower()
+        ok = (name.endswith(".hwpx") and head[:4] == b"PK\x03\x04") or \
+             (name.endswith(".hwp") and head == bytes.fromhex("D0CF11E0A1B11AE1"))
+        if not ok:
+            bad.append(up.filename)
+    if bad:
+        return jsonify(error="한글 문서가 아니에요", bad=bad), 400
+    f = request.form
+    target = f.get("target") if f.get("target") in ("pdf", "md", "img") else "md"
+    if target != "md" and not hwpconv.hancom_available():
+        return jsonify(error="PDF·이미지로 바꾸려면 한컴오피스가 필요해요. 이 PC에서는 Markdown만 가능해요"), 400
+    try:
+        dpi = max(50, min(600, int(f.get("dpi", "150"))))
+    except ValueError:
+        dpi = 150
+    opts = dict(kind="hwp", target=target, fmt="jpg" if f.get("fmt") == "jpg" else "png", dpi=dpi)
+    ids = []
+    for up in ups:
+        dest = save_upload(up)
         ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
     return jsonify(ids)
 

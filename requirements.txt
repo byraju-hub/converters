@@ -6,3 +6,5 @@ anthropic
 pymupdf4llm
 rapidocr
 onnxruntime
+pywin32; sys_platform == "win32"
+olefile

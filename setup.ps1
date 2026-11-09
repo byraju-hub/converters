@@ -116,7 +116,7 @@ Done "설치 완료"
 
 # ---------------------------------------------------------------- 4. 확인
 Step 4 "제대로 설치됐는지 확인하는 중"
-& $venvPy -c "import flask, yt_dlp, faster_whisper, pymupdf, pymupdf4llm, rapidocr, PIL, anthropic, av" 2>&1 | Out-Null
+& $venvPy -c "import flask, yt_dlp, faster_whisper, pymupdf, pymupdf4llm, rapidocr, PIL, anthropic, av, olefile, win32com.client" 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Fail "설치는 끝났는데 일부 프로그램을 불러오지 못해요" @(
         "setup.bat 을 한 번 더 실행해 보세요.",
