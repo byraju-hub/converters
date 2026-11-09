@@ -179,6 +179,117 @@ pre{scrollbar-width:thin;scrollbar-color:#9db4ac transparent;white-space:pre-wra
   .acts{margin-left:auto}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Liquid glass =====
+   뒤에 깔린 색 번짐을 반투명 유리가 흐리게 비추는 방식. 동작은 건드리지 않고 겉모양만 덮어쓴다. */
+:root{
+  --rim:rgba(255,255,255,.78);
+  --glass-hi:rgba(255,255,255,.72);
+  --glass-lo:rgba(255,255,255,.40);
+  --glass-shadow:0 14px 40px rgba(18,70,58,.14),0 2px 8px rgba(18,70,58,.06);
+  --inner-lit:inset 0 1px 1.5px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.35);
+}
+
+/* 배경: 유리가 비출 색 (천천히 흐른다) */
+body{background:#dcece6;min-height:100vh;position:relative;isolation:isolate}
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 12% 10%,#6fd3b6 0%,transparent 70%),
+    radial-gradient(34% 40% at 88% 16%,#8fd0f2 0%,transparent 70%),
+    radial-gradient(42% 46% at 72% 94%,#cdeea0 0%,transparent 70%),
+    radial-gradient(30% 36% at 4% 88%,#7ec8e8 0%,transparent 70%);
+  animation:glassdrift 30s ease-in-out infinite alternate}
+@keyframes glassdrift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(2.5%,-2%,0) scale(1.07)}}
+
+/* 큰 유리판 */
+.panel{
+  background:
+    linear-gradient(115deg,rgba(255,255,255,.50) 0%,rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,.22) 100%),
+    linear-gradient(160deg,var(--glass-hi),var(--glass-lo));
+  -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);
+  border:1px solid var(--rim);
+  box-shadow:var(--glass-shadow),var(--inner-lit)}
+
+/* 상단 탭·버튼 알약 */
+.tabs,.top-link,.top-acts .top-link{
+  background:rgba(255,255,255,.48);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid var(--rim);
+  box-shadow:0 6px 20px rgba(18,70,58,.10),var(--inner-lit)}
+.top-link:hover,.top-acts .top-link:hover{background:rgba(255,255,255,.72)}
+.top-link:active{transform:scale(.97)}
+.tabs button:hover:not([aria-selected=true]){background:rgba(255,255,255,.62)}
+.tabs button[aria-selected=true]{
+  background:linear-gradient(180deg,#2aa085 0%,#0f6b57 100%);
+  box-shadow:0 5px 14px rgba(15,107,87,.38),inset 0 1px 1px rgba(255,255,255,.5),inset 0 -2px 4px rgba(0,0,0,.14)}
+
+/* 로고 */
+.mark{background:linear-gradient(160deg,#3bb095 0%,#0f6b57 72%);
+  box-shadow:0 10px 24px rgba(15,107,87,.36),inset 0 1px 1px rgba(255,255,255,.65),inset 0 -3px 6px rgba(0,0,0,.16)}
+
+/* 작은 버튼 */
+.btn{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);
+  box-shadow:0 2px 8px rgba(18,70,58,.08),inset 0 1px 1px rgba(255,255,255,.95);
+  transition:background .15s,transform .12s,box-shadow .15s}
+.btn:hover{background:rgba(255,255,255,.86);box-shadow:0 4px 12px rgba(18,70,58,.12),inset 0 1px 1px #fff}
+.btn:active{transform:scale(.96)}
+.btn:disabled{box-shadow:none}
+.btn.warn{background:rgba(205,234,225,.8)}
+.btn.warn:hover{background:rgba(190,228,216,.95)}
+
+/* 큰 시작 버튼: 윤이 나는 초록 유리 */
+.gowrap{background:linear-gradient(to top,rgba(236,246,242,.9) 55%,rgba(236,246,242,0))}
+.go{background:linear-gradient(180deg,#2fa88c 0%,#0f6b57 60%,#0c5a4a 100%);
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 12px 26px rgba(15,107,87,.38),inset 0 1px 1px rgba(255,255,255,.6),inset 0 -3px 6px rgba(0,0,0,.16);
+  transition:filter .15s,transform .12s,box-shadow .15s}
+.go:hover{background:linear-gradient(180deg,#38b498 0%,#127a63 60%,#0e6552 100%)}
+.go:active{transform:scale(.985);box-shadow:0 6px 14px rgba(15,107,87,.34),inset 0 1px 1px rgba(255,255,255,.45)}
+.go:disabled{background:linear-gradient(180deg,rgba(90,160,142,.7),rgba(15,107,87,.5));box-shadow:none}
+
+/* 입력 칸: 유리에 파낸 홈 */
+textarea{background:rgba(255,255,255,.38);
+  box-shadow:inset 0 1px 3px rgba(18,70,58,.14),inset 0 0 0 1px rgba(255,255,255,.55)}
+textarea:focus{box-shadow:0 0 0 2px var(--accent),inset 0 1px 3px rgba(18,70,58,.12)}
+.dz{background:rgba(255,255,255,.26);border-color:rgba(15,107,87,.42)}
+.dz:hover,.dz.on{background:rgba(255,255,255,.58);border-color:var(--accent)}
+.dz .ic{background:rgba(255,255,255,.62);box-shadow:var(--inner-lit),0 2px 6px rgba(18,70,58,.08)}
+.chip{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 1px #fff}
+.seg{background:rgba(255,255,255,.34);box-shadow:inset 0 1px 3px rgba(18,70,58,.14),inset 0 0 0 1px rgba(255,255,255,.5)}
+.seg button[aria-checked=true]{background:rgba(255,255,255,.94);
+  box-shadow:0 2px 8px rgba(18,70,58,.18),inset 0 1px 1px #fff}
+
+/* 스위치 */
+.sw+.sw{border-top-color:rgba(15,107,87,.12)}
+.sw i{background:rgba(88,112,104,.42);box-shadow:inset 0 1px 3px rgba(0,0,0,.2)}
+.sw i::after{box-shadow:0 2px 5px rgba(0,0,0,.28),inset 0 -1px 1px rgba(0,0,0,.06)}
+.sw input:checked+i{background:linear-gradient(180deg,#2aa085,#0f6b57);box-shadow:inset 0 1px 3px rgba(0,0,0,.22)}
+
+/* 변환 목록 */
+.job+.job{border-top-color:rgba(15,107,87,.13)}
+.ico{background:rgba(255,255,255,.58);box-shadow:var(--inner-lit)}
+.bar{background:rgba(255,255,255,.55);box-shadow:inset 0 1px 2px rgba(18,70,58,.12)}
+pre{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 3px rgba(18,70,58,.12),inset 0 0 0 1px rgba(255,255,255,.6)}
+.empty{background:rgba(255,255,255,.24);border-color:rgba(15,107,87,.28)}
+.fieldmsg code{background:rgba(248,228,226,.8)}
+
+/* 알림 */
+.offline,.toast{background:rgba(18,32,28,.74);
+  -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5)}
+.toast{border:1px solid rgba(255,255,255,.2);box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.offline{box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.offline a{box-shadow:inset 0 1px 1px rgba(255,255,255,.4)}
+
+/* 유리를 지원하지 않거나, 투명 효과를 줄여 달라고 한 환경에서는 불투명하게 */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .panel{background:rgba(255,255,255,.94)}
+  .tabs,.top-link,.top-acts .top-link{background:rgba(255,255,255,.94)}
+}
+@media (prefers-reduced-transparency:reduce){
+  .panel,.tabs,.top-link,.top-acts .top-link{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}
+  .offline,.toast{-webkit-backdrop-filter:none;backdrop-filter:none;background:#14201c}
+  body::before{display:none}
+}
 </style>
 </head>
 <body>

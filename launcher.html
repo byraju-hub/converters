@@ -14,6 +14,24 @@ p{margin:0;color:#4d5a55}
 button{width:100%;border:0;border-radius:12px;background:#0f6b57;color:#fff;padding:15px;font:inherit;font-weight:700;font-size:17px;cursor:pointer}
 button:hover{background:#0b5444}button:disabled{background:#9db4ac;cursor:default}
 small{display:block;margin-top:14px;color:#4d5a55;font-size:14px}
+
+/* ===== Liquid glass ===== */
+body{background:#dcece6;position:relative;isolation:isolate}
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 42% at 12% 10%,#6fd3b6,transparent 70%),radial-gradient(34% 40% at 88% 16%,#8fd0f2,transparent 70%),
+    radial-gradient(42% 46% at 72% 94%,#cdeea0,transparent 70%),radial-gradient(30% 36% at 4% 88%,#7ec8e8,transparent 70%);
+  animation:d 30s ease-in-out infinite alternate}
+@keyframes d{from{transform:scale(1)}to{transform:translate3d(2.5%,-2%,0) scale(1.07)}}
+.card{background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,.22)),linear-gradient(160deg,rgba(255,255,255,.72),rgba(255,255,255,.4));
+  -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.78);
+  box-shadow:0 14px 40px rgba(18,70,58,.14),inset 0 1px 1.5px rgba(255,255,255,.95)}
+.mark{filter:drop-shadow(0 8px 14px rgba(15,107,87,.35))}
+button{background:linear-gradient(180deg,#2fa88c,#0f6b57 60%,#0c5a4a);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 12px 26px rgba(15,107,87,.38),inset 0 1px 1px rgba(255,255,255,.6),inset 0 -3px 6px rgba(0,0,0,.16)}
+button:hover{background:linear-gradient(180deg,#38b498,#127a63 60%,#0e6552)}
+button:disabled{background:linear-gradient(180deg,rgba(90,160,142,.7),rgba(15,107,87,.5));box-shadow:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+@media (prefers-reduced-transparency:reduce){.card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.95)}}
 </style></head>
 <body><main class="card">
 <svg class="mark" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0f6b57"/><path d="M18 20v24l17-12z" fill="#fff"/><path d="M41 24h7M41 32h7M41 40h7" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>
