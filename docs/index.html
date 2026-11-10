@@ -88,7 +88,12 @@ svg.i{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .nav ul a:hover{background:rgba(255,255,255,.7);color:var(--ink)}
 
 /* ---------- 히어로 ---------- */
-.hero{padding:72px 0 40px;text-align:center}
+.hero-photo{position:relative;border-radius:40px;overflow:hidden;box-shadow:var(--g-shadow),var(--g-lit);height:clamp(300px,52vw,640px)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
+.hero-photo::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}
+.hero-card{position:relative;max-width:880px;margin:clamp(-150px,-12vw,-70px) auto 0;padding:clamp(28px,4vw,48px) clamp(20px,4vw,52px);border-radius:40px}
+.hero-card .cta-row{margin-top:30px}
+.hero{padding:28px 0 40px;text-align:center}
 .hero h1{font-size:clamp(40px,6.4vw,76px);line-height:1.06;font-weight:800;letter-spacing:-.045em}
 .hero h1 em{font-style:normal;color:var(--tint)}
 .hero .lede{max-width:640px;margin:26px auto 0;font-size:clamp(18px,2.1vw,21px);color:var(--sub)}
@@ -281,6 +286,8 @@ footer .legal a{text-underline-offset:3px}
 
 <main>
 <section class="hero wrap" id="hero" aria-label="소개">
+  <div class="hero-photo rv"><img src="assets/hero-desk.webp" width="1600" height="903" alt="모니터 한 화면에 영상→텍스트, PDF→이미지, 사진 일괄 편집 변환 화면이 나란히 떠 있는 책상 위 모습" fetchpriority="high"></div>
+  <div class="hero-card glass rv" style="--d:.1s">
   <h1 class="rv">영상도 문서도 사진도,<br><em>한 화면에서</em> 바꿉니다.</h1>
   <p class="lede rv" style="--d:.08s">영상, PDF, 한글(HWP) 문서, 사진을 내 PC 안에서 바꿔 주는 무료 변환 도구예요. 파일을 인터넷에 올리지 않습니다.</p>
   <div class="cta-row rv" style="--d:.16s">
@@ -290,8 +297,9 @@ footer .legal a{text-underline-offset:3px}
   <ul class="facts rv" style="--d:.22s">
     <li>Windows 10 · 11</li><li>Chrome · Edge에서 열림</li><li>오픈소스 (AGPL-3.0)</li>
   </ul>
+  </div>
 
-  <div class="stage rv" style="--d:.3s">
+  <div class="stage rv" style="--d:.15s">
     <div class="win glass" data-lens="radius:30,bezel:30,shift:20,blur:14">
       <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>127.0.0.1:8765</span></div>
       <img src="assets/shot-video.webp" width="1200" height="900" alt="Raju's Converters 화면: 영상 링크를 붙여넣고 변환 목록에서 진행 상황과 결과 파일을 확인하는 모습">
