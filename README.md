@@ -1,5 +1,7 @@
 # Raju's Converters
 
+**소개 페이지: <https://byraju-hub.github.io/converters/>** · [설치 가이드](docs/INSTALL.md) · [릴리스](https://github.com/byraju-hub/converters/releases)
+
 유튜브 링크나 내 PC의 영상·오디오 파일을 **타임스탬프가 붙은 Markdown 스크립트**로, PDF 문서를 **제목·목록·표 구조를 살린 Markdown**으로 바꿔 주는 도구입니다. 이미지를 PDF로 묶거나, PDF를 이미지로 저장하고, **사진의 형식을 바꾸거나 긴 변 기준으로 한꺼번에 줄이고(HEIC → JPG 포함)**, **한글(.hwp·.hwpx) 문서를 PDF·Markdown·이미지로** 바꾸는 기능도 있습니다.
 웹 화면과 명령줄 두 가지로 쓸 수 있고, 변환은 모두 내 PC에서 돌아갑니다(무료, API 키 불필요).
 
