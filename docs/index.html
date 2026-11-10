@@ -243,6 +243,66 @@ footer .legal a{text-underline-offset:3px}
   .cta{padding:48px 20px;border-radius:32px;margin-top:68px}
   .faq details{padding:0 20px}
 }
+
+/* ---------- 변환 체험: 파일 아이콘이 변환기를 지나 결과물이 된다 ---------- */
+.demo{border-radius:36px;padding:clamp(20px,4vw,44px);margin-top:8px}
+.dchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{border:0;font:inherit;font-weight:700;font-size:14.5px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.62);box-shadow:var(--g-lit);cursor:pointer;display:inline-flex;gap:8px;align-items:center;color:var(--sub);transition:background .25s,color .25s,transform .35s var(--spring)}
+.chip:hover{transform:translateY(-2px);color:var(--ink)}
+.chip[aria-selected=true]{background:linear-gradient(180deg,#19ad92,var(--tint));color:#fff;box-shadow:0 8px 20px -8px rgba(12,125,104,.6),inset 0 1px 0 rgba(255,255,255,.4)}
+.dstage{--fw:clamp(88px,15vw,132px);--cv:clamp(84px,13vw,124px);position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:clamp(6px,3vw,36px);margin-top:36px}
+.dstage::before{content:"";position:absolute;left:14%;right:14%;top:calc(var(--fw)*.62);height:2px;background:repeating-linear-gradient(90deg,rgba(12,125,104,.38) 0 8px,transparent 8px 16px);background-size:16px 2px;animation:dash 1s linear infinite}
+@keyframes dash{to{background-position:16px 0}}
+.dslot{position:relative;display:flex;flex-direction:column;align-items:center;min-height:calc(var(--fw)*1.24 + 62px)}
+.dslot.src{z-index:3}
+.fbtn{all:unset;display:flex;flex-direction:column;align-items:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+  transform:translate(var(--dx,0px),var(--dy,0px)) scale(var(--sc,1));transition:transform .6s var(--spring),opacity .4s}
+.fbtn:focus-visible{outline:2.5px solid var(--tint);outline-offset:8px;border-radius:20px}
+.fbtn.dragging{transition:none;cursor:grabbing;z-index:5}
+.fbtn.fly{--sc:.22;opacity:0;pointer-events:none;transition:transform .55s cubic-bezier(.5,0,.8,.4),opacity .55s ease-in}
+.fbtn .ficon{animation:bob 4.6s ease-in-out infinite}
+.fbtn:hover .ficon,.fbtn.dragging .ficon{animation-play-state:paused}
+.ficon{position:relative;width:var(--fw);height:calc(var(--fw)*1.24);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;padding:12px 10px 10px;
+  background:linear-gradient(160deg,#fff,#f1faf7);box-shadow:var(--g-shadow-s),var(--g-lit)}
+.ficon::after{content:"";position:absolute;right:0;top:0;width:24%;aspect-ratio:1;background:linear-gradient(225deg,color-mix(in srgb,var(--c) 30%,#fff) 50%,transparent 50%)}
+.ext{align-self:flex-start;font-weight:800;font-size:calc(var(--fw)*.125);letter-spacing:.04em;line-height:1.5;color:#fff;background:var(--c);padding:0 7px;border-radius:6px}
+.lines{margin-top:auto;display:grid;gap:6px}
+.lines i{height:5px;border-radius:3px;background:rgba(15,31,26,.14)}
+.lines i:nth-child(1){width:90%}.lines i:nth-child(2){width:100%}.lines i:nth-child(3){width:72%}.lines i:nth-child(4){width:48%}
+.thumbs{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.thumbs i{aspect-ratio:1;border-radius:6px;background:linear-gradient(160deg,#ffd9a8,#7fb8ff)}
+.thumbs i:nth-child(2){background:linear-gradient(160deg,#bde6ff,#2e8b57)}
+.thumbs i:nth-child(3){background:linear-gradient(160deg,#ffd1dc,#8f7fd9)}
+.thumbs i:nth-child(4){background:linear-gradient(160deg,#d7f0c8,#33658a)}
+.pl{margin:auto;color:var(--c)}.pl svg{width:calc(var(--fw)*.34);height:calc(var(--fw)*.34)}
+.fname{display:block;margin-top:12px;text-align:center;font-size:14px;font-weight:700;color:var(--ink);line-height:1.3}
+.fmeta{display:block;margin-top:2px;font-size:12.5px;color:var(--sub);font-weight:600}
+.ghost{background:rgba(240,252,248,.85);width:var(--fw);height:calc(var(--fw)*1.24);border-radius:18px;border:2px dashed rgba(12,125,104,.32);display:grid;place-items:center;color:rgba(12,125,104,.55);font-weight:700;font-size:14px}
+.ofile{display:flex;flex-direction:column;align-items:center;animation:pop .8s var(--spring) both}
+.ofile .ficon{box-shadow:var(--g-shadow-s),var(--g-lit),0 0 0 3px rgba(12,125,104,.35),0 0 34px rgba(25,173,146,.35)}
+@keyframes pop{from{opacity:0;transform:scale(.3) translateX(-70px)}to{opacity:1;transform:none}}
+.pipe{position:relative;z-index:2;margin-top:calc(var(--fw)*.62 - var(--cv)/2)}
+.conv{position:relative;width:var(--cv);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 28%,#fff,rgba(240,252,248,.92));box-shadow:var(--g-shadow-s),var(--g-lit)}
+.conv .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);fill:none;stroke-width:6;overflow:visible}
+.conv .trk{stroke:rgba(12,125,104,.14)}
+.conv .prg{stroke:var(--tint);stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;filter:drop-shadow(0 0 5px rgba(12,125,104,.5))}
+.conv .ic,.conv .ck{position:absolute;width:38%;height:38%;fill:none;stroke:var(--tint);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:opacity .25s,transform .45s var(--spring)}
+.conv .ck{opacity:0;transform:scale(.4)}
+.conv .pct{position:absolute;font-weight:800;font-size:clamp(15px,2.1vw,21px);color:var(--tint-d);opacity:0;font-variant-numeric:tabular-nums}
+.conv.busy .ic{opacity:0}.conv.busy .pct{opacity:1}
+.conv.busy{animation:halo 1.1s ease-out infinite}
+@keyframes halo{0%{box-shadow:var(--g-shadow-s),var(--g-lit),0 0 0 0 rgba(25,173,146,.42)}100%{box-shadow:var(--g-shadow-s),var(--g-lit),0 0 0 22px rgba(25,173,146,0)}}
+.conv.done .ic{opacity:0}.conv.done .ck{opacity:1;transform:none}.conv.done .pct{opacity:0}
+.conv.idle .ic{animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}
+.spark{position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:var(--tint);opacity:0;pointer-events:none}
+.conv.burst .spark{animation:spark .95s var(--ease) forwards;animation-delay:calc(var(--i)*.05s)}
+@keyframes spark{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)}}
+.dfoot{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:26px;text-align:center}
+.dmsg{min-height:1.7em;color:var(--sub);font-weight:600;font-size:16px}
+.demo .btn[disabled]{opacity:.6;cursor:default}
+@media(max-width:720px){.dchips .chip{font-size:13px;padding:8px 12px}.dstage::before{left:10%;right:10%}.fname{font-size:12.5px}.fmeta{font-size:11.5px}}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
@@ -276,6 +336,7 @@ footer .legal a{text-underline-offset:3px}
 <header class="nav glass" data-lens="radius:999,bezel:24,shift:15,blur:5">
   <a class="brand" href="#hero" aria-label="Raju's Converters 처음으로"><img src="assets/converters-icon.svg" alt="" width="38" height="38"><span>Raju's <b>Converters</b></span></a>
   <nav aria-label="바로가기"><ul>
+    <li><a href="#demo">체험</a></li>
     <li><a href="#tools">변환 종류</a></li>
     <li><a href="#how">설치 방법</a></li>
     <li><a href="#features">기능</a></li>
@@ -309,6 +370,39 @@ footer .legal a{text-underline-offset:3px}
     <span class="float c" aria-hidden="true"><svg class="i"><use href="#i-doc"/></svg>한글 → PDF</span>
   </div>
   <p class="note">화면의 파일 이름과 내용은 모두 예시입니다.</p>
+</section>
+
+<section class="sec" id="demo" aria-labelledby="demo-h">
+  <div class="wrap">
+    <div class="head center"><h2 id="demo-h" class="rv">파일이 바뀌는 모습, 직접 보세요.</h2><p class="rv" style="--d:.06s">아이콘을 가운데 변환기로 끌어다 놓거나, 눌러 보세요.</p></div>
+    <div class="demo glass rv" id="dcard" style="--d:.1s">
+      <div class="dchips" id="dchips" role="group" aria-label="변환 종류 고르기">
+        <button type="button" class="chip" data-k="video" aria-selected="true"><svg class="i"><use href="#i-play"/></svg>영상 → MD</button>
+        <button type="button" class="chip" data-k="pdf" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>PDF → MD</button>
+        <button type="button" class="chip" data-k="img2pdf" aria-selected="false"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
+        <button type="button" class="chip" data-k="pdf2img" aria-selected="false"><svg class="i"><use href="#i-stack"/></svg>PDF → 이미지</button>
+        <button type="button" class="chip" data-k="hwp" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>한글 → PDF</button>
+        <button type="button" class="chip" data-k="heic" aria-selected="false"><svg class="i"><use href="#i-resize"/></svg>HEIC → JPG</button>
+      </div>
+      <div class="dstage">
+        <div class="dslot src" id="dsrc"></div>
+        <div class="pipe">
+          <div class="conv idle" id="dconv" aria-hidden="true">
+            <svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="prg" id="dring" cx="60" cy="60" r="52"/></svg>
+            <svg class="ic" viewBox="0 0 24 24"><path d="M5 8h14l-3-3M19 16H5l3 3"/></svg>
+            <svg class="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            <span class="pct" id="dpct">0%</span>
+            <i class="spark" style="--i:0;--x:90px;--y:-26px"></i><i class="spark" style="--i:1;--x:120px;--y:10px"></i><i class="spark" style="--i:2;--x:100px;--y:34px"></i><i class="spark" style="--i:3;--x:140px;--y:-8px"></i><i class="spark" style="--i:4;--x:80px;--y:18px"></i>
+          </div>
+        </div>
+        <div class="dslot out" id="dout"></div>
+      </div>
+      <div class="dfoot">
+        <button type="button" class="btn primary" id="dgo">변환하기</button>
+        <p class="dmsg" id="dmsg" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="sec" id="tools" aria-labelledby="tools-h">
@@ -585,6 +679,65 @@ document.documentElement.classList.add('js');
     new ResizeObserver(()=>{clearTimeout(t);t=setTimeout(apply,lw?140:0)}).observe(el)}
   document.querySelectorAll('[data-lens]').forEach(el=>{
     const o={};el.dataset.lens.split(',').forEach(p=>{const [k,v]=p.split(':');o[k.trim()]=parseFloat(v)});lens(el,o)});
+})();
+
+/* ===== 변환 체험: 파일 아이콘 → 변환기 → 결과 파일 ===== */
+(function(){
+  const $=s=>document.querySelector(s),card=$('#dcard');if(!card)return;
+  const srcEl=$('#dsrc'),outEl=$('#dout'),conv=$('#dconv'),ring=$('#dring'),pct=$('#dpct'),msg=$('#dmsg'),go=$('#dgo'),chips=[...document.querySelectorAll('#dchips .chip')];
+  const L=326.7,sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const D={
+    video:{s:{ext:'MP4',name:'주간소식.mp4',meta:'128MB',c:'#e8743b',k:'play'},o:{ext:'MD',name:'주간소식.md',meta:'시각 포함 · 42KB',c:'#0c7d68',k:'lines'},ok:'영상이 시각이 붙은 글(Markdown)로 바뀌었어요.'},
+    pdf:{s:{ext:'PDF',name:'회의록.pdf',meta:'2.4MB',c:'#d93f3f',k:'lines'},o:{ext:'MD',name:'회의록.md',meta:'표 · 제목 구조 유지',c:'#0c7d68',k:'lines'},ok:'PDF의 글과 표가 Markdown으로 옮겨졌어요.'},
+    img2pdf:{s:{ext:'JPG',name:'여행 사진 12장',meta:'41.8MB',c:'#e0a21b',k:'thumbs'},o:{ext:'PDF',name:'여행사진.pdf',meta:'한 권으로 · 3.1MB',c:'#d93f3f',k:'lines'},ok:'사진 12장이 PDF 한 권으로 묶였어요.'},
+    pdf2img:{s:{ext:'PDF',name:'발표자료.pdf',meta:'18쪽',c:'#d93f3f',k:'lines'},o:{ext:'ZIP',name:'발표자료.zip',meta:'PNG 18장 · 8.4MB',c:'#8a5cd6',k:'thumbs'},ok:'쪽마다 이미지가 되어 ZIP으로 담겼어요.'},
+    hwp:{s:{ext:'HWPX',name:'보고서.hwpx',meta:'412KB',c:'#2b6cb0',k:'lines'},o:{ext:'PDF',name:'보고서.pdf',meta:'원본 모양 그대로',c:'#d93f3f',k:'lines'},ok:'한글 문서가 모양 그대로 PDF가 되었어요.'},
+    heic:{s:{ext:'HEIC',name:'IMG_2041.HEIC',meta:'3.4MB',c:'#8a5cd6',k:'thumbs'},o:{ext:'JPG',name:'IMG_2041.jpg',meta:'긴 변 1600px · 0.6MB',c:'#e0a21b',k:'thumbs'},ok:'HEIC가 가벼운 JPG로 바뀌고 크기도 줄었어요.'}
+  };
+  const ficon=f=>{const b=f.k==='thumbs'?'<div class="thumbs"><i></i><i></i><i></i><i></i></div>':f.k==='play'?'<div class="pl"><svg class="i"><use href="#i-play"/></svg></div>':'<div class="lines"><i></i><i></i><i></i><i></i></div>';
+    return '<div class="ficon" style="--c:'+f.c+'"><span class="ext">'+f.ext+'</span>'+b+'</div><b class="fname">'+f.name+'</b><small class="fmeta">'+f.meta+'</small>'};
+  let key='video',busy=false,done=false,tok=0,touched=false,drag=null,noClick=false;
+  function load(k){
+    tok++;key=k;busy=false;done=false;const d=D[k];
+    srcEl.innerHTML='<button type="button" class="fbtn" aria-label="'+d.s.name+' 변환하기">'+ficon(d.s)+'</button>';
+    outEl.innerHTML='<div class="ghost">결과</div>';
+    conv.className='conv idle';ring.style.strokeDashoffset=L;pct.textContent='0%';
+    msg.textContent='아이콘을 변환기로 끌어다 놓거나, 눌러 보세요.';go.textContent='변환하기';go.disabled=false;
+    chips.forEach(c=>c.setAttribute('aria-selected',c.dataset.k===k));
+  }
+  async function run(){
+    if(busy||done)return;busy=true;const t=tok,d=D[key],f=srcEl.querySelector('.fbtn');if(!f){busy=false;return}
+    const fr=f.getBoundingClientRect(),cr=conv.getBoundingClientRect();
+    const dx=parseFloat(f.style.getPropertyValue('--dx'))||0,dy=parseFloat(f.style.getPropertyValue('--dy'))||0;
+    f.style.setProperty('--dx',dx+(cr.left+cr.width/2-fr.left-fr.width/2)+'px');f.style.setProperty('--dy',dy+(cr.top+cr.height/2-fr.top-fr.height/2)+'px');
+    f.classList.remove('dragging');f.classList.add('fly');go.disabled=true;msg.textContent='바꾸는 중…';conv.classList.remove('idle');
+    await sleep(540);if(t!==tok)return;
+    conv.classList.add('busy');
+    await new Promise(res=>{const t0=performance.now(),dur=1500;(function fr(now){if(t!==tok)return res();const p=Math.min(1,(now-t0)/dur),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;ring.style.strokeDashoffset=L*(1-e);pct.textContent=Math.round(e*100)+'%';p<1?requestAnimationFrame(fr):res()})(t0)});
+    if(t!==tok)return;
+    conv.classList.remove('busy');conv.classList.add('done','burst');
+    outEl.innerHTML='<div class="ofile">'+ficon(d.o)+'</div>';
+    msg.textContent=d.ok+' (화면은 예시 동작이에요)';go.textContent='다시 해보기';go.disabled=false;busy=false;done=true;
+    setTimeout(()=>{if(t===tok)conv.classList.remove('burst')},1100);
+  }
+  go.addEventListener('click',()=>{touched=true;if(done){load(key);setTimeout(run,380)}else run()});
+  chips.forEach(c=>c.addEventListener('click',()=>{touched=true;load(c.dataset.k)}));
+  srcEl.addEventListener('click',e=>{if(noClick||!e.target.closest('.fbtn'))return;touched=true;run()});
+  srcEl.addEventListener('pointerdown',e=>{const f=e.target.closest('.fbtn');if(!f||busy)return;touched=true;drag={f,x:e.clientX,y:e.clientY,moved:false};try{f.setPointerCapture(e.pointerId)}catch(_){}});
+  srcEl.addEventListener('pointermove',e=>{if(!drag)return;const mx=e.clientX-drag.x,my=e.clientY-drag.y;
+    if(!drag.moved&&Math.hypot(mx,my)>6){drag.moved=true;drag.f.classList.add('dragging')}
+    if(drag.moved){drag.f.style.setProperty('--dx',mx+'px');drag.f.style.setProperty('--dy',my+'px');
+      const fr=drag.f.getBoundingClientRect(),cr=conv.getBoundingClientRect();
+      conv.style.transform=Math.hypot(fr.left+fr.width/2-cr.left-cr.width/2,fr.top+fr.height*.4-cr.top-cr.height/2)<cr.width*1.1?'scale(1.12)':''}});
+  const end=()=>{if(!drag)return;const d=drag;drag=null;conv.style.transform='';d.f.classList.remove('dragging');
+    if(!d.moved)return;noClick=true;setTimeout(()=>noClick=false,60);
+    const fr=d.f.getBoundingClientRect(),cr=conv.getBoundingClientRect();
+    if(Math.hypot(fr.left+fr.width/2-cr.left-cr.width/2,fr.top+fr.height*.4-cr.top-cr.height/2)<cr.width*1.1)run();
+    else{d.f.style.setProperty('--dx','0px');d.f.style.setProperty('--dy','0px')}};
+  srcEl.addEventListener('pointerup',end);srcEl.addEventListener('pointercancel',end);
+  conv.style.transition='transform .3s var(--spring)';
+  load('video');
+  new IntersectionObserver((en,ob)=>{if(en[0].isIntersecting){ob.disconnect();setTimeout(()=>{if(!touched&&!busy&&!done)run()},900)}},{threshold:.6}).observe(card);
 })();
 </script>
 </body>
