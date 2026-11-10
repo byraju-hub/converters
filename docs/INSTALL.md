@@ -47,9 +47,8 @@
 
 **방법 A — ZIP으로 받기 (git을 몰라도 됩니다)**
 
-1. <https://github.com/byraju-hub/converters> 로 갑니다.
-2. 초록색 **Code** 버튼 → **Download ZIP**을 누릅니다.
-3. 받은 ZIP의 압축을 풉니다. 풀린 폴더(`converters-main`)를 원하는 곳에 두세요.
+1. <https://github.com/byraju-hub/converters/releases/latest/download/converters.zip> 를 누르면 **최신 버전 ZIP**이 바로 받아집니다. (릴리스 목록: <https://github.com/byraju-hub/converters/releases>)
+2. 받은 ZIP의 압축을 풉니다. 풀린 폴더(`converters`)를 원하는 곳에 두세요.
 
 **방법 B — git으로 받기**
 

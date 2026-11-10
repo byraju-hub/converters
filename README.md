@@ -23,7 +23,7 @@
 **Windows 10/11**에서는 세 단계면 됩니다. 단계별 설명과 문제 해결은 **[설치 가이드](docs/INSTALL.md)**에 있습니다.
 
 1. **Python을 설치**합니다 (3.10 이상, 3.12~3.14 권장). <https://www.python.org/downloads/> 에서 받고, 설치 첫 화면의 **"Add python.exe to PATH"를 반드시 체크**하세요.
-2. **프로그램을 받습니다.** 이 페이지의 초록색 **Code → Download ZIP**을 누르고 압축을 풉니다. (`git clone https://github.com/byraju-hub/converters.git`도 됩니다.)
+2. **프로그램을 받습니다.** [**최신 버전 ZIP 받기**](https://github.com/byraju-hub/converters/releases/latest/download/converters.zip)를 누르고 압축을 풉니다. (`git clone https://github.com/byraju-hub/converters.git`도 됩니다.)
 3. 폴더 안의 **`setup.bat`을 더블클릭**합니다. 약 650MB를 설치하며 3~10분 걸립니다. 끝나면 바탕화면에 **Raju's Converters** 아이콘이 생깁니다.
 
 | 하고 싶은 일 | 방법 |

@@ -4,7 +4,7 @@
 param(
     [switch]$Yes,               # 질문 없이 진행
     [string]$ZipPath,           # 인터넷 대신 이미 받아 둔 ZIP 파일로 업데이트
-    [string]$ZipUrl = 'https://github.com/byraju-hub/converters/archive/refs/heads/main.zip'
+    [string]$ZipUrl = 'https://github.com/byraju-hub/converters/releases/latest/download/converters.zip'
 )
 
 $ErrorActionPreference = 'Continue'
