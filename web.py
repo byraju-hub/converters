@@ -28,6 +28,7 @@ import mimetypes
 import officeconv
 import pdf2md
 import pdftools
+import qrmake
 import settings
 import vod2md
 
@@ -135,6 +136,11 @@ def run_job(j, cb):
             officeconv.office_to_pdf(j["source"], path, cb)
             j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
                      meta=f"{pdf_pages(path)}쪽 · {human(path.stat().st_size)}", log="완료")
+    elif kind == "qr":
+        path = qrmake.make_qr(j["text"], OUT, name=j.get("qname") or None, fmt=j["fmt"], size=j["size"],
+                              level=j["level"], caption=j.get("caption", ""), cb=cb)
+        j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext=path.suffix.lstrip("."),
+                 meta=f"{path.suffix.lstrip('.').upper()} · {human(path.stat().st_size)}", log="완료")
     elif kind == "pdftool":
         run_pdftool(j, cb)
     elif kind == "pdf":
@@ -584,6 +590,26 @@ def submit_pdftool():
     return jsonify(ids)
 
 
+@app.post("/api/submit-qr")
+def submit_qr():
+    f = request.form
+    lines = [l.strip() for l in f.get("text", "").splitlines() if l.strip()]
+    if not lines:
+        return jsonify(error="QR 코드로 만들 링크나 글을 적어 주세요"), 400
+    if len(lines) > 200:
+        return jsonify(error="한 번에 200개까지만 만들 수 있어요"), 400
+    fmt = f.get("fmt") if f.get("fmt") in qrmake.FORMATS else "png"
+    level = f.get("level") if f.get("level") in qrmake.LEVELS else "m"
+    try:
+        size = max(200, min(4000, int(f.get("size", "800"))))
+    except ValueError:
+        size = 800
+    caption = f.get("caption", "").strip()[:120] if fmt == "png" else ""
+    name = f.get("name", "").strip()[:80] if len(lines) == 1 else ""
+    opts = dict(kind="qr", fmt=fmt, level=level, size=size, caption=caption, qname=name)
+    return jsonify([enqueue(opts, source="", text=l, label=l[:60]) for l in lines])
+
+
 @app.post("/api/retry/<jid>")
 def retry(jid):
     local_only()
@@ -598,7 +624,7 @@ def retry(jid):
     return jsonify(id=enqueue(opts, source=j["source"], label=j["label"]))
 
 
-HIDDEN = {"md", "fpath", "dir", "tmp", "tmps", "names", "md_text", "stem"}
+HIDDEN = {"md", "fpath", "dir", "tmp", "tmps", "names", "md_text", "stem", "text", "caption", "qname"}
 
 
 @app.get("/api/jobs")

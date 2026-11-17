@@ -151,6 +151,8 @@ textarea:focus,.txt:focus{outline:0;background:rgba(255,255,255,.62);box-shadow:
 textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 2px 5px rgba(6,54,44,.1)}
 .fieldmsg{margin:10px 4px 0;font-size:14px;color:var(--bad);font-weight:650}
 .fieldmsg[hidden]{display:none}
+.folder-row{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.folder-row span{font-size:13.5px;color:var(--sub)}
 .thumb-head[hidden]{display:none}
 .fieldmsg code{font:inherit;font-weight:500;background:rgba(196,40,31,.1);border-radius:8px;padding:0 6px;overflow-wrap:anywhere}
 .lbl{display:block;font-size:15px;font-weight:700;margin:0 0 9px}
@@ -392,6 +394,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12.5h8M8 16h5"/></symbol>
     <symbol id="i-tool" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v1"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 9h5M3 15h5M16 9h5M16 15h5"/></symbol>
   </defs>
 </svg>
@@ -428,6 +431,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <button type="button" role="tab" id="tab-img2pdf" data-tab="img2pdf" aria-selected="false" aria-controls="panel-img2pdf"><svg class="i"><use href="#i-image"/></svg><span>이미지 → PDF</span></button>
     <button type="button" role="tab" id="tab-pdf2img" data-tab="pdf2img" aria-selected="false" aria-controls="panel-pdf2img"><svg class="i"><use href="#i-image"/></svg><span>PDF → 이미지</span></button>
     <button type="button" role="tab" id="tab-imgconv" data-tab="imgconv" aria-selected="false" aria-controls="panel-imgconv"><svg class="i"><use href="#i-image"/></svg><span>사진 변환</span></button>
+    <button type="button" role="tab" id="tab-qr" data-tab="qr" aria-selected="false" aria-controls="panel-qr"><svg class="i"><use href="#i-qr"/></svg><span>QR 코드</span></button>
   </div>
 </div>
 
@@ -846,6 +850,54 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <div class="gowrap"><button class="go" id="ptgo" type="button"><span id="ptgo-t">합치기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
+  <section class="panel" id="panel-qr" role="tabpanel" aria-labelledby="tab-qr" hidden>
+    <div class="sect">
+      <h2>링크나 글</h2>
+      <textarea id="qrtext" placeholder="https://…&#10;한 줄에 하나씩 적으면 QR 코드를 여러 개 만들어요" aria-label="QR 코드로 만들 링크나 글"></textarea>
+      <p class="note">수련회 신청 주소, 홈페이지, 계좌 안내 같은 글을 적으세요. 인터넷 없이 내 PC에서 만들고, 적은 내용은 어디에도 보내지 않아요.</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-qrfmt">형식</span>
+      <div class="seg" id="qrfmt" role="radiogroup" aria-labelledby="l-qrfmt">
+        <button type="button" role="radio" data-v="png" aria-checked="true">PNG (그림)</button>
+        <button type="button" role="radio" data-v="svg" aria-checked="false">SVG (인쇄용 벡터)</button>
+      </div>
+      <p class="hint" id="qrfmt-hint"></p>
+    </div>
+
+    <div class="sect" id="qrsize-sect">
+      <span class="lbl" id="l-qrsize">크기 (한 변, px)</span>
+      <div class="seg" id="qrsize" role="radiogroup" aria-labelledby="l-qrsize">
+        <button type="button" role="radio" data-v="400" aria-checked="false">작게 (400)</button>
+        <button type="button" role="radio" data-v="800" aria-checked="true">보통 (800)</button>
+        <button type="button" role="radio" data-v="1600" aria-checked="false">크게 (1600)</button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-qrlevel">오류 정정</span>
+      <div class="seg" id="qrlevel" role="radiogroup" aria-labelledby="l-qrlevel">
+        <button type="button" role="radio" data-v="m" aria-checked="true">보통</button>
+        <button type="button" role="radio" data-v="q" aria-checked="false">높음</button>
+        <button type="button" role="radio" data-v="h" aria-checked="false">최대</button>
+      </div>
+      <p class="hint" id="qrlevel-hint"></p>
+    </div>
+
+    <div class="sect" id="qrcap-sect">
+      <label class="lbl" for="qrcap">QR 아래에 넣을 글자 (선택)</label>
+      <input class="txt" id="qrcap" type="text" maxlength="120" placeholder="예: 수련회 신청은 QR 코드로!" autocomplete="off">
+    </div>
+
+    <div class="sect" id="qrname-sect">
+      <label class="lbl" for="qrname">파일 이름 (선택)</label>
+      <input class="txt" id="qrname" type="text" maxlength="80" placeholder="비워 두면 링크 주소로 정해요" autocomplete="off">
+    </div>
+
+    <div class="gowrap"><button class="go" id="qrgo" type="button"><span id="qrgo-t">QR 코드 만들기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
   <section class="panel" id="panel-queue" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
@@ -877,7 +929,7 @@ const $=id=>document.getElementById(id);
 const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150',hout:'pdf',hfmt:'png',cfmt:'jpg',csize:'orig',cq:'85',
-  afmt:'m4a',akbps:'192',mdsize:'a4',mdfont:'normal',oftarget:'pdf',offmt:'png',ptop:'merge',ptsplit:'each',ptpick:'extract',ptangle:'90',ptlevel:'normal'};
+  qrfmt:'png',qrsize:'800',qrlevel:'m',afmt:'m4a',akbps:'192',mdsize:'a4',mdfont:'normal',oftarget:'pdf',offmt:'png',ptop:'merge',ptsplit:'each',ptpick:'extract',ptangle:'90',ptlevel:'normal'};
 if(location.protocol==='file:'){          /* index.html 을 파일로 직접 연 경우 */
   const B='http://127.0.0.1:8765/';
   const chk=async()=>{try{await fetch(B+'api/info',{mode:'no-cors',cache:'no-store'});location.replace(B)}catch{$('offline').hidden=false;setTimeout(chk,2000)}};
@@ -932,14 +984,14 @@ $('picked').onclick=e=>{const b=e.target.closest('button');if(b){files.splice(+b
 const MEDIA=/\.(mp4|mkv|mov|avi|wmv|webm|flv|m4v|mpg|mpeg|ts|mp3|m4a|wav|flac|aac|ogg|opus|wma)$/i;
 function addFiles(l){
   const all=[...l],ok=all.filter(f=>/^(video|audio)\//.test(f.type)||MEDIA.test(f.name));
-  if(ok.length<all.length)toast(`영상·오디오가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+  if(ok.length<all.length&&!FOLDER)toast(`영상·오디오가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
   files=files.concat(ok.filter(f=>!files.some(g=>g.name===f.name&&g.size===f.size)));renderPicked();
 }
 drop.onclick=()=>fi.click();
 fi.onchange=()=>{addFiles(fi.files);fi.value=''};
 ['dragenter','dragover'].forEach(e=>drop.addEventListener(e,x=>{x.preventDefault();drop.classList.add('on')}));
 ['dragleave','drop'].forEach(e=>drop.addEventListener(e,x=>{x.preventDefault();drop.classList.remove('on')}));
-drop.addEventListener('drop',x=>addFiles(x.dataTransfer.files));
+drop.addEventListener('drop',x=>filesFromDT(x.dataTransfer).then(fs=>takeFiles(fs,addFiles)));
 window.addEventListener('dragover',e=>e.preventDefault());
 window.addEventListener('drop',e=>e.preventDefault());
 
@@ -1032,6 +1084,7 @@ const EMPTY={
   ocr:{i:'scan',t:'아직 읽은 이미지가 없어요',d:'사진이나 캡처를 올리면 그 안의 글자를 읽어 Markdown 글로 바꿔 드려요.'},
   md2pdf:{i:'file',t:'아직 만든 PDF가 없어요',d:'Markdown 파일을 올리거나 글을 붙여넣으면 인쇄하기 좋은 PDF로 만들어 드려요.'},
   office:{i:'grid',t:'아직 변환한 오피스 문서가 없어요',d:'Word·PowerPoint·Excel 파일을 올려 PDF나 이미지로 바꿔 보세요.'},
+  qr:{i:'qr',t:'아직 만든 QR 코드가 없어요',d:'링크나 글을 적으면 주보·포스터에 넣을 QR 코드 이미지를 만들어 드려요.'},
   pdftool:{i:'tool',t:'아직 처리한 PDF가 없어요',d:'PDF를 올리고 합치기·나누기·쪽 고르기·회전·용량 줄이기 중에서 골라 보세요.'}};
 function emptyHTML(){const e=EMPTY[curTab]||EMPTY.video;return `<div class="empty">${ic(e.i)}<b>${e.t}</b><span>${e.d}</span></div>`}
 const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
@@ -1044,6 +1097,7 @@ const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙�
             ocr:'사진이나 캡처 이미지 속 글자를 읽어서 Markdown 글로 옮겨 드려요.',
             md2pdf:'Markdown 글을 인쇄하기 좋은 PDF로 만들어 드려요.',
             office:'Word·PowerPoint·Excel 문서를 PDF나 이미지로 바꿔 드려요.',
+            qr:'링크나 글을 넣으면 주보·포스터에 넣을 QR 코드 이미지(PNG·SVG)를 만들어 드려요.',
             pdftool:'PDF를 합치고, 나누고, 필요한 쪽만 고르고, 돌리고, 용량을 줄여 드려요.'};
 const tabBtns=[...document.querySelectorAll('.tabs [role=tab]')];
 const tabsEl=document.querySelector('.tabs'),bubble=tabsEl.querySelector('.bubble'),bst={done:false};
@@ -1078,14 +1132,14 @@ function renderPPicked(){
 $('ppicked').onclick=e=>{const b=e.target.closest('button');if(b){pfiles.splice(+b.dataset.i,1);renderPPicked()}};
 function addPdfs(l){
   const all=[...l],ok=all.filter(f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name));
-  if(ok.length<all.length)toast(`PDF가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+  if(ok.length<all.length&&!FOLDER)toast(`PDF가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
   pfiles=pfiles.concat(ok.filter(f=>!pfiles.some(g=>g.name===f.name&&g.size===f.size)));renderPPicked();
 }
 pdrop.onclick=()=>pfi.click();
 pfi.onchange=()=>{addPdfs(pfi.files);pfi.value=''};
 ['dragenter','dragover'].forEach(e=>pdrop.addEventListener(e,x=>{x.preventDefault();pdrop.classList.add('on')}));
 ['dragleave','drop'].forEach(e=>pdrop.addEventListener(e,x=>{x.preventDefault();pdrop.classList.remove('on')}));
-pdrop.addEventListener('drop',x=>addPdfs(x.dataTransfer.files));
+pdrop.addEventListener('drop',x=>filesFromDT(x.dataTransfer).then(fs=>takeFiles(fs,addPdfs)));
 $('pgo').onclick=async()=>{
   if(!pfiles.length){toast('PDF 파일을 올려 주세요');pdrop.focus();return}
   const fd=new FormData();fd.append('page_marks',$('pmarks').checked?'1':'0');fd.append('ocr',$('pocr').checked?'1':'0');
@@ -1105,7 +1159,7 @@ function fileBucket(o){
   };
   const add=l=>{
     const all=[...l],ok=all.filter(o.ok);
-    if(ok.length<all.length)toast(`${o.noun}가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+    if(ok.length<all.length&&!FOLDER)toast(`${o.noun}가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
     st.files=st.files.concat(ok.filter(f=>!st.files.some(g=>g.name===f.name&&g.size===f.size)));render();
   };
   pk.onclick=e=>{const b=e.target.closest('button');if(b){st.files.splice(+b.dataset.i,1);render()}};
@@ -1113,7 +1167,8 @@ function fileBucket(o){
   $(o.input).onchange=e=>{add(e.target.files);e.target.value=''};
   ['dragenter','dragover'].forEach(n=>drop.addEventListener(n,x=>{x.preventDefault();drop.classList.add('on')}));
   ['dragleave','drop'].forEach(n=>drop.addEventListener(n,x=>{x.preventDefault();drop.classList.remove('on')}));
-  drop.addEventListener('drop',x=>add(x.dataTransfer.files));
+  drop.addEventListener('drop',x=>filesFromDT(x.dataTransfer).then(fs=>takeFiles(fs,add)));
+  addFolderBtn(o.drop,add);
   st.clear=()=>{st.files=[];render()};
   st.render=render;
   return st;
@@ -1140,7 +1195,7 @@ function renderThumbs(){
 function moveImg(a,b){if(b<0||b>=imgs.length||a===b)return;const [x]=imgs.splice(a,1);imgs.splice(b,0,x);renderThumbs()}
 function addImgs(l){
   const all=[...l],ok=all.filter(f=>IMG_EXT.test(f.name)||/^image\/(png|jpeg|webp|bmp|gif|tiff|heic|heif)$/.test(f.type));
-  if(ok.length<all.length)toast(`이미지가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
+  if(ok.length<all.length&&!FOLDER)toast(`이미지가 아닌 파일 ${all.length-ok.length}개는 뺐어요`);
   for(const f of ok)if(!imgs.some(g=>g.file.name===f.name&&g.file.size===f.size))imgs.push({file:f,url:URL.createObjectURL(f)});
   renderThumbs();
 }
@@ -1149,7 +1204,7 @@ idrop.onclick=()=>ifi.click();
 ifi.onchange=()=>{addImgs(ifi.files);ifi.value=''};
 ['dragenter','dragover'].forEach(e=>idrop.addEventListener(e,x=>{x.preventDefault();idrop.classList.add('on')}));
 ['dragleave','drop'].forEach(e=>idrop.addEventListener(e,x=>{x.preventDefault();idrop.classList.remove('on')}));
-idrop.addEventListener('drop',x=>addImgs(x.dataTransfer.files));
+idrop.addEventListener('drop',x=>filesFromDT(x.dataTransfer).then(fs=>takeFiles(fs,addImgs)));
 thumbs.addEventListener('click',e=>{
   const b=e.target.closest('[data-a]');if(!b)return;const i=+b.dataset.i;
   if(b.dataset.a==='prev')moveImg(i,i-1);
@@ -1417,6 +1472,66 @@ $('ptgo').onclick=async()=>{
   ptUi();
 };
 
+/* ===== QR 코드 ===== */
+const qrLines=()=>$('qrtext').value.split('\n').map(s=>s.trim()).filter(Boolean);
+const QRFMT_HINT={png:'그림 파일이에요. 주보·카톡·홈페이지에 바로 붙여 넣을 수 있고, 아래에 설명 글자를 넣을 수 있어요.',
+  svg:'아무리 키워도 깨지지 않는 벡터예요. 현수막·포스터 같은 큰 인쇄물에 알맞아요. (설명 글자는 PNG에서만 돼요)'};
+const QRLEVEL_HINT={m:'일반적인 경우에 알맞아요. 점이 덜 촘촘해서 작게 인쇄해도 잘 읽혀요.',
+  q:'조금 더러워지거나 접혀도 읽혀요. 점이 약간 촘촘해져요.',h:'일부가 가려져도 읽혀요. 점이 가장 촘촘해서 크게 인쇄하는 게 좋아요.'};
+function qrUi(){
+  const n=qrLines().length;
+  $('qrfmt-hint').textContent=QRFMT_HINT[opts.qrfmt];$('qrlevel-hint').textContent=QRLEVEL_HINT[opts.qrlevel];
+  $('qrsize-sect').hidden=$('qrcap-sect').hidden=opts.qrfmt==='svg';
+  $('qrname-sect').hidden=n>1;
+  $('qrgo-t').textContent=n>1?`${n}개 QR 코드 만들기`:'QR 코드 만들기';
+}
+$('qrtext').addEventListener('input',qrUi);
+seg('qrfmt','qrfmt',qrUi);seg('qrsize','qrsize');seg('qrlevel','qrlevel',qrUi);qrUi();
+$('qrgo').onclick=async()=>{
+  if(!qrLines().length){toast('QR 코드로 만들 링크나 글을 적어 주세요');$('qrtext').focus();return}
+  const fd=new FormData();fd.append('text',$('qrtext').value);fd.append('fmt',opts.qrfmt);fd.append('size',opts.qrsize);fd.append('level',opts.qrlevel);
+  fd.append('caption',$('qrcap').value.trim());fd.append('name',$('qrname').value.trim());
+  $('qrgo-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-qr',fd,$('qrgo'),qrUi);
+  if(r&&r.ok){$('qrtext').value='';$('qrname').value=''}
+  qrUi();
+};
+
+/* ===== 폴더째 올리기: 폴더를 끌어다 놓거나 '폴더째 올리기'로 고르면 안의 파일을 모두 찾아 담는다 ===== */
+let FOLDER=false;                        // 폴더에서 온 파일을 담는 중에는 "종류가 달라 뺐어요" 알림을 내지 않는다
+const natPath=f=>f.webkitRelativePath||f._path||f.name;
+async function filesFromDT(dt){
+  const entries=[...(dt.items||[])].map(i=>i.kind==='file'&&i.webkitGetAsEntry?i.webkitGetAsEntry():null);   // 반드시 await 전에 (끌어다 놓은 직후에만 읽을 수 있다)
+  if(!entries.some(e=>e&&e.isDirectory))return [...dt.files];
+  const out=[],MAX=3000;
+  const readAll=r=>new Promise(res=>{const all=[];const next=()=>r.readEntries(b=>{if(!b.length)res(all);else{all.push(...b);next()}},()=>res(all));next()});
+  async function walk(e,path){
+    if(out.length>=MAX)return;
+    if(e.isFile){await new Promise(res=>e.file(f=>{try{Object.defineProperty(f,'_path',{value:path+f.name})}catch{}out.push(f);res()},()=>res()))}
+    else if(e.isDirectory){for(const c of await readAll(e.createReader()))await walk(c,path+e.name+'/')}
+  }
+  for(const e of entries)if(e)await walk(e,'');
+  out.fromDir=true;
+  if(out.length>=MAX)toast('파일이 너무 많아 처음 3000개만 담았어요');
+  return out;
+}
+function takeFiles(files,addFn){
+  const fs=[...files].sort((a,b)=>natPath(a).localeCompare(natPath(b),'ko',{numeric:true}));
+  FOLDER=!!files.fromDir||fs.some(f=>f.webkitRelativePath);
+  try{addFn(fs)}finally{FOLDER=false}
+}
+function addFolderBtn(dropId,addFn){
+  const dz=$(dropId);if(!dz||dz.nextElementSibling&&dz.nextElementSibling.classList.contains('folder-row'))return;
+  const inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.hidden=true;inp.setAttribute('webkitdirectory','');
+  const b=document.createElement('button');b.type='button';b.className='btn';b.innerHTML=ic('folder')+'폴더째 올리기';
+  b.onclick=()=>inp.click();
+  inp.onchange=()=>{const fs=[...inp.files];inp.value='';if(!fs.length)return;toast(`폴더 안의 파일 ${fs.length}개를 살펴봤어요. 이 탭에서 쓸 수 있는 파일만 담았어요`);takeFiles(fs,addFn)};
+  const row=document.createElement('div');row.className='folder-row';row.append(b,inp);
+  const hint=document.createElement('span');hint.textContent='폴더를 끌어다 놓아도 돼요';row.append(hint);
+  dz.insertAdjacentElement('afterend',row);
+}
+addFolderBtn('drop',addFiles);addFolderBtn('pdrop',addPdfs);addFolderBtn('idrop',addImgs);
+
 const open=new Set(),cache={},openWhy=new Set();let last='';
 $('jobs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.why')){d.open?openWhy.add(d.dataset.id):openWhy.delete(d.dataset.id)}},true);   // 목록이 다시 그려져도 '자세히'가 닫히지 않게
 async function toggle(id){
@@ -1455,6 +1570,7 @@ function flowOf(j){            // 이 변환이 무엇에서 무엇으로 가는
   if(j.kind==='pdf2img')return'PDF → 이미지';
   if(j.kind==='audio')return '유튜브 → '+String(j.fmt||'m4a').toUpperCase();
   if(j.kind==='ocr')return'이미지 → 글자';
+  if(j.kind==='qr')return '링크 → QR '+String(j.fmt||'png').toUpperCase();
   if(j.kind==='md2pdf')return'MD → PDF';
   if(j.kind==='office')return j.target==='img'?'오피스 → 이미지':'오피스 → PDF';
   if(j.kind==='pdftool')return {merge:'PDF 합치기',split:'PDF 나누기',pick:j.mode==='delete'?'쪽 지우기':'쪽 뽑기',rotate:'PDF 회전',compress:'PDF 용량 줄이기'}[j.op]||'PDF 도구';
@@ -1472,7 +1588,7 @@ function jobHTML(j){
   const acts=j.status!=='done'?'':`<div class="acts">`+
     (j.has_md?`<button class="btn ic-only" data-a="view" data-id="${j.id}" aria-label="미리보기" aria-expanded="${open.has(j.id)}" title="미리보기">${ic('eye')}</button>
     <button class="btn ic-only" data-a="copy" data-id="${j.id}" aria-label="복사" title="복사">${ic('copy')}</button>`
-     :(ext==='pdf'||['jpg','png','webp','m4a','mp3'].includes(ext))?`<button class="btn ic-only" data-a="openpdf" data-id="${j.id}" aria-label="새 탭에서 열기" title="${['m4a','mp3'].includes(ext)?'새 탭에서 듣기':'새 탭에서 열기'}">${ic(['m4a','mp3'].includes(ext)?'play':'eye')}</button>`:'')+
+     :(ext==='pdf'||['jpg','png','webp','svg','m4a','mp3'].includes(ext))?`<button class="btn ic-only" data-a="openpdf" data-id="${j.id}" aria-label="새 탭에서 열기" title="${['m4a','mp3'].includes(ext)?'새 탭에서 듣기':'새 탭에서 열기'}">${ic(['m4a','mp3'].includes(ext)?'play':'eye')}</button>`:'')+
     `<button class="btn" data-a="dl" data-id="${j.id}">${ic('dl')}.${ext}</button></div>`;
   const canRetry=j.status==='error'&&/^https?:/i.test(j.source||'');
   const retryBtn=canRetry?`<div class="acts"><button class="btn warn" data-a="retry" data-id="${j.id}">${ic('arrow')}다시 시도</button></div>`:'';
@@ -1485,7 +1601,7 @@ function jobHTML(j){
     sub=`<small><span class="flow">${esc(flowOf(j))}</span><span class="txt2">${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:niceLog(j.log)))}</span></small>`;
   }
   return `<div class="job"><div class="row">
-    <span class="ico">${ic(({pdf:'doc',hwp:'doc',img2pdf:'image',pdf2img:'image',imgconv:'image',audio:'music',ocr:'scan',md2pdf:'file',office:'grid',pdftool:'tool'})[j.kind]||(isUrl?'play':'film'))}</span>
+    <span class="ico">${ic(({pdf:'doc',hwp:'doc',img2pdf:'image',pdf2img:'image',imgconv:'image',audio:'music',ocr:'scan',md2pdf:'file',office:'grid',pdftool:'tool',qr:'qr'})[j.kind]||(isUrl?'play':'film'))}</span>
     <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${sub}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }

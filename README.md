@@ -20,6 +20,8 @@
 - **이미지 → 글자**: 사진·캡처 속 한국어 글자를 읽어 Markdown으로(스캔 PDF와 같은 글자 인식 엔진). 여러 장을 한 문서로 합치거나 장마다 따로 만들 수 있고, 아이폰 사진(HEIC)도 됩니다.
 - **MD → PDF**: Markdown 파일이나 붙여넣은 글을 인쇄하기 좋은 PDF로. 용지(A4/B5)·글자 크기·쪽 번호를 고르며, 이 PC의 Edge(또는 Chrome)로 인쇄하므로 따로 설치할 것이 없습니다.
 - **오피스 변환**: Word·PowerPoint·Excel 문서를 원본 모양 그대로 PDF로, 또는 쪽(슬라이드)마다 이미지로. 이 PC에 Microsoft Office가 있어야 하고, 없는 프로그램은 화면이 알아서 비활성화합니다.
+- **QR 코드**: 링크·글로 QR 코드 이미지를 만듦. PNG(아래에 설명 글자 넣기 가능)와 SVG(현수막처럼 크게 인쇄해도 깨지지 않는 벡터), 오류 정정 수준 선택, 여러 줄을 적으면 한꺼번에 여러 개. 입력한 내용은 어디에도 보내지 않습니다.
+- **폴더째 올리기**: 파일을 받는 모든 탭에서 폴더를 끌어다 놓거나 **폴더째 올리기**를 누르면, 하위 폴더까지 뒤져서 그 탭에서 쓸 수 있는 파일만 담습니다. 이름 순서(1, 2, 10…)로 정렬하고, 결과는 폴더 구조 없이 저장 폴더에 모입니다.
 - **PDF 도구**: 합치기 · 나누기(쪽마다/N쪽씩/범위별) · 쪽 고르기(남기기/지우기) · 회전 · 용량 줄이기.
 - **Claude 요약(선택)**: 문서 맨 위에 요약·핵심 포인트, 본문 중간에 소제목 자동 삽입
 
@@ -71,7 +73,7 @@ powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
 
 ### 웹 화면의 탭
 
-화면 위쪽의 탭 11개(**영상 → MD**, **유튜브 → 오디오**, **PDF → MD**, **이미지 → 글자**, **MD → PDF**, **한글 변환**, **오피스 변환**, **PDF 도구**, **이미지 → PDF**, **PDF → 이미지**, **사진 변환**)를 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`, `#imgconv`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
+화면 위쪽의 탭 12개(**영상 → MD**, **유튜브 → 오디오**, **PDF → MD**, **이미지 → 글자**, **MD → PDF**, **한글 변환**, **오피스 변환**, **PDF 도구**, **이미지 → PDF**, **PDF → 이미지**, **사진 변환**, **QR 코드**)를 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`, `#imgconv`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
 
 ### 명령줄
 
@@ -112,6 +114,7 @@ audiodl.bat "https://youtu.be/XXXX" --fmt mp3 --kbps 192 -d 결과폴더    # �
 imgocr.bat 주보.jpg 캡처.png -d 결과폴더                                # 사진 속 글자 -> Markdown (--separate: 장마다 따로)
 mdpdf.bat 설교문.md --font large --numbers -d 결과폴더                  # Markdown -> PDF (--size a4|b5)
 officeconv.bat 주보.docx 찬양.pptx 표.xlsx -d 결과폴더                  # Office -> PDF (Office 필요)
+qrmake.bat "https://example.com/apply" --caption "신청은 QR로!" --size 800 -d 결과폴더   # QR 코드 (--fmt svg: 벡터)
 ```
 
 - **MD → PDF**는 글 속의 스크립트와 바깥 주소 접속을 막고 인쇄합니다. 바깥 주소의 그림은 넣지 않습니다.
@@ -221,7 +224,7 @@ PDF 변환에 쓰는 [PyMuPDF·pymupdf4llm](https://github.com/pymupdf/pymupdf4l
 | 도구 | 라이선스 |
 |---|---|
 | faster-whisper, CTranslate2, onnxruntime | MIT |
-| Flask, PyAV, NumPy, olefile, pillow-heif, Markdown | BSD 계열 (pillow-heif에는 LGPL인 libheif가 포함됨) |
+| Flask, PyAV, NumPy, olefile, pillow-heif, Markdown, segno | BSD 계열 (pillow-heif에는 LGPL인 libheif가 포함됨) |
 | yt-dlp | Unlicense |
 | pywin32 | PSF |
 | anthropic SDK, RapidOCR, OpenCV | Apache-2.0 |

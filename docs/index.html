@@ -6,7 +6,7 @@
 <title>Raju's Converters — 영상·PDF·한글·사진을 내 PC에서 바꾸는 무료 변환 도구</title>
 <meta name="description" content="영상은 Markdown 스크립트로, PDF·한글(HWP) 문서는 Markdown·이미지로, 사진은 HEIC→JPG와 긴 변 기준 리사이즈로. 파일을 인터넷에 올리지 않고 내 PC 안에서 바꾸는 무료 오픈소스 변환 도구입니다.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Raju's Converters — 한 화면에서 열한 가지 변환">
+<meta property="og:title" content="Raju's Converters — 한 화면에서 열두 가지 변환">
 <meta property="og:description" content="영상·PDF·한글 문서·사진을 내 PC 안에서 바꾸는 무료 도구. 설치는 setup.bat 더블클릭 한 번.">
 <meta property="og:image" content="https://byraju-hub.github.io/converters/assets/og.jpg">
 <meta property="og:url" content="https://byraju-hub.github.io/converters/">
@@ -277,6 +277,9 @@ footer .legal a{text-underline-offset:3px}
 .wave{margin:auto 0;height:calc(var(--fw)*.5);display:flex;align-items:center;justify-content:center;gap:4px}
 .wave i{width:6px;border-radius:3px;background:var(--c);height:30%}
 .wave i:nth-child(2){height:62%}.wave i:nth-child(3){height:90%}.wave i:nth-child(4){height:48%}.wave i:nth-child(5){height:78%}.wave i:nth-child(6){height:36%}.wave i:nth-child(7){height:56%}
+.qrp{margin:auto;width:calc(var(--fw)*.5);height:calc(var(--fw)*.5);display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.qrp i{border-radius:4px;background:repeating-linear-gradient(90deg,var(--c) 0 3px,transparent 3px 6px),repeating-linear-gradient(0deg,var(--c) 0 3px,transparent 3px 6px);background-blend-mode:multiply;border:3px solid var(--c)}
+.qrp i:nth-child(4){opacity:.55;border-style:dashed}
 .pl{margin:auto;color:var(--c)}.pl svg{width:calc(var(--fw)*.34);height:calc(var(--fw)*.34)}
 .fname{display:block;margin-top:12px;text-align:center;font-size:14px;font-weight:700;color:var(--ink);line-height:1.3}
 .fmeta{display:block;margin-top:2px;font-size:12.5px;color:var(--sub);font-weight:600}
@@ -323,6 +326,7 @@ footer .legal a{text-underline-offset:3px}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v1"/></symbol>
     <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></symbol>
     <symbol id="i-tool" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
@@ -394,6 +398,7 @@ footer .legal a{text-underline-offset:3px}
         <button type="button" class="chip" data-k="img2pdf" aria-selected="false"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
         <button type="button" class="chip" data-k="pdf2img" aria-selected="false"><svg class="i"><use href="#i-stack"/></svg>PDF → 이미지</button>
         <button type="button" class="chip" data-k="heic" aria-selected="false"><svg class="i"><use href="#i-resize"/></svg>HEIC → JPG</button>
+        <button type="button" class="chip" data-k="qr" aria-selected="false"><svg class="i"><use href="#i-qr"/></svg>QR 코드</button>
       </div>
       <div class="dstage">
         <div class="dslot src" id="dsrc"></div>
@@ -418,7 +423,7 @@ footer .legal a{text-underline-offset:3px}
 
 <section class="sec" id="tools" aria-labelledby="tools-h">
   <div class="wrap">
-    <div class="head center"><h2 id="tools-h" class="rv">한 화면에 열한 가지 변환.</h2><p class="rv" style="--d:.06s">탭을 눌러 어떤 일을 할 수 있는지 살펴보세요.</p></div>
+    <div class="head center"><h2 id="tools-h" class="rv">한 화면에 열두 가지 변환.</h2><p class="rv" style="--d:.06s">탭을 눌러 어떤 일을 할 수 있는지 살펴보세요.</p></div>
     <div class="tabrow rv" style="--d:.1s">
       <div class="tabs" role="tablist" aria-label="변환 종류" id="tabs">
         <span class="bub" aria-hidden="true"></span>
@@ -433,6 +438,7 @@ footer .legal a{text-underline-offset:3px}
         <button type="button" role="tab" id="t-img2pdf" aria-selected="false" aria-controls="p-img2pdf"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
         <button type="button" role="tab" id="t-pdf2img" aria-selected="false" aria-controls="p-pdf2img"><svg class="i"><use href="#i-image"/></svg>PDF → 이미지</button>
         <button type="button" role="tab" id="t-imgconv" aria-selected="false" aria-controls="p-imgconv"><svg class="i"><use href="#i-image"/></svg>사진 변환</button>
+        <button type="button" role="tab" id="t-qr" aria-selected="false" aria-controls="p-qr"><svg class="i"><use href="#i-qr"/></svg>QR 코드</button>
       </div>
     </div>
 
@@ -472,6 +478,11 @@ footer .legal a{text-underline-offset:3px}
           <h3>PDF를 합치고, 나누고, 다듬어요.</h3>
           <p>한 화면에서 다섯 가지 PDF 작업을 해요.</p>
           <ul><li>합치기, 나누기(쪽마다·N쪽씩·범위별)</li><li>쪽 고르기(남기기·지우기)와 회전</li><li>용량 줄이기 — 큰 그림만 줄이고 글자는 그대로예요</li></ul>
+        </div>
+        <div class="panel" id="p-qr" role="tabpanel" aria-labelledby="t-qr" hidden>
+          <h3>링크를 QR 코드로.</h3>
+          <p>주보·포스터에 넣을 QR 코드 이미지를 만들어 드려요.</p>
+          <ul><li>PNG는 아래에 설명 글자를 넣을 수 있어요</li><li>SVG는 현수막처럼 크게 인쇄해도 깨지지 않아요</li><li>인터넷 없이 내 PC에서 만들고, 내용은 어디에도 보내지 않아요</li></ul>
         </div>
         <div class="panel" id="p-img2pdf" role="tabpanel" aria-labelledby="t-img2pdf" hidden>
           <h3>사진과 스캔 이미지를 PDF 한 개로.</h3>
@@ -579,7 +590,7 @@ footer .legal a{text-underline-offset:3px}
       <article class="feat glass rv" data-lens="radius:30,bezel:28,shift:18,blur:14" style="--d:.06s">
         <div class="ic"><svg class="i"><use href="#i-stack"/></svg></div>
         <h3>한꺼번에 여러 개</h3>
-        <p>링크와 파일을 여러 개 올리면 차례로 변환해요. 하나가 실패해도 나머지는 계속 진행돼요.</p>
+        <p>링크와 파일을 여러 개 올리면 차례로 변환해요. 폴더째 끌어다 놓으면 안의 파일을 모두 찾아 담고, 하나가 실패해도 나머지는 계속 진행돼요.</p>
       </article>
       <article class="feat glass rv" data-lens="radius:30,bezel:28,shift:18,blur:14" style="--d:.12s">
         <div class="ic"><svg class="i"><use href="#i-doc"/></svg></div>
@@ -654,7 +665,7 @@ document.documentElement.classList.add('js');
 /* ===== 변환 종류 탭: 선택 표시가 미끄러지고, 스크린샷이 바뀐다 ===== */
 (function(){
   const tabs=document.getElementById('tabs'),btns=[...tabs.querySelectorAll('[role=tab]')],bub=tabs.querySelector('.bub'),img=document.getElementById('shot');
-  const SHOT={video:'영상 링크를 붙여넣고 변환 목록에서 진행 상황을 보는 화면',pdf:'PDF를 올려 Markdown으로 바꾸는 화면',img2pdf:'이미지를 썸네일로 보며 순서를 바꿔 PDF로 묶는 화면',pdf2img:'PDF를 해상도를 골라 이미지로 저장하는 화면',hwp:'한글 문서를 PDF·Markdown·이미지로 바꾸는 화면',imgconv:'사진 형식을 바꾸고 긴 변 길이를 지정하는 화면',audio:'유튜브 링크를 넣어 MP3로 저장하는 화면',ocr:'사진 속 글자를 읽어 Markdown으로 바꾸는 화면',md2pdf:'Markdown 글을 PDF로 만드는 화면',office:'Word·PowerPoint 문서를 PDF나 이미지로 바꾸는 화면',pdftool:'PDF를 합치고 나누고 용량을 줄이는 화면'};
+  const SHOT={video:'영상 링크를 붙여넣고 변환 목록에서 진행 상황을 보는 화면',pdf:'PDF를 올려 Markdown으로 바꾸는 화면',img2pdf:'이미지를 썸네일로 보며 순서를 바꿔 PDF로 묶는 화면',pdf2img:'PDF를 해상도를 골라 이미지로 저장하는 화면',hwp:'한글 문서를 PDF·Markdown·이미지로 바꾸는 화면',imgconv:'사진 형식을 바꾸고 긴 변 길이를 지정하는 화면',audio:'유튜브 링크를 넣어 MP3로 저장하는 화면',ocr:'사진 속 글자를 읽어 Markdown으로 바꾸는 화면',md2pdf:'Markdown 글을 PDF로 만드는 화면',office:'Word·PowerPoint 문서를 PDF나 이미지로 바꾸는 화면',pdftool:'PDF를 합치고 나누고 용량을 줄이는 화면',qr:'링크를 QR 코드 이미지로 만드는 화면'};
   let first=true;
   function place(){const b=btns.find(x=>x.getAttribute('aria-selected')==='true');if(!b||!tabs.offsetWidth)return;
     if(first)bub.style.transition='none';bub.style.width=b.offsetWidth+'px';bub.style.height=b.offsetHeight+'px';bub.style.transform='translate('+b.offsetLeft+'px,'+b.offsetTop+'px)';
@@ -740,9 +751,10 @@ document.documentElement.classList.add('js');
     md2pdf:{s:{ext:'MD',name:'설교 요약.md',meta:'12KB',c:'#0c7d68',k:'lines'},o:{ext:'PDF',name:'설교 요약.pdf',meta:'A4 · 3쪽',c:'#d93f3f',k:'lines'},ok:'정리한 글이 인쇄하기 좋은 PDF가 되었어요.'},
     office:{s:{ext:'DOCX',name:'주보.docx',meta:'96KB',c:'#2b5797',k:'lines'},o:{ext:'PDF',name:'주보.pdf',meta:'원본 모양 그대로',c:'#d93f3f',k:'lines'},ok:'Word 문서가 원본 모양 그대로 PDF가 되었어요.'},
     merge:{s:{ext:'PDF',name:'순서지 2개',meta:'1부 + 2부',c:'#d93f3f',k:'lines'},o:{ext:'PDF',name:'순서지 합본.pdf',meta:'6쪽 · 312KB',c:'#d93f3f',k:'lines'},ok:'PDF 두 개가 한 권으로 합쳐졌어요.'},
+    qr:{s:{ext:'링크',name:'수련회 신청 주소',meta:'example.com/apply',c:'#e8743b',k:'play'},o:{ext:'PNG',name:'QR 수련회 신청.png',meta:'800px · 설명 글자 포함',c:'#0c7d68',k:'qr'},ok:'링크가 주보에 붙일 수 있는 QR 코드 그림이 되었어요.'},
     heic:{s:{ext:'HEIC',name:'IMG_2041.HEIC',meta:'3.4MB',c:'#8a5cd6',k:'thumbs'},o:{ext:'JPG',name:'IMG_2041.jpg',meta:'긴 변 1600px · 0.6MB',c:'#e0a21b',k:'thumbs'},ok:'HEIC가 가벼운 JPG로 바뀌고 크기도 줄었어요.'}
   };
-  const ficon=f=>{const b=f.k==='thumbs'?'<div class="thumbs"><i></i><i></i><i></i><i></i></div>':f.k==='wave'?'<div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>':f.k==='play'?'<div class="pl"><svg class="i"><use href="#i-play"/></svg></div>':'<div class="lines"><i></i><i></i><i></i><i></i></div>';
+  const ficon=f=>{const b=f.k==='thumbs'?'<div class="thumbs"><i></i><i></i><i></i><i></i></div>':f.k==='qr'?'<div class="qrp"><i></i><i></i><i></i><i></i></div>':f.k==='wave'?'<div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>':f.k==='play'?'<div class="pl"><svg class="i"><use href="#i-play"/></svg></div>':'<div class="lines"><i></i><i></i><i></i><i></i></div>';
     return '<div class="ficon" style="--c:'+f.c+'"><span class="ext">'+f.ext+'</span>'+b+'</div><b class="fname">'+f.name+'</b><small class="fmeta">'+f.meta+'</small>'};
   let key='video',busy=false,done=false,tok=0,touched=false,drag=null,noClick=false;
   function load(k){
