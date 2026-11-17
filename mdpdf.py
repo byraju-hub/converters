@@ -22,7 +22,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from vod2md import log, safe_name, unique_path
+from vod2md import log, unique_path
 
 PRINT_TIMEOUT = 90
 PAGE_SIZES = {"a4": "A4", "b5": "B5"}

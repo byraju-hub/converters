@@ -77,7 +77,7 @@ def images_to_md(items, title=None, cb=None):
     log(f"[ocr] 100% ({n}/{n}장)", cb)
 
     title = title or (Path(items[0][1]).stem + (f" 외 {n - 1}장" if n > 1 else ""))
-    lines = [f"# {title}", "", f"- 원본 파일: " + (items[0][1] if n == 1 else f"이미지 {n}장"),
+    lines = [f"# {title}", "", "- 원본 파일: " + (items[0][1] if n == 1 else f"이미지 {n}장"),
              "- 변환 방식: 글자 인식 OCR (RapidOCR 한국어)",
              "- 참고: 글자 인식 결과에는 오타가 있을 수 있어요. 중요한 부분은 원본과 대조해 주세요."]
     if empty:
