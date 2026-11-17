@@ -44,11 +44,19 @@ function Find-Python {
     # 인자를 배열로 넘기면 PowerShell 이 "-3" 을 "- 3" 으로 바꿔 파이썬이 멈추므로, 명령을 그대로 적는다.
     # 파이썬이 알려 주는 실제 실행 파일 경로(sys.executable)를 이후에 쓴다.
     $code = "import sys; print(sys.executable); print('%d.%d.%d' % sys.version_info[:3])"
+    # 지원하는 3.10~3.14 를 먼저 찾는다 (3.15 는 onnxruntime·av 가 아직 지원하지 않아 설치가 실패한다).
+    # 3.12~3.14 를 우선하고, 그 밖의 py -3 / python / python3 는 마지막에 본다.
     $tries = @(
+        { & py -3.14 -c $code 2>$null },
+        { & py -3.13 -c $code 2>$null },
+        { & py -3.12 -c $code 2>$null },
+        { & py -3.11 -c $code 2>$null },
+        { & py -3.10 -c $code 2>$null },
         { & py -3 -c $code 2>$null },
         { & python -c $code 2>$null },
         { & python3 -c $code 2>$null }
     )
+    $tooNew = $null
     foreach ($t in $tries) {
         try {
             $lines = @(& $t)
@@ -56,17 +64,27 @@ function Find-Python {
             if ($LASTEXITCODE -eq 0 -and $lines.Count -ge 2) {
                 $exe = "$($lines[0])".Trim(); $ver = "$($lines[1])".Trim()
                 if ($ver -match '^\d+\.\d+\.\d+$' -and (Test-Path $exe)) {
-                    return @{ Exe = $exe; Version = [version]$ver }
+                    $v = [version]$ver
+                    if ($v -ge [version]'3.15') { if (-not $tooNew) { $tooNew = $v }; continue }
+                    return @{ Exe = $exe; Version = $v }
                 }
             }
         } catch {}
     }
+    if ($tooNew) { $script:TooNewVersion = $tooNew }
     return $null
 }
 $py = Find-Python
+if (-not $py -and $script:TooNewVersion) {
+    Fail "Python $($script:TooNewVersion) 은 아직 지원하지 않아요 (3.10~3.14 필요)" @(
+        "이 프로그램이 쓰는 패키지(onnxruntime, av)가 Python 3.15 용 설치 파일을 아직 내놓지 않았어요.",
+        "https://www.python.org/downloads/release/python-3148/ 에서 Python 3.14 를 받아 설치하세요. (3.15 와 함께 설치해도 돼요)",
+        "설치 첫 화면에서 'Add python.exe to PATH'를 꼭 체크하세요.",
+        "설치가 끝나면 setup.bat 을 다시 실행하세요. 3.14 가 있으면 자동으로 그것을 써요.")
+}
 if (-not $py) {
     Fail "Python 을 찾지 못했어요" @(
-        "https://www.python.org/downloads/ 에서 Python 3.12 이상을 받아 설치하세요.",
+        "https://www.python.org/downloads/release/python-3148/ 에서 Python 3.14 를 받아 설치하세요. (3.10~3.14 면 돼요)",
         "설치 첫 화면에서 'Add python.exe to PATH'를 꼭 체크하세요.",
         "설치가 끝나면 setup.bat 을 다시 실행하세요.")
 }
@@ -75,17 +93,18 @@ if ($py.Version -lt [version]'3.10') {
         "https://www.python.org/downloads/ 에서 새 버전을 설치하고 setup.bat 을 다시 실행하세요.")
 }
 Done "Python $($py.Version) 사용"
-if ($py.Version -ge [version]'3.15') { Note "주의: 이 버전은 아직 시험해 보지 못했어요. 설치가 실패하면 Python 3.12~3.14 를 써 보세요." }
 
 # ---------------------------------------------------------------- 2. 가상환경
 Step 2 "전용 작업 공간(.venv) 만드는 중"
 $venvPy = Join-Path $root '.venv\Scripts\python.exe'
 $healthy = $false
 if (Test-Path $venvPy) {
-    & $venvPy -c "import sys" 2>$null
+    $vv = & $venvPy -c "import sys; print('%d.%d' % sys.version_info[:2])" 2>$null
     $healthy = ($LASTEXITCODE -eq 0)
+    # 예전에 Python 3.15 로 만들어 실패한 .venv 가 남아 있으면 지원하는 버전으로 다시 만든다
+    if ($healthy -and "$vv" -match '^\d+\.\d+$' -and [version]"$vv" -ge [version]'3.15') { $healthy = $false }
     if (-not $healthy) {
-        Note "이전에 만든 .venv 가 망가져 있어서 다시 만들어요."
+        Note "이전에 만든 .venv 가 망가졌거나 지원하지 않는 Python 으로 만들어져 있어서 다시 만들어요."
         Remove-Item -Recurse -Force (Join-Path $root '.venv')
     }
 }
