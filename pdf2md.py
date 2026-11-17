@@ -41,9 +41,14 @@ def get_ocr(cb=None):
 
 def ocr_page(page, cb=None):
     """스캔한 쪽 하나를 글자로 읽어 문단 단위 텍스트로 돌려준다."""
+    return ocr_png(page.get_pixmap(dpi=OCR_DPI, alpha=False).tobytes("png"), cb)
+
+
+def ocr_png(png, cb=None):
+    """그림 한 장(PNG/JPG 바이트)을 글자로 읽어 문단 단위 텍스트로 돌려준다. (이미지 → 글자 탭도 쓴다)"""
     engine = get_ocr(cb)
-    png = page.get_pixmap(dpi=OCR_DPI, alpha=False).tobytes("png")
-    res = engine(png)
+    # 글자 방향 판별(use_cls)을 끈다: 켜 두면 또렷한 가로 글줄을 통째로 버리는 일이 있었다 (제목·첫 줄이 빠짐)
+    res = engine(png, use_cls=False)
     if res.txts is None or len(res.txts) == 0:
         return ""
     boxes = [] if res.boxes is None else res.boxes

@@ -108,16 +108,16 @@ h1 span{color:var(--tint)}
 
 /* ---------- 탭 바: 화면 위에 떠 있는 캡슐 ---------- */
 .tabs-wrap{position:sticky;top:12px;z-index:40;display:flex;justify-content:center;margin-bottom:22px;pointer-events:none}
-.tabs{position:relative;display:inline-flex;gap:2px;padding:5px;border-radius:var(--r-pill);pointer-events:auto;
+.tabs{position:relative;display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:min(100%,850px);gap:2px;padding:5px;border-radius:var(--r-pill);pointer-events:auto;
   background:var(--g-fill-2);
   -webkit-backdrop-filter:blur(8px) saturate(1.9);backdrop-filter:blur(8px) saturate(1.9);
   box-shadow:var(--g-shadow),var(--g-lit)}
-.tabs .bubble{position:absolute;z-index:0;top:5px;bottom:5px;left:0;width:0;border-radius:var(--r-pill);pointer-events:none;
+.tabs .bubble{position:absolute;z-index:0;top:0;left:0;width:0;height:0;border-radius:var(--r-pill);pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.78));
   box-shadow:0 6px 16px -4px rgba(6,54,44,.32),inset 0 1px 1px #fff,inset 0 -1px 3px rgba(6,54,44,.1);
-  transition:transform .55s var(--spring),width .55s var(--spring)}
+  transition:transform .55s var(--spring),width .55s var(--spring),height .55s var(--spring)}
 .tabs button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;
-  border-radius:var(--r-pill);padding:11px 20px;font-weight:700;font-size:15px;color:var(--sub);white-space:nowrap;
+  border-radius:var(--r-pill);padding:10px 17px;font-weight:700;font-size:14.5px;color:var(--sub);white-space:nowrap;
   transition:color .25s,transform .35s var(--spring)}
 .tabs button:hover:not([aria-selected=true]){color:var(--ink)}
 .tabs button:active{transform:scale(.94)}
@@ -151,6 +151,7 @@ textarea:focus,.txt:focus{outline:0;background:rgba(255,255,255,.62);box-shadow:
 textarea.bad,textarea.bad:focus{box-shadow:0 0 0 3px rgba(196,40,31,.7),inset 0 2px 5px rgba(6,54,44,.1)}
 .fieldmsg{margin:10px 4px 0;font-size:14px;color:var(--bad);font-weight:650}
 .fieldmsg[hidden]{display:none}
+.thumb-head[hidden]{display:none}
 .fieldmsg code{font:inherit;font-weight:500;background:rgba(196,40,31,.1);border-radius:8px;padding:0 6px;overflow-wrap:anywhere}
 .lbl{display:block;font-size:15px;font-weight:700;margin:0 0 9px}
 .hint{margin:10px 4px 0;font-size:14px;color:var(--sub);min-height:22px}
@@ -336,7 +337,7 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
   #stop .tl{display:none}
   /* iOS 탭 바처럼: 아이콘 위, 글자 아래 */
   .tabs-wrap{top:8px;margin-bottom:16px}
-  .tabs{display:flex;width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs{display:flex;flex-wrap:nowrap;justify-content:flex-start;max-width:none;width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .tabs::-webkit-scrollbar{display:none}
   .tabs::before{display:none}
   .tabs button{flex:1 0 auto;min-width:70px;flex-direction:column;gap:3px;padding:8px 1px;font-size:11.5px;letter-spacing:-.05em;border-radius:24px}
@@ -387,6 +388,10 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-9 9"/></symbol>
     <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
     <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12.5h8M8 16h5"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></symbol>
     <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 9h5M3 15h5M16 9h5M16 15h5"/></symbol>
   </defs>
 </svg>
@@ -413,10 +418,15 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
   <div class="tabs" role="tablist" aria-label="변환 종류">
     <span class="bubble" aria-hidden="true"></span>
     <button type="button" role="tab" id="tab-video" data-tab="video" aria-selected="true" aria-controls="panel-video"><svg class="i"><use href="#i-play"/></svg><span>영상 → MD</span></button>
+    <button type="button" role="tab" id="tab-audio" data-tab="audio" aria-selected="false" aria-controls="panel-audio"><svg class="i"><use href="#i-music"/></svg><span>유튜브 → 오디오</span></button>
     <button type="button" role="tab" id="tab-pdf" data-tab="pdf" aria-selected="false" aria-controls="panel-pdf"><svg class="i"><use href="#i-doc"/></svg><span>PDF → MD</span></button>
-    <button type="button" role="tab" id="tab-img2pdf" data-tab="img2pdf" aria-selected="false" aria-controls="panel-img2pdf"><svg class="i"><use href="#i-image"/></svg><span>이미지 → PDF</span></button>
-    <button type="button" role="tab" id="tab-pdf2img" data-tab="pdf2img" aria-selected="false" aria-controls="panel-pdf2img"><svg class="i"><use href="#i-doc"/></svg><span>PDF → 이미지</span></button>
+    <button type="button" role="tab" id="tab-ocr" data-tab="ocr" aria-selected="false" aria-controls="panel-ocr"><svg class="i"><use href="#i-scan"/></svg><span>이미지 → 글자</span></button>
+    <button type="button" role="tab" id="tab-md2pdf" data-tab="md2pdf" aria-selected="false" aria-controls="panel-md2pdf"><svg class="i"><use href="#i-file"/></svg><span>MD → PDF</span></button>
     <button type="button" role="tab" id="tab-hwp" data-tab="hwp" aria-selected="false" aria-controls="panel-hwp"><svg class="i"><use href="#i-doc"/></svg><span>한글 변환</span></button>
+    <button type="button" role="tab" id="tab-office" data-tab="office" aria-selected="false" aria-controls="panel-office"><svg class="i"><use href="#i-grid"/></svg><span>오피스 변환</span></button>
+    <button type="button" role="tab" id="tab-pdftool" data-tab="pdftool" aria-selected="false" aria-controls="panel-pdftool"><svg class="i"><use href="#i-tool"/></svg><span>PDF 도구</span></button>
+    <button type="button" role="tab" id="tab-img2pdf" data-tab="img2pdf" aria-selected="false" aria-controls="panel-img2pdf"><svg class="i"><use href="#i-image"/></svg><span>이미지 → PDF</span></button>
+    <button type="button" role="tab" id="tab-pdf2img" data-tab="pdf2img" aria-selected="false" aria-controls="panel-pdf2img"><svg class="i"><use href="#i-image"/></svg><span>PDF → 이미지</span></button>
     <button type="button" role="tab" id="tab-imgconv" data-tab="imgconv" aria-selected="false" aria-controls="panel-imgconv"><svg class="i"><use href="#i-image"/></svg><span>사진 변환</span></button>
   </div>
 </div>
@@ -643,6 +653,199 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
     <div class="gowrap"><button class="go" id="cgo" type="button"><span id="cgo-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
   </section>
 
+  <section class="panel" id="panel-audio" role="tabpanel" aria-labelledby="tab-audio" hidden>
+    <div class="sect">
+      <h2>유튜브 링크</h2>
+      <textarea id="aurls" placeholder="https://youtu.be/…&#10;한 줄에 하나씩 붙여넣으면 한꺼번에 저장해요" aria-label="유튜브 링크" aria-describedby="aurlmsg"></textarea>
+      <p class="fieldmsg" id="aurlmsg" role="alert" hidden></p>
+      <p class="note">영상은 받지 않고 소리만 저장해요. 저작권이 있는 영상은 개인적으로 듣는 범위에서만 쓰세요.</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-afmt">오디오 형식</span>
+      <div class="seg" id="afmt" role="radiogroup" aria-labelledby="l-afmt">
+        <button type="button" role="radio" data-v="m4a" aria-checked="true">M4A (원본 그대로)</button>
+        <button type="button" role="radio" data-v="mp3" aria-checked="false">MP3 (어디서나)</button>
+      </div>
+      <p class="hint" id="afmt-hint"></p>
+    </div>
+
+    <div class="sect" id="akbps-sect" hidden>
+      <span class="lbl" id="l-akbps">MP3 음질</span>
+      <div class="seg" id="akbps" role="radiogroup" aria-labelledby="l-akbps">
+        <button type="button" role="radio" data-v="128" aria-checked="false">작게 (128k)</button>
+        <button type="button" role="radio" data-v="192" aria-checked="true">보통 (192k)</button>
+        <button type="button" role="radio" data-v="320" aria-checked="false">높음 (320k)</button>
+      </div>
+    </div>
+
+    <div class="gowrap"><button class="go" id="ago" type="button"><span id="ago-t">오디오로 저장</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-ocr" role="tabpanel" aria-labelledby="tab-ocr" hidden>
+    <div class="sect">
+      <h2>사진·캡처 이미지</h2>
+      <button id="ocdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>이미지를 끌어다 놓기</b><small>또는 클릭해서 선택 · JPG, PNG, HEIC, WEBP, BMP, GIF, TIFF</small></span>
+      </button>
+      <input id="ocfile" type="file" multiple accept="image/*,.heic,.heif" hidden>
+      <div id="ocpicked" class="picked"></div>
+      <p class="note">주보 사진, 책 한 쪽, 카톡으로 받은 이미지 속 한국어 글자를 읽어 Markdown 글로 옮겨요. 처음 한 번 인식 모델(약 13MB)을 내려받고, 그 뒤에는 인터넷 없이 내 PC에서 읽어요. 글자가 작거나 흐리면 일부를 놓칠 수 있어요.</p>
+    </div>
+
+    <div class="sect">
+      <label class="sw"><span class="t"><b>여러 장을 한 문서로 합치기</b><small>끄면 이미지마다 따로 문서를 만들어요</small></span><input type="checkbox" id="ocmerge" checked><i></i></label>
+    </div>
+
+    <div class="gowrap"><button class="go" id="ocgo" type="button"><span id="ocgo-t">글자 읽기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-md2pdf" role="tabpanel" aria-labelledby="tab-md2pdf" hidden>
+    <div class="sect">
+      <h2>Markdown 글</h2>
+      <button id="mdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>Markdown 파일을 끌어다 놓기</b><small>또는 클릭해서 선택 · .md, .markdown, .txt (여러 개 가능)</small></span>
+      </button>
+      <input id="mdfile" type="file" multiple accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+      <div id="mdpicked" class="picked"></div>
+      <label class="lbl" for="mdtext" style="margin-top:16px">또는 글을 붙여넣기</label>
+      <textarea id="mdtext" placeholder="# 제목&#10;&#10;여기에 Markdown 글을 붙여넣으면 PDF로 만들어요" aria-label="Markdown 글 붙여넣기"></textarea>
+      <p class="note" id="mdstatus">PDF로 인쇄할 브라우저를 확인하는 중…</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-mdsize">용지 크기</span>
+      <div class="seg" id="mdsize" role="radiogroup" aria-labelledby="l-mdsize">
+        <button type="button" role="radio" data-v="a4" aria-checked="true">A4</button>
+        <button type="button" role="radio" data-v="b5" aria-checked="false">B5 (조금 작게)</button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-mdfont">글자 크기</span>
+      <div class="seg" id="mdfont" role="radiogroup" aria-labelledby="l-mdfont">
+        <button type="button" role="radio" data-v="small" aria-checked="false">작게</button>
+        <button type="button" role="radio" data-v="normal" aria-checked="true">보통</button>
+        <button type="button" role="radio" data-v="large" aria-checked="false">크게</button>
+      </div>
+      <p class="hint">크게 하면 어르신도 읽기 편한 인쇄물이 돼요.</p>
+    </div>
+
+    <div class="sect">
+      <label class="sw"><span class="t"><b>쪽 번호 넣기</b><small>아래쪽 가운데에 "1 / 3"처럼 표시해요</small></span><input type="checkbox" id="mdnum" checked><i></i></label>
+    </div>
+
+    <div class="gowrap"><button class="go" id="mdgo" type="button"><span id="mdgo-t">PDF 만들기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-office" role="tabpanel" aria-labelledby="tab-office" hidden>
+    <div class="sect">
+      <h2>Word · PowerPoint · Excel 문서</h2>
+      <button id="ofdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>문서를 끌어다 놓기</b><small>또는 클릭해서 선택 · .docx, .pptx, .xlsx 등 (여러 개 가능)</small></span>
+      </button>
+      <input id="offile" type="file" multiple accept=".doc,.docx,.rtf,.ppt,.pptx,.pps,.ppsx,.xls,.xlsx,.xlsm,.csv" hidden>
+      <div id="ofpicked" class="picked"></div>
+      <p class="note" id="ofstatus">Office를 확인하는 중…</p>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-oftarget">무엇으로 바꿀까요?</span>
+      <div class="seg" id="oftarget" role="radiogroup" aria-labelledby="l-oftarget">
+        <button type="button" role="radio" data-v="pdf" aria-checked="true">PDF</button>
+        <button type="button" role="radio" data-v="img" aria-checked="false">이미지 (쪽·슬라이드마다)</button>
+      </div>
+      <p class="hint" id="oftarget-hint"></p>
+    </div>
+
+    <div class="sect" id="offmt-sect" hidden>
+      <span class="lbl" id="l-offmt">이미지 형식</span>
+      <div class="seg" id="offmt" role="radiogroup" aria-labelledby="l-offmt">
+        <button type="button" role="radio" data-v="png" aria-checked="true">PNG (선명, 용량 큼)</button>
+        <button type="button" role="radio" data-v="jpg" aria-checked="false">JPG (용량 작음)</button>
+      </div>
+    </div>
+
+    <div class="gowrap"><button class="go" id="ofgo" type="button"><span id="ofgo-t">변환 시작</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <section class="panel" id="panel-pdftool" role="tabpanel" aria-labelledby="tab-pdftool" hidden>
+    <div class="sect">
+      <h2>PDF 파일</h2>
+      <button id="ptdrop" class="dz" type="button">
+        <span class="ic"><svg class="i"><use href="#i-up"/></svg></span>
+        <span><b>PDF 파일을 끌어다 놓기</b><small>또는 클릭해서 선택 (여러 개 가능)</small></span>
+      </button>
+      <input id="ptfile" type="file" multiple accept="application/pdf,.pdf" hidden>
+      <div id="ptpicked" class="picked"></div>
+    </div>
+
+    <div class="sect">
+      <span class="lbl" id="l-ptop">무엇을 할까요?</span>
+      <div class="seg" id="ptop" role="radiogroup" aria-labelledby="l-ptop">
+        <button type="button" role="radio" data-v="merge" aria-checked="true">합치기</button>
+        <button type="button" role="radio" data-v="split" aria-checked="false">나누기</button>
+        <button type="button" role="radio" data-v="pick" aria-checked="false">쪽 고르기</button>
+        <button type="button" role="radio" data-v="rotate" aria-checked="false">회전</button>
+        <button type="button" role="radio" data-v="compress" aria-checked="false">용량</button>
+      </div>
+      <p class="hint" id="ptop-hint"></p>
+    </div>
+
+    <div class="sect" id="pt-merge">
+      <div class="thumb-head"><span id="ptcount"></span><button class="btn" id="ptsort" type="button" disabled>이름순 정렬</button></div>
+      <label class="lbl" for="ptname" style="margin-top:12px">합친 PDF 이름 (선택)</label>
+      <input class="txt" id="ptname" type="text" maxlength="80" placeholder="비워 두면 첫 파일 이름으로 정해요" autocomplete="off">
+    </div>
+
+    <div class="sect" id="pt-split" hidden>
+      <span class="lbl" id="l-ptsplit">어떻게 나눌까요?</span>
+      <div class="seg" id="ptsplit" role="radiogroup" aria-labelledby="l-ptsplit">
+        <button type="button" role="radio" data-v="each" aria-checked="true">쪽마다</button>
+        <button type="button" role="radio" data-v="every" aria-checked="false">N쪽씩</button>
+        <button type="button" role="radio" data-v="ranges" aria-checked="false">범위별</button>
+      </div>
+      <div id="pt-every" hidden style="margin-top:12px"><input class="txt" id="ptevery" type="number" inputmode="numeric" min="1" max="1000" value="5" aria-label="몇 쪽씩 나눌지"></div>
+      <div id="pt-ranges" hidden style="margin-top:12px"><input class="txt" id="ptranges" type="text" placeholder="예: 1-3, 4-6, 7  (쉼표마다 한 파일)" aria-label="나눌 쪽 범위" autocomplete="off"></div>
+      <p class="hint" id="ptsplit-hint"></p>
+    </div>
+
+    <div class="sect" id="pt-pick" hidden>
+      <span class="lbl" id="l-ptpick">고른 쪽을</span>
+      <div class="seg" id="ptpick" role="radiogroup" aria-labelledby="l-ptpick">
+        <button type="button" role="radio" data-v="extract" aria-checked="true">남기기 (뽑기)</button>
+        <button type="button" role="radio" data-v="delete" aria-checked="false">지우기</button>
+      </div>
+      <label class="lbl" for="ptpages" style="margin-top:14px">쪽 번호</label>
+      <input class="txt" id="ptpages" type="text" placeholder="예: 1-3, 5  (필수)" autocomplete="off">
+    </div>
+
+    <div class="sect" id="pt-rotate" hidden>
+      <span class="lbl" id="l-ptangle">돌릴 방향</span>
+      <div class="seg" id="ptangle" role="radiogroup" aria-labelledby="l-ptangle">
+        <button type="button" role="radio" data-v="90" aria-checked="true">오른쪽 90°</button>
+        <button type="button" role="radio" data-v="180" aria-checked="false">180°</button>
+        <button type="button" role="radio" data-v="270" aria-checked="false">왼쪽 90°</button>
+      </div>
+      <label class="lbl" for="ptrpages" style="margin-top:14px">돌릴 쪽 (선택)</label>
+      <input class="txt" id="ptrpages" type="text" placeholder="비우면 전체 · 예: 2, 4-6" autocomplete="off">
+    </div>
+
+    <div class="sect" id="pt-compress" hidden>
+      <span class="lbl" id="l-ptlevel">줄이는 정도</span>
+      <div class="seg" id="ptlevel" role="radiogroup" aria-labelledby="l-ptlevel">
+        <button type="button" role="radio" data-v="normal" aria-checked="true">보통</button>
+        <button type="button" role="radio" data-v="strong" aria-checked="false">강하게</button>
+      </div>
+      <p class="hint" id="ptlevel-hint"></p>
+    </div>
+
+    <div class="gowrap"><button class="go" id="ptgo" type="button"><span id="ptgo-t">합치기</span><svg class="i"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
   <section class="panel" id="panel-queue" aria-label="변환 목록">
     <div class="qhead">
       <h2>변환 목록</h2>
@@ -673,7 +876,8 @@ pre{scrollbar-width:thin;scrollbar-color:rgba(12,125,104,.4) transparent;white-s
 const $=id=>document.getElementById(id);
 const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150',hout:'pdf',hfmt:'png',cfmt:'jpg',csize:'orig',cq:'85'};
+let files=[],opts={model:'small',lang:'',isize:'fit',ofmt:'png',odpi:'150',hout:'pdf',hfmt:'png',cfmt:'jpg',csize:'orig',cq:'85',
+  afmt:'m4a',akbps:'192',mdsize:'a4',mdfont:'normal',oftarget:'pdf',offmt:'png',ptop:'merge',ptsplit:'each',ptpick:'extract',ptangle:'90',ptlevel:'normal'};
 if(location.protocol==='file:'){          /* index.html 을 파일로 직접 연 경우 */
   const B='http://127.0.0.1:8765/';
   const chk=async()=>{try{await fetch(B+'api/info',{mode:'no-cors',cache:'no-store'});location.replace(B)}catch{$('offline').hidden=false;setTimeout(chk,2000)}};
@@ -689,10 +893,11 @@ const HINTS={
  small:'<b>기본값</b> · 영상 길이의 약 1배. 깨끗한 음성이면 무난해요.',
  medium:'<b>한국어 설교·강의 추천</b> · 약 2~3배 걸리지만 훨씬 정확해요.',
  'large-v3':'<b>최고 정확도</b> · CPU에서는 아주 오래 걸려요 (4~6배 이상).'};
-function slideTo(el,ind,btn,state){          // 선택 표시를 눌린 버튼 아래로 미끄러뜨린다
+function slideTo(el,ind,btn,state,twoD){          // 선택 표시를 눌린 버튼 아래로 미끄러뜨린다 (twoD: 여러 줄일 때 위아래도)
   if(!btn||!el.offsetWidth)return;
   if(!state.done){ind.style.transition='none'}
-  ind.style.width=btn.offsetWidth+'px';ind.style.transform=`translateX(${btn.offsetLeft}px)`;
+  if(twoD){ind.style.height=btn.offsetHeight+'px'}
+  ind.style.width=btn.offsetWidth+'px';ind.style.transform=`translate(${btn.offsetLeft}px,${twoD?btn.offsetTop:0}px)`;
   if(!state.done){void ind.offsetWidth;ind.style.transition='';state.done=true}
 }
 function seg(id,key,after){
@@ -822,18 +1027,29 @@ const EMPTY={
   img2pdf:{i:'image',t:'아직 만든 PDF가 없어요',d:'이미지를 올려 순서를 정하고 PDF 한 개로 묶어 보세요.'},
   pdf2img:{i:'image',t:'아직 저장한 이미지가 없어요',d:'PDF를 올리면 쪽마다 이미지 파일로 저장해 드려요.'},
   hwp:{i:'doc',t:'아직 변환한 한글 문서가 없어요',d:'.hwp·.hwpx 파일을 올려서 PDF, Markdown, 이미지로 바꿔 보세요.'},
-  imgconv:{i:'image',t:'아직 변환한 사진이 없어요',d:'사진을 올려 JPG로 바꾸거나 긴 변 길이로 줄여 보세요. 아이폰 사진(HEIC)도 돼요.'}};
+  imgconv:{i:'image',t:'아직 변환한 사진이 없어요',d:'사진을 올려 JPG로 바꾸거나 긴 변 길이로 줄여 보세요. 아이폰 사진(HEIC)도 돼요.'},
+  audio:{i:'music',t:'아직 저장한 오디오가 없어요',d:'유튜브 링크를 붙여넣으면 소리만 뽑아 M4A·MP3 파일로 저장해 드려요.'},
+  ocr:{i:'scan',t:'아직 읽은 이미지가 없어요',d:'사진이나 캡처를 올리면 그 안의 글자를 읽어 Markdown 글로 바꿔 드려요.'},
+  md2pdf:{i:'file',t:'아직 만든 PDF가 없어요',d:'Markdown 파일을 올리거나 글을 붙여넣으면 인쇄하기 좋은 PDF로 만들어 드려요.'},
+  office:{i:'grid',t:'아직 변환한 오피스 문서가 없어요',d:'Word·PowerPoint·Excel 파일을 올려 PDF나 이미지로 바꿔 보세요.'},
+  pdftool:{i:'tool',t:'아직 처리한 PDF가 없어요',d:'PDF를 올리고 합치기·나누기·쪽 고르기·회전·용량 줄이기 중에서 골라 보세요.'}};
 function emptyHTML(){const e=EMPTY[curTab]||EMPTY.video;return `<div class="empty">${ic(e.i)}<b>${e.t}</b><span>${e.d}</span></div>`}
 const LEDE={video:'영상 링크나 파일을 넣으면, 타임스탬프가 붙은 Markdown 스크립트로 바꿔 드려요.',
             pdf:'PDF 파일을 넣으면, 제목·목록·표 구조를 살린 Markdown 문서로 바꿔 드려요.',
             img2pdf:'이미지 파일을 순서대로 모아서 PDF 한 개로 만들어 드려요.',
             pdf2img:'PDF의 쪽을 이미지 파일(PNG·JPG)로 저장해 드려요.',
             hwp:'한글(.hwp·.hwpx) 문서를 PDF, Markdown, 이미지로 바꿔 드려요.',
-            imgconv:'사진의 형식을 바꾸고(HEIC → JPG 등) 긴 변 길이를 기준으로 한꺼번에 줄여 드려요.'};
+            imgconv:'사진의 형식을 바꾸고(HEIC → JPG 등) 긴 변 길이를 기준으로 한꺼번에 줄여 드려요.',
+            audio:'유튜브 링크를 넣으면, 영상에서 소리만 뽑아 오디오 파일(M4A·MP3)로 저장해 드려요.',
+            ocr:'사진이나 캡처 이미지 속 글자를 읽어서 Markdown 글로 옮겨 드려요.',
+            md2pdf:'Markdown 글을 인쇄하기 좋은 PDF로 만들어 드려요.',
+            office:'Word·PowerPoint·Excel 문서를 PDF나 이미지로 바꿔 드려요.',
+            pdftool:'PDF를 합치고, 나누고, 필요한 쪽만 고르고, 돌리고, 용량을 줄여 드려요.'};
 const tabBtns=[...document.querySelectorAll('.tabs [role=tab]')];
 const tabsEl=document.querySelector('.tabs'),bubble=tabsEl.querySelector('.bubble'),bst={done:false};
-function placeBubble(){slideTo(tabsEl,bubble,tabsEl.querySelector('[aria-selected=true]'),bst)}
-new ResizeObserver(placeBubble).observe(tabsEl);
+function placeBubble(){slideTo(tabsEl,bubble,tabsEl.querySelector('[aria-selected=true]'),bst,true)}
+const tabRO=new ResizeObserver(placeBubble);tabRO.observe(tabsEl);tabBtns.forEach(b=>tabRO.observe(b));   // 글꼴이 늦게 로드돼 탭 폭·줄이 바뀌어도 선택 표시를 다시 맞춘다
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(placeBubble);
 function setTab(t,focus){
   if(!LEDE[t])t='video';
   curTab=t;if(njobs===0)$('jobs').innerHTML=emptyHTML();
@@ -899,6 +1115,7 @@ function fileBucket(o){
   ['dragleave','drop'].forEach(n=>drop.addEventListener(n,x=>{x.preventDefault();drop.classList.remove('on')}));
   drop.addEventListener('drop',x=>add(x.dataTransfer.files));
   st.clear=()=>{st.files=[];render()};
+  st.render=render;
   return st;
 }
 
@@ -1051,6 +1268,155 @@ $('cgo').onclick=async()=>{
   ph.clear();$('cgo').disabled=false;poll();
 };
 
+
+/* ===== 공통: 서버로 보내고 결과 처리 ===== */
+async function sendJob(url,fd,btn,after){
+  btn.disabled=true;
+  let r;try{r=await fetch(url,{method:'POST',body:fd})}catch(e){toast('서버에 연결하지 못했어요. 위쪽 안내를 확인해 주세요');btn.disabled=false;after();return null}
+  if(!r.ok){const d=await r.json().catch(()=>({}));toast((d.error||'요청을 처리하지 못했어요')+(d.bad?': '+d.bad.slice(0,2).join(', '):''));btn.disabled=false;after();return {error:d}}
+  btn.disabled=false;poll();return {ok:true};
+}
+const pdfOk=f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name);
+
+/* ===== 유튜브 → 오디오 ===== */
+const aList=()=>$('aurls').value.split('\n').map(s=>s.trim()).filter(Boolean);
+function aMsg(bad){
+  const m=$('aurlmsg'),t=$('aurls');
+  if(!bad||!bad.length){m.hidden=true;t.classList.remove('bad');t.removeAttribute('aria-invalid');return}
+  m.innerHTML='링크는 <code>http://</code> 또는 <code>https://</code>로 시작해야 해요. 다시 확인해 주세요: '+bad.slice(0,3).map(b=>'<code>'+esc(b.length>60?b.slice(0,60)+'…':b)+'</code>').join(' ');
+  m.hidden=false;t.classList.add('bad');t.setAttribute('aria-invalid','true');
+}
+function aLabel(){const n=aList().length;$('ago-t').textContent=n?`${n}개 오디오로 저장`:'오디오로 저장'}
+$('aurls').addEventListener('input',()=>{aMsg();aLabel()});
+const AFMT_HINT={m4a:'유튜브가 주는 소리를 그대로 저장해요. 가장 빠르고 음질 손실이 없어요. 아이폰·안드로이드·PC 모두 재생돼요.',
+  mp3:'MP3로 바꿔 저장해요. 오래된 기기나 차량 오디오에서도 재생돼요. 변환 때문에 조금 더 걸려요.'};
+function afmtChanged(){$('afmt-hint').textContent=AFMT_HINT[opts.afmt];$('akbps-sect').hidden=opts.afmt!=='mp3'}
+seg('afmt','afmt',afmtChanged);seg('akbps','akbps');afmtChanged();
+$('ago').onclick=async()=>{
+  if(!aList().length){toast('유튜브 링크를 붙여넣어 주세요');$('aurls').focus();return}
+  const bad=aList().filter(l=>!isUrl(l));if(bad.length){aMsg(bad);$('aurls').focus();return}
+  const fd=new FormData();fd.append('urls',$('aurls').value);fd.append('fmt',opts.afmt);fd.append('kbps',opts.akbps);
+  $('ago-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-audio',fd,$('ago'),aLabel);
+  if(r&&r.error&&r.error.bad)aMsg(r.error.bad);
+  if(r&&r.ok){$('aurls').value='';aMsg()}
+  aLabel();
+};
+
+/* ===== 이미지 → 글자 ===== */
+const oc=fileBucket({drop:'ocdrop',input:'ocfile',picked:'ocpicked',noun:'이미지',
+  ok:f=>/\.(png|jpe?g|webp|bmp|gif|tiff?|heic|heif)$/i.test(f.name)||/^image\//.test(f.type),
+  onChange:n=>$('ocgo-t').textContent=n?`${n}장 글자 읽기`:'글자 읽기'});
+$('ocgo').onclick=async()=>{
+  if(!oc.files.length){toast('이미지를 올려 주세요');$('ocdrop').focus();return}
+  const fd=new FormData();oc.files.forEach(f=>fd.append('files',f));fd.append('merge',$('ocmerge').checked?'1':'0');
+  $('ocgo-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-ocr',fd,$('ocgo'),()=>oc.render());
+  if(r&&r.ok)oc.clear();else oc.render();
+};
+
+/* ===== MD → PDF ===== */
+let MDPDF=null;
+const mdb=fileBucket({drop:'mdrop',input:'mdfile',picked:'mdpicked',noun:'Markdown 파일',
+  ok:f=>/\.(md|markdown|txt)$/i.test(f.name),onChange:()=>mdLabel()});
+function mdLabel(){
+  const n=mdb.files.length+($('mdtext').value.trim()?1:0);
+  $('mdgo-t').textContent=n?`${n}개 PDF 만들기`:'PDF 만들기';
+}
+$('mdtext').addEventListener('input',mdLabel);
+seg('mdsize','mdsize');seg('mdfont','mdfont');
+fetch('/api/capabilities').then(r=>r.json()).then(c=>{
+  MDPDF=!!c.mdpdf;
+  $('mdstatus').textContent=MDPDF?'이 PC의 Edge(또는 Chrome)로 인쇄해서 PDF를 만들어요. 표·제목·인용·목록이 모양대로 나와요.'
+    :'PDF로 인쇄할 브라우저(Microsoft Edge 또는 Chrome)를 찾지 못했어요. 설치한 뒤 다시 열어 주세요.';
+  $('mdgo').disabled=!MDPDF;
+}).catch(()=>{$('mdstatus').textContent='브라우저 확인에 실패했어요. 서버가 켜져 있는지 확인해 주세요.'});
+$('mdgo').onclick=async()=>{
+  if(!mdb.files.length&&!$('mdtext').value.trim()){toast('Markdown 파일을 올리거나 글을 붙여넣어 주세요');$('mdrop').focus();return}
+  const fd=new FormData();mdb.files.forEach(f=>fd.append('files',f));fd.append('text',$('mdtext').value);
+  fd.append('size',opts.mdsize);fd.append('font',opts.mdfont);fd.append('numbers',$('mdnum').checked?'1':'0');
+  $('mdgo-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-md2pdf',fd,$('mdgo'),mdLabel);
+  if(r&&r.ok){mdb.clear();$('mdtext').value=''}
+  mdLabel();if(MDPDF===false)$('mdgo').disabled=true;
+};
+
+/* ===== 오피스 → PDF·이미지 ===== */
+let OFFICE=null;
+const OF_APP=n=>/\.(docx?|rtf)$/i.test(n)?'word':/\.(pptx?|ppsx?)$/i.test(n)?'ppt':/\.(xlsx?|xlsm|csv)$/i.test(n)?'excel':null;
+const OF_NAME={word:'Word',ppt:'PowerPoint',excel:'Excel'};
+const ofb=fileBucket({drop:'ofdrop',input:'offile',picked:'ofpicked',noun:'지원하는 Office 문서',
+  ok:f=>{const a=OF_APP(f.name);if(!a)return false;if(OFFICE&&!OFFICE[a]){toast(`이 PC에서 ${OF_NAME[a]}을(를) 찾지 못해 ${f.name} 파일은 바꿀 수 없어요`);return false}return true},
+  onChange:n=>$('ofgo-t').textContent=n?`${n}개 변환 시작`:'변환 시작'});
+const OFT_HINT={pdf:'Office가 문서를 열어 원본 모양 그대로 PDF로 저장해요. 문서 하나에 10초 안팎 걸려요.',
+  img:'쪽(슬라이드)마다 이미지 한 장으로 저장해요. Office가 PDF로 먼저 저장한 뒤 이미지로 바꾸고, 결과는 ZIP으로도 받을 수 있어요.'};
+function oftChanged(){$('oftarget-hint').textContent=OFT_HINT[opts.oftarget];$('offmt-sect').hidden=opts.oftarget!=='img'}
+seg('oftarget','oftarget',oftChanged);seg('offmt','offmt');oftChanged();
+fetch('/api/capabilities').then(r=>r.json()).then(c=>{
+  OFFICE=c.office||{word:false,ppt:false,excel:false};
+  const have=Object.keys(OF_NAME).filter(k=>OFFICE[k]).map(k=>OF_NAME[k]),lack=Object.keys(OF_NAME).filter(k=>!OFFICE[k]).map(k=>OF_NAME[k]);
+  $('ofstatus').textContent=!have.length?'이 PC에서 Microsoft Office를 찾지 못했어요. Office가 설치된 PC에서 쓸 수 있어요.'
+    :lack.length?`찾은 프로그램: ${have.join(', ')}. ${lack.join(', ')} 파일은 이 PC에서 바꿀 수 없어요. (Excel은 표가 쪽 너비보다 넓으면 여러 쪽으로 나뉠 수 있어요)`
+    :'Word · PowerPoint · Excel을 모두 찾았어요. (Excel은 표가 쪽 너비보다 넓으면 여러 쪽으로 나뉠 수 있어요)';
+  $('ofgo').disabled=!have.length;
+}).catch(()=>{$('ofstatus').textContent='Office 확인에 실패했어요. 서버가 켜져 있는지 확인해 주세요.'});
+$('ofgo').onclick=async()=>{
+  if(!ofb.files.length){toast('문서를 올려 주세요');$('ofdrop').focus();return}
+  const fd=new FormData();ofb.files.forEach(f=>fd.append('files',f));fd.append('target',opts.oftarget);fd.append('fmt',opts.offmt);
+  $('ofgo-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-office',fd,$('ofgo'),()=>ofb.render());
+  if(r&&r.ok)ofb.clear();else ofb.render();
+};
+
+/* ===== PDF 도구 (합치기·나누기·쪽 고르기·회전·용량 줄이기) ===== */
+const PT_HINT={merge:'올린 순서대로 PDF 한 개로 이어 붙여요. 두 개 이상 올려 주세요.',
+  split:'PDF 한 개를 여러 파일로 나눠 폴더에 저장하고, ZIP으로도 받을 수 있어요.',
+  pick:'필요한 쪽만 남기거나, 필요 없는 쪽을 지운 새 PDF를 만들어요. 원본은 그대로 있어요.',
+  rotate:'거꾸로 스캔된 쪽 등을 바로잡아요. 쪽을 비우면 전체를 돌려요.',
+  compress:'큰 그림의 해상도·화질을 낮춰 이메일·카톡으로 보내기 좋게 만들어요. 글자는 그대로예요.'};
+const PT_GO={merge:'합치기',split:'나누기',pick:'새 PDF 만들기',rotate:'회전하기',compress:'용량 줄이기'};
+const PT_SPLIT_HINT={each:'쪽마다 PDF 한 개씩 만들어요.',every:'정해 둔 쪽 수만큼 묶어서 파일을 만들어요. 예: 5쪽씩.',ranges:'쉼표로 나눈 범위마다 파일 한 개를 만들어요. 예: 1-3, 4-6 → 파일 2개.'};
+const PT_LEVEL_HINT={normal:'화질 손실이 거의 눈에 띄지 않는 정도로 줄여요. 대부분 이걸로 충분해요.',strong:'더 많이 줄여요. 사진이 조금 거칠어질 수 있지만 용량이 크게 줄어요.'};
+const ptb=fileBucket({drop:'ptdrop',input:'ptfile',picked:'ptpicked',noun:'PDF',ok:pdfOk,onChange:()=>ptUi()});
+function ptUi(){
+  const n=ptb.files.length,op=opts.ptop;
+  ['merge','split','pick','rotate','compress'].forEach(k=>$('pt-'+k).hidden=k!==op);
+  $('ptop-hint').textContent=PT_HINT[op];
+  $('pt-every').hidden=!(op==='split'&&opts.ptsplit==='every');
+  $('pt-ranges').hidden=!(op==='split'&&opts.ptsplit==='ranges');
+  $('ptsplit-hint').textContent=PT_SPLIT_HINT[opts.ptsplit];
+  $('ptlevel-hint').textContent=PT_LEVEL_HINT[opts.ptlevel];
+  $('ptcount').textContent=op==='merge'&&n?`${n}개 · 위에서부터 차례로 이어 붙여요`:'';
+  $('ptsort').disabled=n<2;$('ptsort').parentElement.hidden=n<1;
+  if(op==='merge')[...$('ptpicked').children].forEach((c,i)=>{if(ptb.files[i])c.firstElementChild.textContent=`${i+1}. ${ptb.files[i].name}`});
+  $('ptgo-t').textContent=n?(op==='merge'?`${n}개 합치기`:`${n}개 ${PT_GO[op]}`):PT_GO[op];
+}
+$('ptsort').onclick=()=>{ptb.files.sort((a,b)=>a.name.localeCompare(b.name,'ko',{numeric:true}));ptb.render();toast('이름순으로 정렬했어요')};
+seg('ptop','ptop',ptUi);seg('ptsplit','ptsplit',ptUi);seg('ptpick','ptpick');seg('ptangle','ptangle');seg('ptlevel','ptlevel',ptUi);
+ptUi();
+$('ptgo').onclick=async()=>{
+  const op=opts.ptop;
+  if(!ptb.files.length){toast('PDF 파일을 올려 주세요');$('ptdrop').focus();return}
+  const fd=new FormData();ptb.files.forEach(f=>fd.append('files',f));fd.append('op',op);
+  if(op==='merge'){
+    if(ptb.files.length<2){toast('합치려면 PDF를 두 개 이상 올려 주세요');return}
+    fd.append('name',$('ptname').value.trim());
+  }else if(op==='split'){
+    fd.append('mode',opts.ptsplit);
+    if(opts.ptsplit==='every'){const v=parseInt($('ptevery').value,10);if(!(v>=1)){toast('몇 쪽씩 나눌지 1 이상의 숫자로 적어 주세요');$('ptevery').focus();return}fd.append('every',String(v))}
+    if(opts.ptsplit==='ranges'){if(!$('ptranges').value.trim()){toast('나눌 쪽 범위를 적어 주세요. 예: 1-3, 4-6');$('ptranges').focus();return}fd.append('spec',$('ptranges').value.trim())}
+  }else if(op==='pick'){
+    if(!$('ptpages').value.trim()){toast('쪽 번호를 적어 주세요. 예: 1-3, 5');$('ptpages').focus();return}
+    fd.append('mode',opts.ptpick);fd.append('spec',$('ptpages').value.trim());
+  }else if(op==='rotate'){
+    fd.append('angle',opts.ptangle);fd.append('spec',$('ptrpages').value.trim());
+  }else fd.append('level',opts.ptlevel);
+  $('ptgo-t').textContent='보내는 중…';
+  const r=await sendJob('/api/submit-pdftool',fd,$('ptgo'),ptUi);
+  if(r&&r.ok){ptb.clear();$('ptname').value=''}
+  ptUi();
+};
+
 const open=new Set(),cache={},openWhy=new Set();let last='';
 $('jobs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.why')){d.open?openWhy.add(d.dataset.id):openWhy.delete(d.dataset.id)}},true);   // 목록이 다시 그려져도 '자세히'가 닫히지 않게
 async function toggle(id){
@@ -1087,6 +1453,11 @@ function flowOf(j){            // 이 변환이 무엇에서 무엇으로 가는
   if(j.kind==='imgconv')return {jpg:'사진 → JPG',png:'사진 → PNG',webp:'사진 → WEBP'}[j.fmt]||'사진 변환';
   if(j.kind==='hwp')return {pdf:'한글 → PDF',md:'한글 → MD',img:'한글 → 이미지'}[j.target]||'한글 변환';
   if(j.kind==='pdf2img')return'PDF → 이미지';
+  if(j.kind==='audio')return '유튜브 → '+String(j.fmt||'m4a').toUpperCase();
+  if(j.kind==='ocr')return'이미지 → 글자';
+  if(j.kind==='md2pdf')return'MD → PDF';
+  if(j.kind==='office')return j.target==='img'?'오피스 → 이미지':'오피스 → PDF';
+  if(j.kind==='pdftool')return {merge:'PDF 합치기',split:'PDF 나누기',pick:j.mode==='delete'?'쪽 지우기':'쪽 뽑기',rotate:'PDF 회전',compress:'PDF 용량 줄이기'}[j.op]||'PDF 도구';
   return /^https?:/i.test(j.label||'')?(/youtu/i.test(j.label)?'YouTube → MD':'링크 → MD'):'영상 → MD';
 }
 function niceLog(l){          // 개발자용 로그 머리표를 사람 말로
@@ -1101,7 +1472,7 @@ function jobHTML(j){
   const acts=j.status!=='done'?'':`<div class="acts">`+
     (j.has_md?`<button class="btn ic-only" data-a="view" data-id="${j.id}" aria-label="미리보기" aria-expanded="${open.has(j.id)}" title="미리보기">${ic('eye')}</button>
     <button class="btn ic-only" data-a="copy" data-id="${j.id}" aria-label="복사" title="복사">${ic('copy')}</button>`
-     :(ext==='pdf'||['jpg','png','webp'].includes(ext))?`<button class="btn ic-only" data-a="openpdf" data-id="${j.id}" aria-label="새 탭에서 열기" title="새 탭에서 열기">${ic('eye')}</button>`:'')+
+     :(ext==='pdf'||['jpg','png','webp','m4a','mp3'].includes(ext))?`<button class="btn ic-only" data-a="openpdf" data-id="${j.id}" aria-label="새 탭에서 열기" title="${['m4a','mp3'].includes(ext)?'새 탭에서 듣기':'새 탭에서 열기'}">${ic(['m4a','mp3'].includes(ext)?'play':'eye')}</button>`:'')+
     `<button class="btn" data-a="dl" data-id="${j.id}">${ic('dl')}.${ext}</button></div>`;
   const canRetry=j.status==='error'&&/^https?:/i.test(j.source||'');
   const retryBtn=canRetry?`<div class="acts"><button class="btn warn" data-a="retry" data-id="${j.id}">${ic('arrow')}다시 시도</button></div>`:'';
@@ -1114,7 +1485,7 @@ function jobHTML(j){
     sub=`<small><span class="flow">${esc(flowOf(j))}</span><span class="txt2">${esc(j.meta?j.label+' · '+j.meta:(j.title?j.label:niceLog(j.log)))}</span></small>`;
   }
   return `<div class="job"><div class="row">
-    <span class="ico">${ic((j.kind==='pdf'||j.kind==='hwp')?'doc':(j.kind==='img2pdf'||j.kind==='pdf2img'||j.kind==='imgconv')?'image':isUrl?'play':'film')}</span>
+    <span class="ico">${ic(({pdf:'doc',hwp:'doc',img2pdf:'image',pdf2img:'image',imgconv:'image',audio:'music',ocr:'scan',md2pdf:'file',office:'grid',pdftool:'tool'})[j.kind]||(isUrl?'play':'film'))}</span>
     <div class="t"><b title="${esc(j.title||j.label)}">${esc(j.title||j.label)}</b>${sub}</div>
     <span class="st ${j.status}">${LABEL[j.status]}</span>${acts}${retryBtn}</div>${bar}${prev}</div>`;
 }

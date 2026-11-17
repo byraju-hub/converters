@@ -6,7 +6,7 @@
 <title>Raju's Converters — 영상·PDF·한글·사진을 내 PC에서 바꾸는 무료 변환 도구</title>
 <meta name="description" content="영상은 Markdown 스크립트로, PDF·한글(HWP) 문서는 Markdown·이미지로, 사진은 HEIC→JPG와 긴 변 기준 리사이즈로. 파일을 인터넷에 올리지 않고 내 PC 안에서 바꾸는 무료 오픈소스 변환 도구입니다.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Raju's Converters — 한 화면에서 여섯 가지 변환">
+<meta property="og:title" content="Raju's Converters — 한 화면에서 열한 가지 변환">
 <meta property="og:description" content="영상·PDF·한글 문서·사진을 내 PC 안에서 바꾸는 무료 도구. 설치는 setup.bat 더블클릭 한 번.">
 <meta property="og:image" content="https://byraju-hub.github.io/converters/assets/og.jpg">
 <meta property="og:url" content="https://byraju-hub.github.io/converters/">
@@ -124,14 +124,14 @@ svg.i{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .center{text-align:center;margin-left:auto;margin-right:auto}
 
 /* ---------- 변환 종류 (직접 눌러 보기) ---------- */
-.tabs{position:relative;display:inline-flex;gap:2px;padding:5px;border-radius:999px;max-width:100%;overflow-x:auto;scrollbar-width:none;
+.tabs{position:relative;display:inline-flex;flex-wrap:wrap;justify-content:center;gap:2px;padding:5px;border-radius:999px;max-width:min(100%,850px);scrollbar-width:none;
   background:var(--g-fill-2);-webkit-backdrop-filter:blur(8px) saturate(1.9);backdrop-filter:blur(8px) saturate(1.9);box-shadow:var(--g-shadow),var(--g-lit)}
 .tabs::-webkit-scrollbar{display:none}
-.tabs .bub{position:absolute;z-index:0;top:5px;bottom:5px;left:0;width:0;border-radius:999px;pointer-events:none;
+.tabs .bub{position:absolute;z-index:0;top:0;left:0;width:0;height:0;border-radius:999px;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.78));
   box-shadow:0 6px 16px -4px rgba(6,54,44,.32),inset 0 1px 1px #fff,inset 0 -1px 3px rgba(6,54,44,.1);
-  transition:transform .55s var(--spring),width .55s var(--spring)}
-.tabs button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:999px;padding:11px 20px;font:inherit;font-weight:700;font-size:15px;color:var(--sub);white-space:nowrap;cursor:pointer;transition:color .25s,transform .35s var(--spring)}
+  transition:transform .55s var(--spring),width .55s var(--spring),height .55s var(--spring)}
+.tabs button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:999px;padding:10px 17px;font:inherit;font-weight:700;font-size:14.5px;color:var(--sub);white-space:nowrap;cursor:pointer;transition:color .25s,transform .35s var(--spring)}
 .tabs button:hover:not([aria-selected=true]){color:var(--ink)}
 .tabs button:active{transform:scale(.95)}
 .tabs button[aria-selected=true]{color:var(--tint-d)}
@@ -239,7 +239,7 @@ footer .legal a{text-underline-offset:3px}
   .float{display:none}
   .show{padding:20px;border-radius:28px}
   .tabrow{justify-content:flex-start}
-  .tabs{width:100%}
+  .tabs{width:100%;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;max-width:100%}
   .cta{padding:48px 20px;border-radius:32px;margin-top:68px}
   .faq details{padding:0 20px}
 }
@@ -274,6 +274,9 @@ footer .legal a{text-underline-offset:3px}
 .thumbs i:nth-child(2){background:linear-gradient(160deg,#bde6ff,#2e8b57)}
 .thumbs i:nth-child(3){background:linear-gradient(160deg,#ffd1dc,#8f7fd9)}
 .thumbs i:nth-child(4){background:linear-gradient(160deg,#d7f0c8,#33658a)}
+.wave{margin:auto 0;height:calc(var(--fw)*.5);display:flex;align-items:center;justify-content:center;gap:4px}
+.wave i{width:6px;border-radius:3px;background:var(--c);height:30%}
+.wave i:nth-child(2){height:62%}.wave i:nth-child(3){height:90%}.wave i:nth-child(4){height:48%}.wave i:nth-child(5){height:78%}.wave i:nth-child(6){height:36%}.wave i:nth-child(7){height:56%}
 .pl{margin:auto;color:var(--c)}.pl svg{width:calc(var(--fw)*.34);height:calc(var(--fw)*.34)}
 .fname{display:block;margin-top:12px;text-align:center;font-size:14px;font-weight:700;color:var(--ink);line-height:1.3}
 .fmeta{display:block;margin-top:2px;font-size:12.5px;color:var(--sub);font-weight:600}
@@ -320,6 +323,9 @@ footer .legal a{text-underline-offset:3px}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
     <symbol id="i-play" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.5 9.5v5l4-2.5z"/></symbol>
     <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
     <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-9 9"/></symbol>
@@ -350,7 +356,7 @@ footer .legal a{text-underline-offset:3px}
   <div class="hero-photo rv"><img src="assets/hero-desk.webp" width="1600" height="903" alt="모니터 한 화면에 영상→텍스트, PDF→이미지, 사진 일괄 편집 변환 화면이 나란히 떠 있는 책상 위 모습" fetchpriority="high"></div>
   <div class="hero-card glass rv" style="--d:.1s">
   <h1 class="rv">영상도 문서도 사진도,<br><em>한 화면에서</em> 바꿉니다.</h1>
-  <p class="lede rv" style="--d:.08s">영상, PDF, 한글(HWP) 문서, 사진을 내 PC 안에서 바꿔 주는 무료 변환 도구예요. 파일을 인터넷에 올리지 않습니다.</p>
+  <p class="lede rv" style="--d:.08s">영상, 오디오, PDF, 한글·오피스 문서, 사진을 내 PC 안에서 바꿔 주는 무료 변환 도구예요. 파일을 인터넷에 올리지 않습니다.</p>
   <div class="cta-row rv" style="--d:.16s">
     <a class="btn primary" href="https://github.com/byraju-hub/converters/releases/latest/download/converters.zip"><svg class="i"><use href="#i-dl"/></svg>다운로드(무료)</a>
     <a class="btn soft" href="https://github.com/byraju-hub/converters/blob/main/docs/INSTALL.md">설치 방법 보기</a>
@@ -378,10 +384,15 @@ footer .legal a{text-underline-offset:3px}
     <div class="demo glass rv" id="dcard" style="--d:.1s">
       <div class="dchips" id="dchips" role="group" aria-label="변환 종류 고르기">
         <button type="button" class="chip" data-k="video" aria-selected="true"><svg class="i"><use href="#i-play"/></svg>영상 → MD</button>
+        <button type="button" class="chip" data-k="audio" aria-selected="false"><svg class="i"><use href="#i-music"/></svg>유튜브 → 오디오</button>
         <button type="button" class="chip" data-k="pdf" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>PDF → MD</button>
+        <button type="button" class="chip" data-k="ocr" aria-selected="false"><svg class="i"><use href="#i-scan"/></svg>이미지 → 글자</button>
+        <button type="button" class="chip" data-k="md2pdf" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>MD → PDF</button>
+        <button type="button" class="chip" data-k="hwp" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>한글 → PDF</button>
+        <button type="button" class="chip" data-k="office" aria-selected="false"><svg class="i"><use href="#i-grid"/></svg>오피스 → PDF</button>
+        <button type="button" class="chip" data-k="merge" aria-selected="false"><svg class="i"><use href="#i-tool"/></svg>PDF 합치기</button>
         <button type="button" class="chip" data-k="img2pdf" aria-selected="false"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
         <button type="button" class="chip" data-k="pdf2img" aria-selected="false"><svg class="i"><use href="#i-stack"/></svg>PDF → 이미지</button>
-        <button type="button" class="chip" data-k="hwp" aria-selected="false"><svg class="i"><use href="#i-doc"/></svg>한글 → PDF</button>
         <button type="button" class="chip" data-k="heic" aria-selected="false"><svg class="i"><use href="#i-resize"/></svg>HEIC → JPG</button>
       </div>
       <div class="dstage">
@@ -407,15 +418,20 @@ footer .legal a{text-underline-offset:3px}
 
 <section class="sec" id="tools" aria-labelledby="tools-h">
   <div class="wrap">
-    <div class="head center"><h2 id="tools-h" class="rv">한 화면에 여섯 가지 변환.</h2><p class="rv" style="--d:.06s">탭을 눌러 어떤 일을 할 수 있는지 살펴보세요.</p></div>
+    <div class="head center"><h2 id="tools-h" class="rv">한 화면에 열한 가지 변환.</h2><p class="rv" style="--d:.06s">탭을 눌러 어떤 일을 할 수 있는지 살펴보세요.</p></div>
     <div class="tabrow rv" style="--d:.1s">
       <div class="tabs" role="tablist" aria-label="변환 종류" id="tabs">
         <span class="bub" aria-hidden="true"></span>
         <button type="button" role="tab" id="t-video" aria-selected="true" aria-controls="p-video"><svg class="i"><use href="#i-play"/></svg>영상 → MD</button>
+        <button type="button" role="tab" id="t-audio" aria-selected="false" aria-controls="p-audio"><svg class="i"><use href="#i-music"/></svg>유튜브 → 오디오</button>
         <button type="button" role="tab" id="t-pdf" aria-selected="false" aria-controls="p-pdf"><svg class="i"><use href="#i-doc"/></svg>PDF → MD</button>
-        <button type="button" role="tab" id="t-img2pdf" aria-selected="false" aria-controls="p-img2pdf"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
-        <button type="button" role="tab" id="t-pdf2img" aria-selected="false" aria-controls="p-pdf2img"><svg class="i"><use href="#i-doc"/></svg>PDF → 이미지</button>
+        <button type="button" role="tab" id="t-ocr" aria-selected="false" aria-controls="p-ocr"><svg class="i"><use href="#i-scan"/></svg>이미지 → 글자</button>
+        <button type="button" role="tab" id="t-md2pdf" aria-selected="false" aria-controls="p-md2pdf"><svg class="i"><use href="#i-doc"/></svg>MD → PDF</button>
         <button type="button" role="tab" id="t-hwp" aria-selected="false" aria-controls="p-hwp"><svg class="i"><use href="#i-doc"/></svg>한글 변환</button>
+        <button type="button" role="tab" id="t-office" aria-selected="false" aria-controls="p-office"><svg class="i"><use href="#i-grid"/></svg>오피스 변환</button>
+        <button type="button" role="tab" id="t-pdftool" aria-selected="false" aria-controls="p-pdftool"><svg class="i"><use href="#i-tool"/></svg>PDF 도구</button>
+        <button type="button" role="tab" id="t-img2pdf" aria-selected="false" aria-controls="p-img2pdf"><svg class="i"><use href="#i-image"/></svg>이미지 → PDF</button>
+        <button type="button" role="tab" id="t-pdf2img" aria-selected="false" aria-controls="p-pdf2img"><svg class="i"><use href="#i-image"/></svg>PDF → 이미지</button>
         <button type="button" role="tab" id="t-imgconv" aria-selected="false" aria-controls="p-imgconv"><svg class="i"><use href="#i-image"/></svg>사진 변환</button>
       </div>
     </div>
@@ -431,6 +447,31 @@ footer .legal a{text-underline-offset:3px}
           <h3>PDF를 구조 그대로 Markdown으로.</h3>
           <p>제목, 목록, 표를 살려서 Markdown 문서로 바꿉니다.</p>
           <ul><li>글자 없는 스캔 PDF는 한국어 글자 인식(OCR)으로 읽어요</li><li>쪽 구분 표시를 넣을 수 있어요</li><li>암호가 걸린 PDF는 이유를 알려 줘요</li></ul>
+        </div>
+        <div class="panel" id="p-audio" role="tabpanel" aria-labelledby="t-audio" hidden>
+          <h3>유튜브 영상에서 소리만 뽑아요.</h3>
+          <p>링크를 붙여넣으면 오디오 파일로 저장해 드려요.</p>
+          <ul><li>M4A는 원본 그대로 — 가장 빠르고 음질 손실이 없어요</li><li>MP3는 128·192·320kbps 중에서 골라요</li><li>ffmpeg 같은 별도 프로그램을 설치하지 않아도 돼요</li></ul>
+        </div>
+        <div class="panel" id="p-ocr" role="tabpanel" aria-labelledby="t-ocr" hidden>
+          <h3>사진 속 글자를 읽어 옮겨요.</h3>
+          <p>주보 사진, 책 한 쪽, 캡처 이미지의 한국어 글자를 Markdown으로 바꿔요.</p>
+          <ul><li>여러 장을 한 문서로 합치거나 장마다 따로 만들어요</li><li>아이폰 사진(HEIC)도 방향을 맞춰 읽어요</li><li>처음 한 번 모델(약 13MB)만 받으면 인터넷 없이 읽어요</li></ul>
+        </div>
+        <div class="panel" id="p-md2pdf" role="tabpanel" aria-labelledby="t-md2pdf" hidden>
+          <h3>정리한 글을 인쇄용 PDF로.</h3>
+          <p>Markdown 파일이나 붙여넣은 글을 보기 좋은 PDF로 만들어요.</p>
+          <ul><li>A4·B5, 글자 크기, 쪽 번호를 고를 수 있어요</li><li>표·제목·인용·목록이 모양대로 나와요</li><li>이 PC의 Edge(또는 Chrome)로 인쇄해서 따로 설치할 것이 없어요</li></ul>
+        </div>
+        <div class="panel" id="p-office" role="tabpanel" aria-labelledby="t-office" hidden>
+          <h3>Word·PowerPoint·Excel도 바꿔요.</h3>
+          <p>원본 모양 그대로 PDF로, 또는 쪽·슬라이드마다 이미지로 저장해요.</p>
+          <ul><li>이 PC의 Microsoft Office가 보이지 않게 열렸다 닫혀요</li><li>Office가 없으면 이 탭은 알아서 비활성화돼요</li><li>암호가 걸린 문서는 이유를 알려 줘요</li></ul>
+        </div>
+        <div class="panel" id="p-pdftool" role="tabpanel" aria-labelledby="t-pdftool" hidden>
+          <h3>PDF를 합치고, 나누고, 다듬어요.</h3>
+          <p>한 화면에서 다섯 가지 PDF 작업을 해요.</p>
+          <ul><li>합치기, 나누기(쪽마다·N쪽씩·범위별)</li><li>쪽 고르기(남기기·지우기)와 회전</li><li>용량 줄이기 — 큰 그림만 줄이고 글자는 그대로예요</li></ul>
         </div>
         <div class="panel" id="p-img2pdf" role="tabpanel" aria-labelledby="t-img2pdf" hidden>
           <h3>사진과 스캔 이미지를 PDF 한 개로.</h3>
@@ -574,6 +615,7 @@ footer .legal a{text-underline-offset:3px}
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>인터넷이 꼭 필요한가요?</summary><div class="a">설치할 때, 처음 쓰는 기능의 모델을 받을 때, 유튜브를 가져올 때만 필요해요. 모델을 받고 나면 파일 변환은 인터넷 없이 내 PC에서 돌아가요.</div></details>
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>내 파일이 어디로 전송되나요?</summary><div class="a">어디로도 보내지 않아요. 변환은 모두 내 PC 안에서 이루어지고, 화면도 내 PC(127.0.0.1)에서만 열려요. 단, “Claude 요약”을 켜면 영상 스크립트 텍스트가 Anthropic의 API로 전송돼요. 켜지 않으면 전송되지 않아요.</div></details>
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>한글(HWP) 문서의 PDF 변환에는 한컴오피스가 필요한가요?</summary><div class="a">PDF와 이미지로 바꾸려면 PC에 설치된 한컴오피스가 필요해요. Markdown은 한컴오피스가 없어도 변환돼요(.hwpx는 표까지, .hwp는 글자 위주). 암호가 걸린 문서와 배포용(읽기 전용) 문서는 변환할 수 없어요.</div></details>
+      <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>Word·PowerPoint·Excel 변환에도 Office가 필요한가요?</summary><div class="a">네, 이 PC에 Microsoft Office가 설치돼 있어야 해요. 원본 모양 그대로 PDF로 만들려고 Office를 보이지 않게 열었다 닫아요. 없는 프로그램의 파일은 화면이 알아서 막아 주고, MD → PDF·PDF 도구·이미지 → 글자는 Office 없이도 돼요.</div></details>
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>유튜브 영상은 모두 변환되나요?</summary><div class="a">자막이 있으면 바로, 없으면 음성인식으로 변환해요. 비공개·삭제·로그인이 필요한 영상은 안 돼요. 저작권과 유튜브 이용약관을 지켜서 사용해 주세요. 유튜브가 바뀌어 안 될 때는 <b>update.bat</b>을 실행하면 대부분 해결돼요.</div></details>
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>얼마나 걸리나요?</summary><div class="a">자막이 있는 유튜브 영상은 몇 초면 끝나요. 음성인식은 컴퓨터의 CPU만 쓰기 때문에 영상 길이의 1~2배(small 모델 기준) 걸려요. 한글 문서는 파일당 10초 안팎이에요.</div></details>
       <details class="glass rv" data-lens="radius:24,bezel:22,shift:14,blur:12"><summary>업데이트는 어떻게 하나요?</summary><div class="a">폴더의 <b>update.bat</b>을 더블클릭하면 최신 프로그램으로 바꾸고 필요한 것을 갱신해요. 내가 만든 결과와 설정은 그대로 남아요.</div></details>
@@ -612,10 +654,10 @@ document.documentElement.classList.add('js');
 /* ===== 변환 종류 탭: 선택 표시가 미끄러지고, 스크린샷이 바뀐다 ===== */
 (function(){
   const tabs=document.getElementById('tabs'),btns=[...tabs.querySelectorAll('[role=tab]')],bub=tabs.querySelector('.bub'),img=document.getElementById('shot');
-  const SHOT={video:'영상 링크를 붙여넣고 변환 목록에서 진행 상황을 보는 화면',pdf:'PDF를 올려 Markdown으로 바꾸는 화면',img2pdf:'이미지를 썸네일로 보며 순서를 바꿔 PDF로 묶는 화면',pdf2img:'PDF를 해상도를 골라 이미지로 저장하는 화면',hwp:'한글 문서를 PDF·Markdown·이미지로 바꾸는 화면',imgconv:'사진 형식을 바꾸고 긴 변 길이를 지정하는 화면'};
+  const SHOT={video:'영상 링크를 붙여넣고 변환 목록에서 진행 상황을 보는 화면',pdf:'PDF를 올려 Markdown으로 바꾸는 화면',img2pdf:'이미지를 썸네일로 보며 순서를 바꿔 PDF로 묶는 화면',pdf2img:'PDF를 해상도를 골라 이미지로 저장하는 화면',hwp:'한글 문서를 PDF·Markdown·이미지로 바꾸는 화면',imgconv:'사진 형식을 바꾸고 긴 변 길이를 지정하는 화면',audio:'유튜브 링크를 넣어 MP3로 저장하는 화면',ocr:'사진 속 글자를 읽어 Markdown으로 바꾸는 화면',md2pdf:'Markdown 글을 PDF로 만드는 화면',office:'Word·PowerPoint 문서를 PDF나 이미지로 바꾸는 화면',pdftool:'PDF를 합치고 나누고 용량을 줄이는 화면'};
   let first=true;
   function place(){const b=btns.find(x=>x.getAttribute('aria-selected')==='true');if(!b||!tabs.offsetWidth)return;
-    if(first)bub.style.transition='none';bub.style.width=b.offsetWidth+'px';bub.style.transform='translateX('+b.offsetLeft+'px)';
+    if(first)bub.style.transition='none';bub.style.width=b.offsetWidth+'px';bub.style.height=b.offsetHeight+'px';bub.style.transform='translate('+b.offsetLeft+'px,'+b.offsetTop+'px)';
     if(first){void bub.offsetWidth;bub.style.transition='';first=false}}
   function select(id,focus){
     btns.forEach(b=>{const on=b.id==='t-'+id;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
@@ -623,13 +665,14 @@ document.documentElement.classList.add('js');
     img.style.opacity='.0';setTimeout(()=>{img.src='assets/shot-'+id+'.webp';img.alt=SHOT[id];img.onload=()=>{img.style.opacity='1'}},120);
     place();
     const b=btns.find(x=>x.getAttribute('aria-selected')==='true');
-    if(tabs.scrollWidth>tabs.clientWidth)b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+    if(tabs.scrollWidth>tabs.clientWidth+1)b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
   }
   btns.forEach(b=>{b.tabIndex=b.getAttribute('aria-selected')==='true'?0:-1;b.addEventListener('click',()=>select(b.id.slice(2)))});
   tabs.addEventListener('keydown',e=>{const d={ArrowRight:1,ArrowLeft:-1}[e.key];if(!d)return;e.preventDefault();
     const i=btns.findIndex(x=>x.getAttribute('aria-selected')==='true');select(btns[(i+d+btns.length)%btns.length].id.slice(2),true)});
   img.alt=SHOT.video;
-  new ResizeObserver(place).observe(tabs);
+  const ro=new ResizeObserver(place);ro.observe(tabs);btns.forEach(x=>ro.observe(x));
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(place);   // 글꼴이 늦게 로드돼도 선택 표시를 다시 맞춘다
   // 다른 화면 이미지를 미리 받아 둔다 (탭을 눌렀을 때 바로 보이게)
   const warm=()=>Object.keys(SHOT).forEach(k=>{const i=new Image();i.src='assets/shot-'+k+'.webp'});
   if('requestIdleCallback' in window)requestIdleCallback(warm);else setTimeout(warm,2500);
@@ -692,9 +735,14 @@ document.documentElement.classList.add('js');
     img2pdf:{s:{ext:'JPG',name:'여행 사진 12장',meta:'41.8MB',c:'#e0a21b',k:'thumbs'},o:{ext:'PDF',name:'여행사진.pdf',meta:'한 권으로 · 3.1MB',c:'#d93f3f',k:'lines'},ok:'사진 12장이 PDF 한 권으로 묶였어요.'},
     pdf2img:{s:{ext:'PDF',name:'발표자료.pdf',meta:'18쪽',c:'#d93f3f',k:'lines'},o:{ext:'ZIP',name:'발표자료.zip',meta:'PNG 18장 · 8.4MB',c:'#8a5cd6',k:'thumbs'},ok:'쪽마다 이미지가 되어 ZIP으로 담겼어요.'},
     hwp:{s:{ext:'HWPX',name:'보고서.hwpx',meta:'412KB',c:'#2b6cb0',k:'lines'},o:{ext:'PDF',name:'보고서.pdf',meta:'원본 모양 그대로',c:'#d93f3f',k:'lines'},ok:'한글 문서가 모양 그대로 PDF가 되었어요.'},
+    audio:{s:{ext:'링크',name:'유튜브 영상',meta:'youtu.be/…',c:'#e8743b',k:'play'},o:{ext:'MP3',name:'찬양 모음.mp3',meta:'192kbps · 3.1MB',c:'#8a5cd6',k:'wave'},ok:'영상에서 소리만 뽑아 MP3 파일로 저장했어요.'},
+    ocr:{s:{ext:'JPG',name:'주보 사진.jpg',meta:'2.4MB',c:'#e0a21b',k:'thumbs'},o:{ext:'MD',name:'주보 사진.md',meta:'글자를 읽어 옮김',c:'#0c7d68',k:'lines'},ok:'사진 속 한국어 글자를 읽어 Markdown 글로 옮겼어요.'},
+    md2pdf:{s:{ext:'MD',name:'설교 요약.md',meta:'12KB',c:'#0c7d68',k:'lines'},o:{ext:'PDF',name:'설교 요약.pdf',meta:'A4 · 3쪽',c:'#d93f3f',k:'lines'},ok:'정리한 글이 인쇄하기 좋은 PDF가 되었어요.'},
+    office:{s:{ext:'DOCX',name:'주보.docx',meta:'96KB',c:'#2b5797',k:'lines'},o:{ext:'PDF',name:'주보.pdf',meta:'원본 모양 그대로',c:'#d93f3f',k:'lines'},ok:'Word 문서가 원본 모양 그대로 PDF가 되었어요.'},
+    merge:{s:{ext:'PDF',name:'순서지 2개',meta:'1부 + 2부',c:'#d93f3f',k:'lines'},o:{ext:'PDF',name:'순서지 합본.pdf',meta:'6쪽 · 312KB',c:'#d93f3f',k:'lines'},ok:'PDF 두 개가 한 권으로 합쳐졌어요.'},
     heic:{s:{ext:'HEIC',name:'IMG_2041.HEIC',meta:'3.4MB',c:'#8a5cd6',k:'thumbs'},o:{ext:'JPG',name:'IMG_2041.jpg',meta:'긴 변 1600px · 0.6MB',c:'#e0a21b',k:'thumbs'},ok:'HEIC가 가벼운 JPG로 바뀌고 크기도 줄었어요.'}
   };
-  const ficon=f=>{const b=f.k==='thumbs'?'<div class="thumbs"><i></i><i></i><i></i><i></i></div>':f.k==='play'?'<div class="pl"><svg class="i"><use href="#i-play"/></svg></div>':'<div class="lines"><i></i><i></i><i></i><i></i></div>';
+  const ficon=f=>{const b=f.k==='thumbs'?'<div class="thumbs"><i></i><i></i><i></i><i></i></div>':f.k==='wave'?'<div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>':f.k==='play'?'<div class="pl"><svg class="i"><use href="#i-play"/></svg></div>':'<div class="lines"><i></i><i></i><i></i><i></i></div>';
     return '<div class="ficon" style="--c:'+f.c+'"><span class="ext">'+f.ext+'</span>'+b+'</div><b class="fname">'+f.name+'</b><small class="fmeta">'+f.meta+'</small>'};
   let key='video',busy=false,done=false,tok=0,touched=false,drag=null,noClick=false;
   function load(k){

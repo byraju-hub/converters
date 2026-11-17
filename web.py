@@ -19,9 +19,13 @@ from queue import Queue
 
 from flask import Flask, abort, jsonify, request, send_file, Response
 
+import audiodl
 import hwpconv
 import imgconv
+import imgocr
+import mdpdf
 import mimetypes
+import officeconv
 import pdf2md
 import pdftools
 import settings
@@ -100,6 +104,39 @@ def run_job(j, cb):
         total = sum(f.stat().st_size for f in files)
         j.update(status="done", title=folder.name, file=folder.name + ".zip", dir=str(folder), ext="zip",
                  meta=f"{len(files)}장 · {j.get('fmt', 'png').upper()} {j.get('dpi', 150)}dpi · {human(total)}", log="완료")
+    elif kind == "audio":
+        title, path = audiodl.download_audio(j["source"], OUT, j["fmt"], j["kbps"], cb)
+        j.update(status="done", title=title, file=path.name, fpath=str(path), ext=j["fmt"],
+                 meta=f"{j['fmt'].upper()}" + (f" {j['kbps']}kbps" if j["fmt"] == "mp3" else "") + f" · {human(path.stat().st_size)}",
+                 log="완료")
+    elif kind == "ocr":
+        items = list(zip(j["tmps"], j["names"]))
+        title, md = imgocr.images_to_md(items, cb=cb)
+        save_md(j, title, md)
+    elif kind == "md2pdf":
+        stem = j["stem"]
+        path = vod2md.unique_path(OUT, stem, ".pdf")
+        mdpdf.md_to_pdf(j["md_text"], path, title=mdpdf.title_of(j["md_text"], stem), size=j["size"],
+                        font=j["font"], numbers=j["numbers"], cb=cb)
+        j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
+                 meta=f"{pdf_pages(path)}쪽 · {human(path.stat().st_size)}", log="완료")
+    elif kind == "office":
+        stem = Path(j["name"]).stem
+        if j.get("target") == "img":
+            with tempfile.TemporaryDirectory(prefix="office2img_") as tmp:
+                pdf = officeconv.office_to_pdf(j["source"], Path(tmp) / "doc.pdf", cb)
+                folder = vod2md.unique_path(OUT, stem + " 이미지", "")
+                files = pdftools.pdf_to_images(pdf, folder, j.get("fmt", "png"), j.get("dpi", 150), "", stem=stem, cb=cb)
+            total = sum(f.stat().st_size for f in files)
+            j.update(status="done", title=folder.name, file=folder.name + ".zip", dir=str(folder), ext="zip",
+                     meta=f"{len(files)}장 · {j.get('fmt', 'png').upper()} {j.get('dpi', 150)}dpi · {human(total)}", log="완료")
+        else:
+            path = vod2md.unique_path(OUT, stem, ".pdf")
+            officeconv.office_to_pdf(j["source"], path, cb)
+            j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
+                     meta=f"{pdf_pages(path)}쪽 · {human(path.stat().st_size)}", log="완료")
+    elif kind == "pdftool":
+        run_pdftool(j, cb)
     elif kind == "pdf":
         title, md = pdf2md.convert_pdf(j["source"], local_name=j.get("name"),
                                        page_marks=j.get("page_marks", True), ocr=j.get("ocr", True), cb=cb)
@@ -108,6 +145,57 @@ def run_job(j, cb):
         title, md = vod2md.convert(j["source"], j["model"], j["lang"], j["whisper"],
                                    j["summarize"], cb=cb, local_name=j.get("name"))
         save_md(j, title, md)
+
+
+def pdf_pages(path):
+    try:
+        import pymupdf
+        with pymupdf.open(str(path)) as d:
+            return len(d)
+    except Exception:
+        return "?"
+
+
+def run_pdftool(j, cb):
+    """PDF 도구함: 합치기·나누기·쪽 뽑기/지우기·회전·용량 줄이기"""
+    op = j["op"]
+    if op == "merge":
+        stem = vod2md.safe_name(j["pdfname"]) if j.get("pdfname") else None
+        if not stem:
+            first = Path(j["names"][0]).stem
+            stem = first + (f" 외 {len(j['names']) - 1}개 합침" if len(j["names"]) > 1 else " (합침)")
+        path = vod2md.unique_path(OUT, stem, ".pdf")
+        _, pages = pdftools.merge_pdfs(j["tmps"], path, cb=cb)
+        j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf",
+                 meta=f"{len(j['tmps'])}개 → {pages}쪽 · {human(path.stat().st_size)}", log="완료")
+        return
+    stem = Path(j["name"]).stem
+    if op == "split":
+        folder = vod2md.unique_path(OUT, stem + " 나눔", "")
+        files = pdftools.split_pdf(j["source"], folder, j["mode"], j.get("every", 1), j.get("spec", ""), stem=stem, cb=cb)
+        total = sum(f.stat().st_size for f in files)
+        j.update(status="done", title=folder.name, file=folder.name + ".zip", dir=str(folder), ext="zip",
+                 meta=f"{len(files)}개 파일 · {human(total)}", log="완료")
+        return
+    if op == "pick":
+        tag = "(일부 쪽)" if j["mode"] == "extract" else "(쪽 지움)"
+        path = vod2md.unique_path(OUT, f"{stem} {tag}", ".pdf")
+        _, kept = pdftools.select_pages(j["source"], path, j["spec"], j["mode"], cb)
+        meta = f"{kept}쪽 · {human(path.stat().st_size)}"
+    elif op == "rotate":
+        path = vod2md.unique_path(OUT, f"{stem} (회전)", ".pdf")
+        _, count = pdftools.rotate_pdf(j["source"], path, j["angle"], j.get("spec", ""), cb)
+        meta = f"{count}쪽을 {j['angle']}° 돌림 · {human(path.stat().st_size)}"
+    elif op == "compress":
+        path = vod2md.unique_path(OUT, f"{stem} (용량 줄임)", ".pdf")
+        _, before, after = pdftools.compress_pdf(j["source"], path, j["level"], cb)
+        if after >= before:
+            meta = f"{human(before)} · 이미 충분히 작아서 그대로 뒀어요"
+        else:
+            meta = f"{human(before)} → {human(after)} ({round((1 - after / before) * 100)}% 줄임)"
+    else:
+        raise ValueError("알 수 없는 PDF 도구예요.")
+    j.update(status="done", title=path.stem, file=path.name, fpath=str(path), ext="pdf", meta=meta, log="완료")
 
 
 def save_md(j, title, md):
@@ -284,7 +372,7 @@ def submit_pdf():
 @app.get("/api/capabilities")
 def capabilities():
     """이 PC에서 가능한 것 (화면이 선택지를 맞추는 데 쓴다)"""
-    return jsonify(hancom=hwpconv.hancom_available())
+    return jsonify(hancom=hwpconv.hancom_available(), office=officeconv.office_available(), mdpdf=mdpdf.available())
 
 
 @app.post("/api/submit-hwp")
@@ -319,18 +407,198 @@ def submit_hwp():
     return jsonify(ids)
 
 
+@app.post("/api/submit-audio")
+def submit_audio():
+    f = request.form
+    lines = [l.strip() for l in f.get("urls", "").splitlines() if l.strip()]
+    if not lines:
+        return jsonify(error="유튜브 링크를 붙여넣어 주세요"), 400
+    bad = [l for l in lines if not l.lower().startswith(("http://", "https://"))]
+    if bad:
+        return jsonify(error="링크는 http:// 또는 https:// 로 시작해야 해요", bad=bad), 400
+    fmt = f.get("fmt") if f.get("fmt") in audiodl.FORMATS else "m4a"
+    try:
+        kbps = int(f.get("kbps", "192"))
+    except ValueError:
+        kbps = 192
+    opts = dict(kind="audio", fmt=fmt, kbps=kbps if kbps in audiodl.BITRATES else 192)
+    return jsonify([enqueue(opts, source=l, label=l) for l in lines])
+
+
+@app.post("/api/submit-ocr")
+def submit_ocr():
+    from PIL import Image
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="사진이나 캡처 이미지를 올려 주세요"), 400
+    bad = []
+    for up in ups:
+        try:
+            Image.open(up.stream).verify()
+        except Exception:
+            bad.append(up.filename)
+        finally:
+            up.stream.seek(0)
+    if bad:
+        return jsonify(error="이미지로 읽을 수 없는 파일이 있어요", bad=bad), 400
+    paths = [str(save_upload(up)) for up in ups]
+    names = [up.filename for up in ups]
+    if request.form.get("merge") == "1" or len(ups) == 1:        # 여러 장을 한 문서로
+        return jsonify([enqueue(dict(kind="ocr"), source="", tmps=paths, names=names,
+                                label=names[0] if len(names) == 1 else f"이미지 {len(names)}장")])
+    return jsonify([enqueue(dict(kind="ocr"), source="", tmps=[pa], names=[nm], label=nm)
+                    for pa, nm in zip(paths, names)])
+
+
+def read_text_upload(up):
+    raw = up.stream.read()
+    up.stream.seek(0)
+    for enc in ("utf-8-sig", "cp949"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    raise ValueError("글자 인코딩을 읽을 수 없어요")
+
+
+@app.post("/api/submit-md2pdf")
+def submit_md2pdf():
+    if not mdpdf.available():
+        return jsonify(error="PDF로 인쇄할 브라우저(Microsoft Edge 또는 Chrome)를 찾지 못했어요"), 400
+    f = request.form
+    size = f.get("size") if f.get("size") in mdpdf.PAGE_SIZES else "a4"
+    font = f.get("font") if f.get("font") in mdpdf.FONT_PT else "normal"
+    opts = dict(kind="md2pdf", size=size, font=font, numbers=f.get("numbers") == "1")
+    docs, bad = [], []
+    for up in request.files.getlist("files"):
+        if not up.filename.lower().endswith((".md", ".markdown", ".txt")):
+            bad.append(up.filename)
+            continue
+        try:
+            text = read_text_upload(up)
+        except ValueError:
+            bad.append(up.filename)
+            continue
+        docs.append((Path(up.filename).stem, up.filename, text))
+    if bad:
+        return jsonify(error="Markdown(.md)나 텍스트(.txt) 파일이 아니거나 읽을 수 없어요", bad=bad), 400
+    pasted = f.get("text", "")
+    if pasted.strip():
+        docs.append((mdpdf.title_of(pasted, "붙여넣은 글"), "붙여넣은 글", pasted))
+    if not docs:
+        return jsonify(error="Markdown 파일을 올리거나 글을 붙여넣어 주세요"), 400
+    if any(len(t) > 3_000_000 for _, _, t in docs):
+        return jsonify(error="글이 너무 길어요 (300만 자 이하)"), 400
+    ids = [enqueue(opts, source="", stem=stem, md_text=text, name=label, label=label) for stem, label, text in docs]
+    return jsonify(ids)
+
+
+def office_file_ok(up):
+    """확장자와 파일 머리(OOXML=PK, 옛 형식=OLE)를 확인한다."""
+    name = up.filename.lower()
+    ext = Path(name).suffix
+    if ext not in officeconv.SUFFIXES:
+        return False
+    head = up.stream.read(8)
+    up.stream.seek(0)
+    if ext in (".csv",):
+        return True
+    if ext == ".rtf":
+        return head[:5] == b"{\\rtf"
+    if ext in (".doc", ".ppt", ".pps", ".xls"):
+        return head == bytes.fromhex("D0CF11E0A1B11AE1")
+    return head[:4] == b"PK\x03\x04"              # docx·pptx·xlsx·odt·odp·ods 등 (ZIP 기반)
+
+
+@app.post("/api/submit-office")
+def submit_office():
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="Word·PowerPoint·Excel 파일을 올려 주세요"), 400
+    bad = [up.filename for up in ups if not office_file_ok(up)]
+    if bad:
+        return jsonify(error="지원하지 않는 파일이에요 (Word·PowerPoint·Excel만)", bad=bad), 400
+    have = officeconv.office_available()
+    missing = sorted({officeconv.APPS[officeconv.app_of(up.filename)][0] for up in ups if not have[officeconv.app_of(up.filename)]})
+    if missing:
+        return jsonify(error="이 PC에서 " + ", ".join(missing) + "을(를) 찾지 못했어요. Microsoft Office가 있어야 변환할 수 있어요"), 400
+    f = request.form
+    try:
+        dpi = max(50, min(600, int(f.get("dpi", "150"))))
+    except ValueError:
+        dpi = 150
+    opts = dict(kind="office", target="img" if f.get("target") == "img" else "pdf",
+                fmt="jpg" if f.get("fmt") == "jpg" else "png", dpi=dpi)
+    ids = []
+    for up in ups:
+        dest = save_upload(up)
+        ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
+    return jsonify(ids)
+
+
+@app.post("/api/submit-pdftool")
+def submit_pdftool():
+    ups = request.files.getlist("files")
+    if not ups:
+        return jsonify(error="PDF 파일을 올려 주세요"), 400
+    bad = not_pdfs(ups)
+    if bad:
+        return jsonify(error="PDF 파일이 아니에요", bad=bad), 400
+    f = request.form
+    op = f.get("op")
+    spec = f.get("spec", "").strip()
+    try:
+        if op == "merge":
+            if len(ups) < 2:
+                return jsonify(error="합치려면 PDF를 두 개 이상 올려 주세요"), 400
+            paths = [str(save_upload(up)) for up in ups]       # 올린 순서가 이어붙이는 순서
+            return jsonify([enqueue(dict(kind="pdftool", op="merge", pdfname=f.get("name", "").strip()),
+                                    source="", tmps=paths, names=[up.filename for up in ups], label=f"PDF {len(ups)}개")])
+        if op == "split":
+            mode = f.get("mode") if f.get("mode") in ("each", "every", "ranges") else "each"
+            every = max(1, min(1000, int(f.get("every", "1") or 1)))
+            if mode == "ranges":
+                pdftools.parse_groups(spec, 10 ** 6)
+            opts = dict(kind="pdftool", op="split", mode=mode, every=every, spec=spec)
+        elif op == "pick":
+            if not spec:
+                return jsonify(error="쪽 범위를 적어 주세요. 예: 1-3, 5"), 400
+            pdftools.parse_pages(spec, 10 ** 6)
+            opts = dict(kind="pdftool", op="pick", mode="delete" if f.get("mode") == "delete" else "extract", spec=spec)
+        elif op == "rotate":
+            angle = int(f.get("angle", "90"))
+            if angle not in (90, 180, 270):
+                return jsonify(error="회전 각도는 90, 180, 270 중에서 골라 주세요"), 400
+            pdftools.parse_pages(spec, 10 ** 6)
+            opts = dict(kind="pdftool", op="rotate", angle=angle, spec=spec)
+        elif op == "compress":
+            opts = dict(kind="pdftool", op="compress", level="strong" if f.get("level") == "strong" else "normal")
+        else:
+            return jsonify(error="알 수 없는 PDF 도구예요"), 400
+    except ValueError as e:
+        return jsonify(error=str(e)), 400
+    ids = []
+    for up in ups:
+        dest = save_upload(up)
+        ids.append(enqueue(opts, source=str(dest), tmp=str(dest), name=up.filename, label=up.filename))
+    return jsonify(ids)
+
+
 @app.post("/api/retry/<jid>")
 def retry(jid):
     local_only()
     j = jobs.get(jid)
     if not j or j["status"] != "error" or not j.get("source", "").lower().startswith(("http://", "https://")):
         abort(404)      # 올린 파일은 변환 후 지워지므로 링크만 다시 시도할 수 있다
-    opts = {k: j[k] for k in ("model", "lang", "whisper", "summarize")}
+    if j.get("kind") == "audio":
+        opts = {k: j[k] for k in ("kind", "fmt", "kbps")}
+    else:
+        opts = {k: j[k] for k in ("model", "lang", "whisper", "summarize")}
     del jobs[jid]
     return jsonify(id=enqueue(opts, source=j["source"], label=j["label"]))
 
 
-HIDDEN = {"md", "fpath", "dir", "tmp", "tmps", "names"}
+HIDDEN = {"md", "fpath", "dir", "tmp", "tmps", "names", "md_text", "stem"}
 
 
 @app.get("/api/jobs")

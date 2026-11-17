@@ -7,6 +7,7 @@
 
   이미지 -> PDF : 여러 이미지를 순서대로 한 PDF 로 묶는다
   PDF -> 이미지 : PDF 의 쪽을 PNG/JPG 이미지로 저장한다
+  PDF 도구함    : 합치기 · 나누기 · 쪽 뽑기/지우기 · 회전 · 용량 줄이기 (웹 화면의 "PDF 도구" 탭)
 
 사용법:
   python pdftools.py img2pdf 사진1.jpg 사진2.png -o 결과.pdf [--size fit|a4]
@@ -167,6 +168,150 @@ def pdf_to_images(pdf_path, out_dir, fmt="png", dpi=150, pages="", stem=None, cb
     finally:
         doc.close()
     return files
+
+
+# ====================================================================== PDF 도구함
+def _open_pdf(path):
+    import pymupdf
+    doc = pymupdf.open(str(path))
+    if doc.needs_pass:
+        doc.close()
+        raise ValueError("암호가 걸린 PDF예요. 암호를 해제한 뒤 다시 올려 주세요.")
+    if len(doc) == 0:
+        doc.close()
+        raise ValueError("쪽이 없는 PDF예요.")
+    return doc
+
+
+def _save(doc, out_path, **kw):
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(str(out_path), garbage=3, deflate=True, **kw)
+    return out_path
+
+
+def parse_groups(spec, n):
+    """'1-3, 5, 7-9' -> [[0,1,2],[4],[6,7,8]] (쉼표마다 한 묶음, 0부터)."""
+    groups = []
+    for part in re.split(r"[,\s]+", (spec or "").strip()):
+        if part:
+            groups.append(parse_pages(part, n))
+    if not groups:
+        raise ValueError("나눌 쪽 범위를 적어 주세요. 예: 1-3, 4-6")
+    return groups
+
+
+def merge_pdfs(paths, out_path, cb=None):
+    """여러 PDF 를 주어진 순서대로 한 PDF 로 이어붙인다."""
+    import pymupdf
+    out = pymupdf.open()
+    try:
+        total = len(paths)
+        for k, p in enumerate(paths):
+            src = _open_pdf(p)
+            try:
+                out.insert_pdf(src)
+            finally:
+                src.close()
+            log(f"[pdf] 합치는 중 ({k + 1}/{total})", cb)
+        pages = len(out)
+        _save(out, out_path)
+    finally:
+        out.close()
+    return Path(out_path), pages
+
+
+def split_pdf(pdf_path, out_dir, mode="each", every=1, spec="", stem=None, cb=None):
+    """PDF 를 여러 파일로 나눠 out_dir 에 저장한다. mode: each(쪽마다) / every(N쪽씩) / ranges(범위마다)."""
+    import pymupdf
+    src = _open_pdf(pdf_path)
+    files = []
+    try:
+        n = len(src)
+        if mode == "every":
+            every = max(1, int(every))
+            groups = [list(range(i, min(i + every, n))) for i in range(0, n, every)]
+        elif mode == "ranges":
+            groups = parse_groups(spec, n)
+        else:
+            groups = [[i] for i in range(n)]
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        stem = safe_name(stem or Path(pdf_path).stem)
+        width = max(3, len(str(n)))
+        for k, g in enumerate(groups):
+            label = f"{g[0] + 1:0{width}d}" if len(g) == 1 else f"{g[0] + 1:0{width}d}-{g[-1] + 1:0{width}d}"
+            part = pymupdf.open()
+            try:
+                for i in g:
+                    part.insert_pdf(src, from_page=i, to_page=i)
+                files.append(_save(part, out_dir / f"{stem}_{label}.pdf"))
+            finally:
+                part.close()
+            log(f"[pdf] 나누는 중 ({k + 1}/{len(groups)})", cb)
+    finally:
+        src.close()
+    return files
+
+
+def select_pages(pdf_path, out_path, spec, mode="extract", cb=None):
+    """쪽 뽑기(extract: 적은 쪽만 남김) 또는 지우기(delete: 적은 쪽을 뺌). 돌려주는 값: (경로, 남은 쪽수)."""
+    doc = _open_pdf(pdf_path)
+    try:
+        n = len(doc)
+        idx = parse_pages(spec, n)
+        if not (spec or "").strip():
+            raise ValueError("쪽 범위를 적어 주세요. 예: 1-3, 5")
+        keep = idx if mode == "extract" else [i for i in range(n) if i not in set(idx)]
+        if not keep:
+            raise ValueError("모든 쪽을 지울 수는 없어요.")
+        doc.select(keep)
+        _save(doc, out_path)
+    finally:
+        doc.close()
+    return Path(out_path), len(keep)
+
+
+def rotate_pdf(pdf_path, out_path, angle, pages="", cb=None):
+    """쪽을 시계 방향으로 angle(90·180·270)도 돌린다. pages 가 비면 전체."""
+    if angle not in (90, 180, 270):
+        raise ValueError("회전 각도는 90, 180, 270 중에서 골라 주세요.")
+    doc = _open_pdf(pdf_path)
+    try:
+        idx = parse_pages(pages, len(doc))
+        for i in idx:
+            doc[i].set_rotation((doc[i].rotation + angle) % 360)
+        _save(doc, out_path)
+    finally:
+        doc.close()
+    return Path(out_path), len(idx)
+
+
+COMPRESS_LEVELS = {                      # 그림 해상도·화질을 이 값까지 낮춘다
+    "normal": dict(dpi_threshold=170, dpi_target=130, quality=78),
+    "strong": dict(dpi_threshold=120, dpi_target=96, quality=55),
+}
+
+
+def compress_pdf(pdf_path, out_path, level="normal", cb=None):
+    """PDF 용량을 줄인다(큰 그림의 해상도·화질을 낮추고 중복을 정리). 돌려주는 값: (경로, 원래 바이트, 결과 바이트)."""
+    import shutil
+    doc = _open_pdf(pdf_path)
+    before = Path(pdf_path).stat().st_size
+    try:
+        log("[pdf] 그림을 줄이는 중…", cb)
+        try:
+            doc.rewrite_images(**COMPRESS_LEVELS.get(level, COMPRESS_LEVELS["normal"]))
+        except Exception as e:                       # 그림 줄이기가 안 되는 PDF 도 구조 정리만으로 저장한다
+            log(f"[pdf] 그림은 그대로 두고 정리만 해요 ({e})", cb)
+        _save(doc, out_path, clean=True)
+    finally:
+        doc.close()
+    after = Path(out_path).stat().st_size
+    if after >= before:                              # 더 커지면 원본을 그대로 돌려준다
+        shutil.copyfile(pdf_path, out_path)
+        after = before
+    return Path(out_path), before, after
 
 
 def main():

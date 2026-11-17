@@ -16,6 +16,11 @@
 - **PDF → 이미지**: PDF의 쪽을 PNG/JPG로 저장(해상도·쪽 범위 선택). `output` 폴더에 PDF 이름의 폴더로 저장되고 ZIP으로도 받음
 - **사진 변환**: HEIC·JPG·PNG·WEBP 등을 JPG·PNG·WEBP로 바꾸고, **긴 변 길이(px)를 지정해 여러 장을 한꺼번에 리사이즈**. 작은 사진은 키우지 않고, 사진 방향을 바르게 맞추며, 위치(GPS) 같은 사진 정보는 기본으로 지움
 - **한글 변환**: `.hwp`·`.hwpx`를 PDF, Markdown, 이미지로. 한컴오피스가 있는 PC에서는 한글이 원본 모양 그대로 PDF를 만들고(이미지도 여기서 파생), 한컴오피스가 없어도 Markdown은 직접 읽어서 만듭니다(`.hwpx`는 제목·표까지, `.hwp`는 글자 위주).
+- **유튜브 → 오디오**: 영상에서 소리만 뽑아 **M4A**(원본 그대로, 가장 빠름) 또는 **MP3**(128/192/320kbps)로 저장. ffmpeg를 따로 설치하지 않아도 됩니다.
+- **이미지 → 글자**: 사진·캡처 속 한국어 글자를 읽어 Markdown으로(스캔 PDF와 같은 글자 인식 엔진). 여러 장을 한 문서로 합치거나 장마다 따로 만들 수 있고, 아이폰 사진(HEIC)도 됩니다.
+- **MD → PDF**: Markdown 파일이나 붙여넣은 글을 인쇄하기 좋은 PDF로. 용지(A4/B5)·글자 크기·쪽 번호를 고르며, 이 PC의 Edge(또는 Chrome)로 인쇄하므로 따로 설치할 것이 없습니다.
+- **오피스 변환**: Word·PowerPoint·Excel 문서를 원본 모양 그대로 PDF로, 또는 쪽(슬라이드)마다 이미지로. 이 PC에 Microsoft Office가 있어야 하고, 없는 프로그램은 화면이 알아서 비활성화합니다.
+- **PDF 도구**: 합치기 · 나누기(쪽마다/N쪽씩/범위별) · 쪽 고르기(남기기/지우기) · 회전 · 용량 줄이기.
 - **Claude 요약(선택)**: 문서 맨 위에 요약·핵심 포인트, 본문 중간에 소제목 자동 삽입
 
 ## 설치
@@ -66,7 +71,7 @@ powershell -ExecutionPolicy Bypass -File unregister-protocol.ps1   # 해제
 
 ### 웹 화면의 탭
 
-화면 위쪽의 탭으로 **영상 → MD**, **PDF → MD**, **이미지 → PDF**, **PDF → 이미지**, **한글 변환**, **사진 변환**을 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`, `#imgconv`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
+화면 위쪽의 탭 11개(**영상 → MD**, **유튜브 → 오디오**, **PDF → MD**, **이미지 → 글자**, **MD → PDF**, **한글 변환**, **오피스 변환**, **PDF 도구**, **이미지 → PDF**, **PDF → 이미지**, **사진 변환**)를 오갈 수 있습니다. 변환 목록과 저장 폴더는 두 탭이 함께 씁니다. 주소 끝에 `#pdf`, `#img2pdf`, `#pdf2img`, `#hwp`, `#imgconv`를 붙이면(예: `http://127.0.0.1:8765/#img2pdf`) 해당 탭으로 바로 열립니다.
 
 ### 명령줄
 
@@ -99,6 +104,20 @@ python pdftools.py pdf2img 문서.pdf -d 결과폴더 --format jpg --dpi 200 --p
   PNG·BMP·GIF·TIFF는 손실 없이(PNG) 넣고, WEBP는 JPEG로 변환해 넣습니다. HEIC는 아직 지원하지 않습니다.
 - 아주 긴 이미지(웹 전체 캡처 등)는 PDF 한 쪽의 길이 한계(약 14,000pt)에 맞춰 줄어듭니다.
 - PDF → 이미지의 해상도는 100/150/220/300dpi 중에서 고르며, 클수록 선명하지만 용량이 커집니다.
+
+### 유튜브 → 오디오 · 이미지 → 글자 · MD → PDF · 오피스 → PDF
+
+```bash
+audiodl.bat "https://youtu.be/XXXX" --fmt mp3 --kbps 192 -d 결과폴더    # 오디오만 저장 (m4a는 원본 그대로)
+imgocr.bat 주보.jpg 캡처.png -d 결과폴더                                # 사진 속 글자 -> Markdown (--separate: 장마다 따로)
+mdpdf.bat 설교문.md --font large --numbers -d 결과폴더                  # Markdown -> PDF (--size a4|b5)
+officeconv.bat 주보.docx 찬양.pptx 표.xlsx -d 결과폴더                  # Office -> PDF (Office 필요)
+```
+
+- **MD → PDF**는 글 속의 스크립트와 바깥 주소 접속을 막고 인쇄합니다. 바깥 주소의 그림은 넣지 않습니다.
+- **오피스 변환**은 Office를 보이지 않게 띄워 저장하고(파일당 10초 안팎), 3분 넘게 멈추면 이 프로그램이 띄운 것만 끕니다. 암호가 걸린 문서는 변환할 수 없습니다. Excel은 표가 쪽 너비보다 넓으면 여러 쪽으로 나뉠 수 있습니다.
+- **이미지 → 글자**는 글자만 읽습니다. 글자가 작거나 흐리면 일부를 놓칠 수 있으니 중요한 부분은 원본과 대조하세요.
+- **PDF 도구**(합치기·나누기·쪽 고르기·회전·용량 줄이기)는 웹 화면에서 씁니다.
 
 ### 사진 변환 (형식 바꾸기 · 긴 변 기준 리사이즈)
 
@@ -202,7 +221,7 @@ PDF 변환에 쓰는 [PyMuPDF·pymupdf4llm](https://github.com/pymupdf/pymupdf4l
 | 도구 | 라이선스 |
 |---|---|
 | faster-whisper, CTranslate2, onnxruntime | MIT |
-| Flask, PyAV, NumPy, olefile, pillow-heif | BSD 계열 (pillow-heif에는 LGPL인 libheif가 포함됨) |
+| Flask, PyAV, NumPy, olefile, pillow-heif, Markdown | BSD 계열 (pillow-heif에는 LGPL인 libheif가 포함됨) |
 | yt-dlp | Unlicense |
 | pywin32 | PSF |
 | anthropic SDK, RapidOCR, OpenCV | Apache-2.0 |

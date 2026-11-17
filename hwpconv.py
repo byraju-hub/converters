@@ -15,6 +15,7 @@
   python hwpconv.py 문서.hwpx --to pdf|md|img [-d 결과폴더]
 """
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -94,7 +95,8 @@ def hwp_save_as(src, out, fmt="PDF", cb=None, timeout=PDF_TIMEOUT):
     try:
         try:
             r = subprocess.run([sys.executable, str(Path(__file__).resolve()), "--worker-save", str(src), str(work_out), fmt],
-                               capture_output=True, text=True, timeout=timeout)
+                               capture_output=True, text=True, encoding="utf-8", errors="replace",
+                               env={**os.environ, "PYTHONUTF8": "1"}, timeout=timeout)
         except subprocess.TimeoutExpired:
             for pid in _hwp_pids() - before:         # 내가 띄운 한글만 끈다
                 subprocess.run(["taskkill", "/F", "/T", "/PID", pid], capture_output=True)
